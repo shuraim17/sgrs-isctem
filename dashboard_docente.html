@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Docente | SGRS ISCTEM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1565c0;
+            --secondary: #2e7d32;
+            --accent: #e65100;
+            --danger: #c62828;
+            --sidebar-width: 260px;
+        }
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #1a237e 0%, #283593 100%);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .sidebar-menu li {
+            margin: 5px 0;
+        }
+        .sidebar-menu a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-radius: 0 30px 30px 0;
+            margin-right: 15px;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .sidebar-menu i {
+            width: 30px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-dashboard {
+            background: white;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .bg-gradient-primary { background: linear-gradient(135deg, #1565c0, #0d47a1); }
+        .bg-gradient-success { background: linear-gradient(135deg, #2e7d32, #1b5e20); }
+        .bg-gradient-warning { background: linear-gradient(135deg, #ff9800, #e65100); }
+        .bg-gradient-danger { background: linear-gradient(135deg, #ef5350, #c62828); }
+        .bg-gradient-info { background: linear-gradient(135deg, #29b6f6, #0277bd); }
+        .bg-gradient-purple { background: linear-gradient(135deg, #ab47bc, #6a1b9a); }
+
+        .btn-action {
+            border-radius: 10px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pendente { background: #fff3e0; color: #e65100; }
+        .status-aprovada { background: #e8f5e9; color: #2e7d32; }
+        .status-recusada { background: #ffebee; color: #c62828; }
+        .status-concluida { background: #e3f2fd; color: #1565c0; }
+
+        .table-custom {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .table-custom thead {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            color: white;
+        }
+        .table-custom th {
+            font-weight: 600;
+            padding: 15px;
+            border: none;
+        }
+        .table-custom td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .table-custom tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+        .form-control-modal {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 12px;
+        }
+        .form-control-modal:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header text-center">
+            <i class="fas fa-university fa-2x mb-2"></i>
+            <h5 class="mb-0">SGRS</h5>
+            <small>ISCTEM</small>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fas fa-plus-circle"></i> Nova Requisição</a></li>
+            <li><a href="#"><i class="fas fa-list-alt"></i> Minhas Requisições</a></li>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalDisponibilidade"><i class="fas fa-calendar-alt"></i> Disponibilidade</a></li>
+            <li><a href="#"><i class="fas fa-file-pdf"></i> Comprovativos</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notificações <span class="badge bg-danger ms-2">3</span></a></li>
+            <li><a href="#"><i class="fas fa-user"></i> Meu Perfil</a></li>
+            <li class="mt-4"><a href="index.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div>
+                <h4 class="mb-0">Dashboard do Docente</h4>
+                <small class="text-muted">Bem-vindo, Prof. Exemplo</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light position-relative">
+                    <i class="fas fa-bell text-primary"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <small class="fw-semibold d-block">Prof. Exemplo</small>
+                        <small class="text-muted">Docente</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card-dashboard p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Requisições</h6>
+                            <h3 class="mb-0">24</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +12% este mês</small>
+                        </div>
+                        <div class="card-icon bg-gradient-primary">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-dashboard p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Pendentes</h6>
+                            <h3 class="mb-0">3</h3>
+                            <small class="text-warning"><i class="fas fa-clock"></i> Aguardando</small>
+                        </div>
+                        <div class="card-icon bg-gradient-warning">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-dashboard p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Aprovadas</h6>
+                            <h3 class="mb-0">18</h3>
+                            <small class="text-success"><i class="fas fa-check"></i> Confirmadas</small>
+                        </div>
+                        <div class="card-icon bg-gradient-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-dashboard p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">Próximo Evento</h6>
+                            <h3 class="mb-0">2d</h3>
+                            <small class="text-info"><i class="fas fa-calendar"></i> 06/05/2026</small>
+                        </div>
+                        <div class="card-icon bg-gradient-info">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-12">
+                <div class="card-dashboard p-4">
+                    <h5 class="mb-4">Ações Rápidas</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100 btn-action" data-bs-toggle="modal" data-bs-target="#modalRequisicao">
+                                <i class="fas fa-plus-circle me-2"></i>Nova Requisição
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-success w-100 btn-action" data-bs-toggle="modal" data-bs-target="#modalDisponibilidade">
+                                <i class="fas fa-search me-2"></i>Consultar Disponibilidade
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-info w-100 btn-action text-white">
+                                <i class="fas fa-file-download me-2"></i>Meus Comprovativos
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary w-100 btn-action">
+                                <i class="fas fa-history me-2"></i>Histórico Completo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Requests Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-dashboard p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Minhas Requisições Recentes</h5>
+                        <button class="btn btn-outline-primary btn-sm">Ver Todas</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Nº</th>
+                                    <th>Espaço</th>
+                                    <th>Data</th>
+                                    <th>Horário</th>
+                                    <th>Motivo</th>
+                                    <th>Estado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>#REQ-20260504-001</strong></td>
+                                    <td><i class="fas fa-door-open text-primary me-2"></i>Sala 101 - Bloco A</td>
+                                    <td>06/05/2026</td>
+                                    <td>14:00 - 16:00</td>
+                                    <td>Aula de Programação</td>
+                                    <td><span class="status-badge status-aprovada"><i class="fas fa-check me-1"></i>Aprovada</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Ver"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-success me-1" title="Comprovativo"><i class="fas fa-file-pdf"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Cancelar"><i class="fas fa-times"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#REQ-20260503-002</strong></td>
+                                    <td><i class="fas fa-desktop text-success me-2"></i>Lab Info 3</td>
+                                    <td>10/05/2026</td>
+                                    <td>08:00 - 12:00</td>
+                                    <td>Teste Prático</td>
+                                    <td><span class="status-badge status-pendente"><i class="fas fa-clock me-1"></i>Pendente</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Ver"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-warning me-1" title="Editar"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Cancelar"><i class="fas fa-times"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#REQ-20260428-003</strong></td>
+                                    <td><i class="fas fa-chalkboard-teacher text-warning me-2"></i>Auditório Central</td>
+                                    <td>02/05/2026</td>
+                                    <td>19:00 - 21:00</td>
+                                    <td>Conferência IA</td>
+                                    <td><span class="status-badge status-concluida"><i class="fas fa-check-double me-1"></i>Concluída</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Ver"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-success me-1" title="Comprovativo"><i class="fas fa-file-pdf"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#REQ-20260425-004</strong></td>
+                                    <td><i class="fas fa-door-open text-primary me-2"></i>Sala 205 - Bloco B</td>
+                                    <td>28/04/2026</td>
+                                    <td>10:00 - 12:00</td>
+                                    <td>Reunião Grupo</td>
+                                    <td><span class="status-badge status-recusada"><i class="fas fa-times me-1"></i>Recusada</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Ver"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-info" title="Motivo"><i class="fas fa-info-circle"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nova Requisição -->
+    <div class="modal fade" id="modalRequisicao" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Nova Requisição de Sala</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formRequisicao">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Tipo de Espaço</label>
+                                <select class="form-control form-control-modal" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="sala">Sala de Aula</option>
+                                    <option value="auditorio">Auditório</option>
+                                    <option value="laboratorio">Laboratório Informático</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Espaço Específico</label>
+                                <select class="form-control form-control-modal" required>
+                                    <option value="">Selecione primeiro o tipo...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Data do Evento</label>
+                                <input type="date" class="form-control form-control-modal" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Hora Início</label>
+                                <input type="time" class="form-control form-control-modal" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Hora Fim</label>
+                                <input type="time" class="form-control form-control-modal" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Motivo</label>
+                                <select class="form-control form-control-modal" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="aula">Aula Normal</option>
+                                    <option value="extra">Aula Extraordinária</option>
+                                    <option value="teste">Teste</option>
+                                    <option value="exame">Exame Normal</option>
+                                    <option value="exame_rec">Exame de Recurso</option>
+                                    <option value="reuniao">Reunião de Grupo</option>
+                                    <option value="evento">Evento Académico</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nº Participantes</label>
+                                <input type="number" class="form-control form-control-modal" min="1" max="500" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Equipamentos Adicionais</label>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="proj">
+                                        <label class="form-check-label" for="proj">Projetor</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="mic">
+                                        <label class="form-check-label" for="mic">Microfone</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="wifi">
+                                        <label class="form-check-label" for="wifi">WiFi Extra</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="quadro">
+                                        <label class="form-check-label" for="quadro">Quadro Interativo</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Observações</label>
+                                <textarea class="form-control form-control-modal" rows="3" placeholder="Informações adicionais relevantes..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info text-white" onclick="verificarDisponibilidade()">
+                        <i class="fas fa-search me-2"></i>Verificar Disponibilidade
+                    </button>
+                    <button type="submit" class="btn btn-primary" form="formRequisicao">
+                        <i class="fas fa-paper-plane me-2"></i>Submeter Requisição
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Consultar Disponibilidade -->
+    <div class="modal fade" id="modalDisponibilidade" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-calendar-alt me-2"></i>Consultar Disponibilidade</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo de Espaço</label>
+                            <select class="form-control form-control-modal">
+                                <option value="">Todos</option>
+                                <option value="sala">Sala de Aula</option>
+                                <option value="auditorio">Auditório</option>
+                                <option value="laboratorio">Laboratório</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Data</label>
+                            <input type="date" class="form-control form-control-modal">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Capacidade Mínima</label>
+                            <input type="number" class="form-control form-control-modal" placeholder="Ex: 30">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Espaço</th>
+                                    <th>Tipo</th>
+                                    <th>Capacidade</th>
+                                    <th>Localização</th>
+                                    <th>08:00-10:00</th>
+                                    <th>10:00-12:00</th>
+                                    <th>14:00-16:00</th>
+                                    <th>16:00-18:00</th>
+                                    <th>19:00-21:00</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Sala 101</strong></td>
+                                    <td><span class="badge bg-primary">Sala</span></td>
+                                    <td>40</td>
+                                    <td>Bloco A, 1º Andar</td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-danger text-white text-center"><i class="fas fa-times"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Auditório Central</strong></td>
+                                    <td><span class="badge bg-warning text-dark">Auditório</span></td>
+                                    <td>200</td>
+                                    <td>Edifício Principal</td>
+                                    <td class="bg-danger text-white text-center"><i class="fas fa-times"></i></td>
+                                    <td class="bg-danger text-white text-center"><i class="fas fa-times"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Lab Info 3</strong></td>
+                                    <td><span class="badge bg-success">Laboratório</span></td>
+                                    <td>25</td>
+                                    <td>Bloco B, Térreo</td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                    <td class="bg-danger text-white text-center"><i class="fas fa-times"></i></td>
+                                    <td class="bg-success text-white text-center"><i class="fas fa-check"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex gap-3 justify-content-center mt-3">
+                        <span class="badge bg-success">&nbsp;</span> Disponível
+                        <span class="badge bg-danger">&nbsp;</span> Ocupado
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalRequisicao">
+                        <i class="fas fa-plus me-2"></i>Requisitar Espaço
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function verificarDisponibilidade() {
+            alert('Verificando disponibilidade...\n\nSala disponível para o período solicitado!');
+        }
+
+        document.getElementById('formRequisicao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Requisição submetida com sucesso!\nNúmero: REQ-20260504-005\n\nAguarde aprovação do Gestor.');
+            bootstrap.Modal.getInstance(document.getElementById('modalRequisicao')).hide();
+        });
+    </script>
+</body>
+</html>
