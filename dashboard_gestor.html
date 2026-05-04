@@ -1,4 +1,3 @@
-<!-- dashboard_gestor.html -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -12,17 +11,78 @@
             --glass-bg: rgba(255,255,255,0.25);
             --glass-border: rgba(255,255,255,0.4);
             --sf-font: 'Segoe UI', sans-serif;
+            --sidebar-width: 260px;
         }
-        body { background: #f0f0f5; font-family: var(--sf-font); display: flex; }
-        .sidebar { width: 260px; backdrop-filter: blur(25px); background: rgba(255,255,255,0.3); border-right:1px solid var(--glass-border); }
-        .main-content { flex:1; padding:30px; }
-        .card-dashboard { background: rgba(255,255,255,0.35); backdrop-filter: blur(15px); border-radius: 24px; }
+        body { margin:0; font-family: var(--sf-font); background:#f0f0f5; display:flex; }
+        .bg-orb { position:fixed; border-radius:50%; filter:blur(120px); opacity:0.4; pointer-events:none; z-index:0; }
+        .bg-orb--1 { width:450px; height:450px; background:radial-gradient(circle, #ffd1d1, #ffaaaa); top:-100px; left:-80px; }
+        .bg-orb--2 { width:400px; height:400px; background:radial-gradient(circle, #c4d9ff, #8bb3ff); bottom:-100px; right:-70px; }
+
+        .sidebar { width:var(--sidebar-width); height:100vh; background:rgba(255,255,255,0.35); backdrop-filter:blur(25px); border-right:1px solid var(--glass-border); position:fixed; left:0; top:0; z-index:100; padding:24px 16px; display:flex; flex-direction:column; }
+        .sidebar-header { text-align:center; margin-bottom:30px; color:#1d1d1f; }
+        .sidebar-menu { list-style:none; padding:0; margin:0; flex:1; }
+        .sidebar-menu li a { color:#1d1d1f; text-decoration:none; padding:12px 16px; display:flex; align-items:center; gap:12px; border-radius:14px; margin-bottom:4px; font-weight:500; }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active { background:rgba(255,255,255,0.65); }
+
+        .main-content { margin-left:var(--sidebar-width); flex:1; padding:30px; position:relative; z-index:1; }
+        .topbar { background:rgba(255,255,255,0.4); backdrop-filter:blur(20px); border-radius:24px; padding:16px 28px; margin-bottom:30px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--glass-border); }
+        .card-dashboard { background:rgba(255,255,255,0.35); backdrop-filter:blur(15px); border-radius:24px; padding:24px; border:1px solid var(--glass-border); }
+        .btn-glass { background:rgba(29,29,31,0.9); color:white; border:none; padding:10px 22px; border-radius:14px; font-weight:600; cursor:pointer; }
+        .input-glass { background:rgba(255,255,255,0.5); border:1px solid rgba(200,200,210,0.5); border-radius:14px; padding:10px 16px; display:flex; align-items:center; gap:10px; }
+        .input-glass input, .input-glass select { background:transparent; border:none; outline:none; flex:1; }
+        .modal-content { background:rgba(255,255,255,0.45); backdrop-filter:blur(30px); border-radius:28px; border:1px solid var(--glass-border); }
     </style>
 </head>
 <body>
-<div class="sidebar">...</div>
-<div class="main-content">
-    <!-- Mesma estrutura do gestor original com vidro e validações -->
+<div class="bg-orb bg-orb--1"></div>
+<div class="bg-orb bg-orb--2"></div>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <i class="fas fa-university fa-2x" style="color:#c62828;"></i>
+        <h5 class="mt-2">SGRS</h5>
+        <small>Gestor Académico</small>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="#"><i class="fas fa-inbox"></i> Requisições Pendentes <span class="badge bg-warning ms-2">12</span></a></li>
+        <li><a href="#"><i class="fas fa-check-circle"></i> Aprovadas</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalRelatorios"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+        <li class="mt-auto"><a href="index.html" class="text-white"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+    </ul>
 </div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div><h4>Gestor Académico</h4><small>Painel de Controlo</small></div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-2"><div class="card-dashboard text-center"><h2>12</h2><small>Pendentes</small></div></div>
+        <div class="col-md-2"><div class="card-dashboard text-center"><h2>156</h2><small>Aprovadas</small></div></div>
+        <div class="col-md-2"><div class="card-dashboard text-center"><h2>8</h2><small>Recusadas</small></div></div>
+        <div class="col-md-2"><div class="card-dashboard text-center"><h2>45</h2><small>Salas</small></div></div>
+        <div class="col-md-2"><div class="card-dashboard text-center"><h2>320</h2><small>Utilizadores</small></div></div>
+        <div class="col-md-2"><div class="card-dashboard text-center"><h2>87%</h2><small>Ocupação</small></div></div>
+    </div>
+    <!-- Tabela de pendentes (exemplo) -->
+</div>
+
+<!-- Modal Relatórios -->
+<div class="modal fade" id="modalRelatorios" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content p-3">
+            <div class="modal-header"><h5>Gerar Relatório</h5></div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-6"><label>Período Início</label><div class="input-glass"><i class="fas fa-calendar"></i><input type="date"></div></div>
+                    <div class="col-md-6"><label>Período Fim</label><div class="input-glass"><i class="fas fa-calendar"></i><input type="date"></div></div>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn-glass" onclick="alert('Relatório gerado!')">Gerar</button></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
