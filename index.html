@@ -3,223 +3,865 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRS - Sistema de Gestão de Requisição de Salas | ISCTEM</title>
+    <title>SGRS — Sistema de Gestão de Requisição de Salas | ISCTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1565c0;
-            --secondary-color: #2e7d32;
-            --accent-color: #e65100;
-            --danger-color: #c62828;
-            --light-bg: #f5f7fa;
+            --glass-bg: rgba(255, 255, 255, 0.18);
+            --glass-border: rgba(255, 255, 255, 0.35);
+            --glass-shadow: rgba(0, 0, 0, 0.08);
+            --apple-blue: #0071e3;
+            --apple-blue-hover: #0077ed;
+            --apple-gray: #f5f5f7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+            --sf-font: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            --radius-sm: 12px;
+            --radius-md: 18px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .login-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            max-width: 900px;
-            margin: 50px auto;
-        }
-        .login-left {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0d47a1 100%);
-            color: white;
-            padding: 50px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .login-right {
-            padding: 50px 40px;
-        }
-        .btn-primary-custom {
-            background: var(--primary-color);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .btn-primary-custom:hover {
-            background: #0d47a1;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(21, 101, 192, 0.4);
-        }
-        .form-control-custom {
-            border-radius: 10px;
-            border: 2px solid #e0e0e0;
-            padding: 12px 15px;
-            transition: all 0.3s;
-        }
-        .form-control-custom:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
-        }
-        .logo-isctem {
-            font-size: 3rem;
-            margin-bottom: 20px;
-        }
-        .feature-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 12px;
+            font-family: var(--sf-font);
+            background: #f0f0f5;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .alert-custom {
-            border-radius: 10px;
+
+        /* Fundo dinâmico com gradiente animado e orbes */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.55;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 18s ease-in-out infinite;
+        }
+        .bg-orb--1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #a5c8ff 0%, #7aa9ff 40%, transparent 70%);
+            top: -180px;
+            left: -120px;
+            animation-delay: 0s;
+        }
+        .bg-orb--2 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #c4b5fd 0%, #a78bfa 40%, transparent 70%);
+            bottom: -160px;
+            right: -100px;
+            animation-delay: -7s;
+        }
+        .bg-orb--3 {
+            width: 340px;
+            height: 340px;
+            background: radial-gradient(circle, #fecaca 0%, #fca5a5 40%, transparent 70%);
+            top: 50%;
+            left: 55%;
+            animation-delay: -12s;
+            opacity: 0.4;
+        }
+
+        @keyframes floatOrb {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            20% {
+                transform: translate(40px, -30px) scale(1.08);
+            }
+            40% {
+                transform: translate(-25px, 35px) scale(0.94);
+            }
+            60% {
+                transform: translate(30px, 20px) scale(1.05);
+            }
+            80% {
+                transform: translate(-35px, -25px) scale(0.96);
+            }
+        }
+
+        /* Container principal — vidro líquido */
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 920px;
+            max-width: 95vw;
+            display: flex;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.12),
+                0 8px 20px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transition: box-shadow 0.5s var(--transition-smooth);
+        }
+        .login-wrapper:hover {
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.16),
+                0 10px 28px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        }
+
+        /* Painel esquerdo */
+        .login-left {
+            flex: 0 0 44%;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 48px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            color: #1d1d1f;
+            position: relative;
+        }
+        .login-left::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(255, 255, 255, 0.35) 0%,
+                    rgba(255, 255, 255, 0.05) 50%,
+                    rgba(255, 255, 255, 0.2) 100%);
+            pointer-events: none;
+            border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+        }
+        .login-left>* {
+            position: relative;
+            z-index: 1;
+        }
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #1d1d1f;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+        .login-left h2 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.3px;
+            color: #1d1d1f;
+        }
+        .login-left p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .feature-pill {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            transition: all 0.3s var(--transition-smooth);
+            cursor: default;
+        }
+        .feature-pill:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        .feature-pill .fp-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #1d1d1f;
+            flex-shrink: 0;
+        }
+        .feature-pill h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1d1d1f;
+        }
+        .feature-pill small {
+            color: #666;
+            font-size: 0.78rem;
+        }
+
+        /* Painel direito */
+        .login-right {
+            flex: 1;
+            padding: 48px 40px;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        .login-right::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(255, 255, 255, 0.25) 0%,
+                    rgba(255, 255, 255, 0.02) 50%,
+                    rgba(255, 255, 255, 0.2) 100%);
+            pointer-events: none;
+            border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+        }
+        .login-right>* {
+            position: relative;
+            z-index: 1;
+        }
+        .login-right h3 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
+            color: #1d1d1f;
+        }
+        .login-right .subtitle {
+            color: #6e6e73;
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        /* Campos de formulário — estilo Apple */
+        .form-group-apple {
+            margin-bottom: 20px;
+        }
+        .form-group-apple label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1d1d1f;
+            margin-bottom: 6px;
+            display: block;
+            letter-spacing: -0.1px;
+        }
+        .input-glass {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(200, 200, 210, 0.5);
+            border-radius: var(--radius-md);
+            padding: 6px 6px 6px 16px;
+            transition: all 0.3s var(--transition-smooth);
+            gap: 8px;
+        }
+        .input-glass:focus-within {
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.12);
+            background: rgba(255, 255, 255, 0.75);
+        }
+        .input-glass.input-glass--error {
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
+        }
+        .input-glass.input-glass--success {
+            border-color: #38a169;
+            box-shadow: 0 0 0 4px rgba(56, 161, 105, 0.1);
+        }
+        .input-glass i {
+            color: #86868b;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .input-glass input {
+            flex: 1;
             border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.95rem;
+            color: #1d1d1f;
+            font-family: var(--sf-font);
+            letter-spacing: -0.1px;
+            padding: 10px 0;
+            min-width: 0;
+        }
+        .input-glass input::placeholder {
+            color: #b0b0b8;
+            font-size: 0.9rem;
+        }
+        .input-glass .btn-icon {
+            background: transparent;
+            border: none;
+            color: #86868b;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .input-glass .btn-icon:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1d1d1f;
+        }
+        .field-hint {
+            font-size: 0.75rem;
+            color: #86868b;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 18px;
+            transition: all 0.3s;
+        }
+        .field-hint.error {
+            color: #e53e3e;
+        }
+        .field-hint.success {
+            color: #38a169;
+        }
+
+        /* Botão principal */
+        .btn-apple {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            font-family: var(--sf-font);
+            letter-spacing: -0.1px;
+            border: none;
+            cursor: pointer;
+            background: #1d1d1f;
+            color: #fff;
+            transition: all 0.3s var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-apple::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .btn-apple:hover {
+            background: #2d2d2f;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+        }
+        .btn-apple:active {
+            transform: scale(0.97);
+            transition: transform 0.15s;
+        }
+        .btn-apple:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Link */
+        .link-apple {
+            color: var(--apple-blue);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .link-apple:hover {
+            text-decoration: underline;
+            color: #005bb5;
+        }
+
+        /* Checkbox personalizado */
+        .checkbox-apple {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #555;
+        }
+        .checkbox-apple input {
+            display: none;
+        }
+        .checkbox-apple .checkmark {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #c8c8d0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .checkbox-apple input:checked+.checkmark {
+            background: var(--apple-blue);
+            border-color: var(--apple-blue);
+        }
+        .checkbox-apple input:checked+.checkmark::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #fff;
+            font-size: 0.65rem;
+        }
+
+        /* Toast */
+        .toast-container-apple {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-apple {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            animation: slideInToast 0.4s var(--transition-smooth);
+            min-width: 280px;
+            max-width: 420px;
+        }
+        .toast-apple.toast-error {
+            border-left: 4px solid #e53e3e;
+        }
+        .toast-apple.toast-success {
+            border-left: 4px solid #38a169;
+        }
+        .toast-apple.toast-warning {
+            border-left: 4px solid #f59e0b;
+        }
+        @keyframes slideInToast {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes slideOutToast {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+        }
+
+        /* Loading spinner */
+        .spinner-apple {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .btn-apple.loading .spinner-apple {
+            display: inline-block;
+        }
+        .btn-apple.loading .btn-text {
+            display: none;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+                border-radius: var(--radius-lg);
+                margin: 16px;
+                max-width: 100%;
+            }
+            .login-left {
+                flex: auto;
+                padding: 32px 24px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            }
+            .login-left::after {
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            }
+            .login-right {
+                padding: 32px 24px;
+                border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            }
+            .login-right::after {
+                border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            }
+            .feature-pill {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+            .feature-pill .fp-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-container row g-0">
-            <div class="col-md-5 login-left">
-                <div class="text-center">
-                    <i class="fas fa-university logo-isctem"></i>
-                    <h2 class="mb-3">ISCTEM</h2>
-                    <p class="mb-4">Instituto Superior de Ciências e Tecnologia de Moçambique</p>
+
+    <!-- Orbes de fundo -->
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+
+    <!-- Toast container -->
+    <div class="toast-container-apple" id="toastContainer"></div>
+
+    <!-- Login Wrapper -->
+    <div class="login-wrapper" id="loginWrapper">
+        <!-- Lado esquerdo -->
+        <div class="login-left">
+            <div class="text-center">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
                 </div>
-                <div class="mt-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="feature-icon me-3">
-                            <i class="fas fa-door-open"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0">Gestão de Salas</h6>
-                            <small>Requisição centralizada</small>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="feature-icon me-3">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0">Disponibilidade Real</h6>
-                            <small>Consulta em tempo real</small>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="feature-icon me-3">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0">Comprovativos Digitais</h6>
-                            <small>PDF com QR Code</small>
-                        </div>
-                    </div>
-                </div>
+                <h2>ISCTEM</h2>
+                <p>Instituto Superior de Ciências e Tecnologia de Moçambique</p>
             </div>
-            <div class="col-md-7 login-right">
-                <h3 class="mb-1">Bem-vindo ao SGRS</h3>
-                <p class="text-muted mb-4">Sistema de Gestão de Requisição de Salas</p>
-
-                <div id="alertContainer"></div>
-
-                <form id="loginForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Email Institucional</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0">
-                                <i class="fas fa-envelope text-muted"></i>
-                            </span>
-                            <input type="email" class="form-control form-control-custom border-start-0" 
-                                   id="email" placeholder="exemplo@isctem.ac.mz" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0">
-                                <i class="fas fa-lock text-muted"></i>
-                            </span>
-                            <input type="password" class="form-control form-control-custom border-start-0" 
-                                   id="password" placeholder="••••••••" required>
-                            <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePassword">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rememberMe">
-                            <label class="form-check-label text-muted" for="rememberMe">Lembrar-me</label>
-                        </div>
-                        <a href="#" class="text-decoration-none" style="color: var(--primary-color);">Recuperar password?</a>
-                    </div>
-                    <button type="submit" class="btn btn-primary-custom w-100 text-white mb-3">
-                        <i class="fas fa-sign-in-alt me-2"></i>Entrar no Sistema
-                    </button>
-                </form>
-
-                <div class="text-center mt-3">
-                    <small class="text-muted">Não tem conta? Contacte o </small>
-                    <a href="#" class="text-decoration-none fw-semibold" style="color: var(--primary-color);">Administrador</a>
+            <div class="mt-3">
+                <div class="feature-pill">
+                    <div class="fp-icon"><i class="fas fa-door-open"></i></div>
+                    <div><h6>Gestão de Salas</h6><small>Requisição centralizada e eficiente</small></div>
                 </div>
-
-                <hr class="my-4">
-                <div class="text-center">
-                    <small class="text-muted">Versão 1.0.0 | Maio 2026</small>
+                <div class="feature-pill">
+                    <div class="fp-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div><h6>Disponibilidade em Tempo Real</h6><small>Consulte horários instantaneamente</small></div>
+                </div>
+                <div class="feature-pill">
+                    <div class="fp-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div><h6>Comprovativos Digitais</h6><small>PDF assinado com QR Code</small></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Toggle password visibility
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
+        <!-- Lado direito — formulário -->
+        <div class="login-right">
+            <h3>Bem-vindo ao SGRS</h3>
+            <p class="subtitle">Sistema de Gestão de Requisição de Salas</p>
+
+            <form id="loginForm" novalidate>
+                <!-- Email -->
+                <div class="form-group-apple">
+                    <label for="email">Email Institucional</label>
+                    <div class="input-glass" id="emailGlass">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="exemplo@isctem.ac.mz"
+                        autocomplete="email" required>
+                        <span style="font-size:0.7rem;color:#86868b;flex-shrink:0;padding-right:4px;">@isctem.ac.mz</span>
+                    </div>
+                    <div class="field-hint" id="emailHint">
+                        <i class="fas fa-info-circle"></i> Use o seu email institucional completo
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group-apple">
+                    <label for="password">Palavra-passe</label>
+                    <div class="input-glass" id="passGlass">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Mínimo 6 caracteres"
+                        autocomplete="current-password" required minlength="6">
+                        <button type="button" class="btn-icon" id="togglePassword" tabindex="-1"
+                        title="Mostrar / ocultar palavra-passe">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="field-hint" id="passHint">
+                    <i class="fas fa-info-circle"></i> Mínimo 6 caracteres
+                </div>
+            </div>
+
+            <!-- Opções -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <label class="checkbox-apple" for="rememberMe">
+                    <input type="checkbox" id="rememberMe">
+                    <span class="checkmark"></span> Lembrar-me
+                </label>
+                <a class="link-apple" href="#" id="recoverLink">Recuperar acesso?</a>
+            </div>
+
+            <!-- Botão -->
+            <button type="submit" class="btn-apple" id="submitBtn">
+                <span class="btn-text"><i class="fas fa-arrow-right me-2"></i>Entrar no Sistema</span>
+                <span class="spinner-apple"></span>
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <small style="color:#86868b;">Não tem conta? Contacte o</small>
+            <a class="link-apple" href="#">Administrador do Sistema</a>
+        </div>
+
+        <hr style="border-color:rgba(0,0,0,0.08);margin:20px 0;">
+        <div class="text-center">
+            <small style="color:#b0b0b8;">Versão 2.0 · Maio 2026</small>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Elementos
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passInput = document.getElementById('password');
+        const emailGlass = document.getElementById('emailGlass');
+        const passGlass = document.getElementById('passGlass');
+        const emailHint = document.getElementById('emailHint');
+        const passHint = document.getElementById('passHint');
+        const togglePassBtn = document.getElementById('togglePassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Regex para validação
+        const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
+        const EMAIL_PARTIAL_REGEX = /^[a-zA-Z0-9._%+-]+@/;
+
+        // Toast system
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast-apple toast-${type}`;
+            const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger',
+                warning: 'fa-exclamation-triangle text-warning' };
+            toast.innerHTML =
+                `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.35s ease forwards';
+                setTimeout(() => toast.remove(), 350);
+            }, 3800);
+        }
+
+        // Atualizar estado visual do campo
+        function setFieldState(glassEl, hintEl, state, message) {
+            glassEl.classList.remove('input-glass--error', 'input-glass--success');
+            hintEl.classList.remove('error', 'success');
+            if (state === 'error') {
+                glassEl.classList.add('input-glass--error');
+                hintEl.classList.add('error');
+                hintEl.innerHTML = `<i class="fas fa-times-circle"></i> ${message}`;
+            } else if (state === 'success') {
+                glassEl.classList.add('input-glass--success');
+                hintEl.classList.add('success');
+                hintEl.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            } else {
+                hintEl.innerHTML = message;
+            }
+        }
+
+        // Validação em tempo real do email
+        emailInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val.length === 0) {
+                setFieldState(emailGlass, emailHint, 'neutral',
+                    '<i class="fas fa-info-circle"></i> Use o seu email institucional completo');
+                return;
+            }
+            if (EMAIL_REGEX.test(val)) {
+                setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓');
+            } else if (val.includes('@') && !val.endsWith('@isctem.ac.mz') && val.split('@')[1]?.length > 0) {
+                setFieldState(emailGlass, emailHint, 'error',
+                    'O domínio deve ser @isctem.ac.mz');
+            } else if (val.length > 0 && !val.includes('@')) {
+                setFieldState(emailGlass, emailHint, 'neutral',
+                    '<i class="fas fa-info-circle"></i> Inclua o @isctem.ac.mz completo');
+            } else if (val.endsWith('@isctem.ac.mz') && val.split('@')[0].length === 0) {
+                setFieldState(emailGlass, emailHint, 'error', 'Insira o nome de utilizador antes do @');
+            } else {
+                setFieldState(emailGlass, emailHint, 'neutral',
+                    '<i class="fas fa-info-circle"></i> Formato: utilizador@isctem.ac.mz');
+            }
+        });
+
+        // Validação em tempo real da password
+        passInput.addEventListener('input', function() {
+            const val = this.value;
+            if (val.length === 0) {
+                setFieldState(passGlass, passHint, 'neutral',
+                    '<i class="fas fa-info-circle"></i> Mínimo 6 caracteres');
+                return;
+            }
+            if (val.length >= 6) {
+                const strength = val.length >= 10 ? 'Forte' : val.length >= 8 ? 'Média' : 'Básica';
+                setFieldState(passGlass, passHint, 'success', `Palavra-passe válida (força: ${strength}) ✓`);
+            } else {
+                setFieldState(passGlass, passHint, 'error',
+                    `Faltam ${6 - val.length} caracter(es) para o mínimo`);
+            }
+        });
+
+        // Toggle password
+        togglePassBtn.addEventListener('click', function() {
             const icon = this.querySelector('i');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
                 icon.classList.remove('fa-eye');
                 icon.classList.add('fa-eye-slash');
+                this.title = 'Ocultar palavra-passe';
             } else {
-                passwordInput.type = 'password';
+                passInput.type = 'password';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
+                this.title = 'Mostrar palavra-passe';
             }
         });
 
-        // Login form handler
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Recuperar acesso
+        document.getElementById('recoverLink').addEventListener('click', function(e) {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Simulação de autenticação
-            if (email && password) {
-                // Redirecionar para o dashboard apropriado
-                if (email.includes('gestor')) {
-                    window.location.href = 'dashboard_gestor.html';
-                } else if (email.includes('admin')) {
-                    window.location.href = 'dashboard_admin.html';
-                } else {
-                    window.location.href = 'dashboard_docente.html';
-                }
+            const emailVal = emailInput.value.trim();
+            if (emailVal && EMAIL_REGEX.test(emailVal)) {
+                showToast(
+                    `Instruções de recuperação enviadas para <strong>${emailVal}</strong>. Verifique a sua caixa de entrada.`,
+                    'success');
+            } else if (emailVal && !EMAIL_REGEX.test(emailVal)) {
+                showToast('Insira um email institucional válido antes de solicitar a recuperação.',
+                    'warning');
             } else {
-                showAlert('Por favor, preencha todos os campos.', 'danger');
+                showToast(
+                    'Insira o seu email institucional e clique novamente para recuperar o acesso.',
+                    'warning');
             }
         });
 
-        function showAlert(message, type) {
-            const container = document.getElementById('alertContainer');
-            container.innerHTML = `<div class="alert alert-${type} alert-custom alert-dismissible fade show">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`;
-        }
-    </script>
+        // Submit com validação completa
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            const password = passInput.value;
+            let hasError = false;
+
+            // Validar email
+            if (!email) {
+                setFieldState(emailGlass, emailHint, 'error', 'O email institucional é obrigatório');
+                hasError = true;
+            } else if (!EMAIL_REGEX.test(email)) {
+                setFieldState(emailGlass, emailHint, 'error',
+                    'Formato inválido. Use: utilizador@isctem.ac.mz');
+                hasError = true;
+            } else {
+                setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓');
+            }
+
+            // Validar password
+            if (!password) {
+                setFieldState(passGlass, passHint, 'error', 'A palavra-passe é obrigatória');
+                hasError = true;
+            } else if (password.length < 6) {
+                setFieldState(passGlass, passHint, 'error', 'Mínimo 6 caracteres');
+                hasError = true;
+            } else {
+                setFieldState(passGlass, passHint, 'success', 'Palavra-passe válida ✓');
+            }
+
+            if (hasError) {
+                showToast('Por favor, corrija os campos assinalados antes de continuar.', 'error');
+                // Focar no primeiro campo com erro
+                if (!email || !EMAIL_REGEX.test(email)) emailInput.focus();
+                else passInput.focus();
+                return;
+            }
+
+            // Simular loading
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                showToast('Autenticação bem-sucedida! A redirecionar...', 'success');
+
+                // Redirecionar baseado no email
+                setTimeout(() => {
+                    const lowerEmail = email.toLowerCase();
+                    if (lowerEmail.includes('gestor')) {
+                        window.location.href = 'dashboard_gestor.html';
+                    } else if (lowerEmail.includes('admin')) {
+                        window.location.href = 'dashboard_admin.html';
+                    } else {
+                        window.location.href = 'dashboard_docente.html';
+                    }
+                }, 600);
+            }, 1200);
+        });
+
+        // Efeito de foco suave nos inputs
+        [emailInput, passInput].forEach(input => {
+            input.addEventListener('focus', function() {
+                this.closest('.input-glass').style.transform = 'scale(1.01)';
+                this.closest('.input-glass').style.transition = 'transform 0.25s var(--transition-smooth)';
+            });
+            input.addEventListener('blur', function() {
+                this.closest('.input-glass').style.transform = 'scale(1)';
+            });
+        });
+
+        console.log('🍎 SGRS v2.0 — Liquid Glass Edition');
+        console.log('👋 Dica: Use gestor@isctem.ac.mz, admin@isctem.ac.mz ou docente@isctem.ac.mz para testar.');
+    })();
+</script>
 </body>
 </html>
