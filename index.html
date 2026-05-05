@@ -12,7 +12,6 @@
             --glass-border: rgba(255, 255, 255, 0.35);
             --apple-blue: #0071e3;
             --text-primary: #1d1d1f;
-            --text-secondary: #86868b;
             --sf-font: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             --radius-sm: 12px;
             --radius-md: 18px;
@@ -43,22 +42,20 @@
         .login-wrapper {
             position: relative; z-index: 1; width: 920px; max-width: 95vw; display: flex;
             border-radius: var(--radius-xl); overflow: hidden; backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px); background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
             box-shadow: 0 25px 70px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5);
         }
         .login-left {
             flex: 0 0 44%; background: rgba(255,255,255,0.25); backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px); padding: 48px 36px; display: flex;
-            flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,0.3);
-            color: #1d1d1f; position: relative;
+            padding: 48px 36px; display: flex; flex-direction: column; justify-content: center;
+            border-right: 1px solid rgba(255,255,255,0.3); color: #1d1d1f; position: relative;
         }
         .login-left > * { position: relative; z-index: 1; }
         .logo-icon {
             width: 64px; height: 64px; border-radius: var(--radius-md);
-            background: rgba(255,255,255,0.55); backdrop-filter: blur(12px); display: flex;
-            align-items: center; justify-content: center; font-size: 2rem; color: #1d1d1f;
-            margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.55); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center; font-size: 2rem;
+            color: #1d1d1f; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.5);
             box-shadow: 0 8px 24px rgba(0,0,0,0.06);
         }
         .login-left h2 { font-weight: 700; font-size: 1.6rem; letter-spacing: -0.3px; color: #1d1d1f; }
@@ -74,7 +71,8 @@
         .feature-pill small { color: #666; font-size: 0.78rem; }
         .login-right {
             flex: 1; padding: 48px 40px; background: rgba(255,255,255,0.35);
-            backdrop-filter: blur(18px); display: flex; flex-direction: column; justify-content: center; position: relative;
+            backdrop-filter: blur(18px); display: flex; flex-direction: column; justify-content: center;
+            position: relative;
         }
         .login-right > * { position: relative; z-index: 1; }
         .login-right h3 { font-weight: 700; font-size: 1.5rem; letter-spacing: -0.3px; color: #1d1d1f; }
@@ -102,15 +100,16 @@
         .field-hint.error { color: #e53e3e; }
         .field-hint.success { color: #38a169; }
         .btn-apple {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-            padding: 14px 28px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.95rem;
-            font-family: var(--sf-font); border: none; cursor: pointer; background: #1d1d1f; color: #fff;
-            transition: all 0.3s var(--transition-smooth); position: relative; overflow: hidden;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px 28px; border-radius: var(--radius-md); font-weight: 600;
+            font-size: 0.95rem; font-family: var(--sf-font); border: none; cursor: pointer;
+            background: #1d1d1f; color: #fff; transition: all 0.3s var(--transition-smooth);
+            position: relative; overflow: hidden;
         }
         .btn-apple:hover { background: #2d2d2f; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
         .btn-apple:active { transform: scale(0.97); }
         .btn-apple:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .link-apple { color: var(--apple-blue); text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s; cursor: pointer; }
+        .link-apple { color: var(--apple-blue); text-decoration: none; font-weight: 500; font-size: 0.85rem; cursor: pointer; }
         .link-apple:hover { text-decoration: underline; color: #005bb5; }
         .checkbox-apple { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: #555; }
         .checkbox-apple input { display: none; }
@@ -140,6 +139,7 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .btn-apple.loading .spinner-apple { display: inline-block; }
         .btn-apple.loading .btn-text { display: none; }
+        .modal-content { background: rgba(255,255,255,0.45); backdrop-filter: blur(30px); border-radius: 28px; border: 1px solid var(--glass-border); }
         @media (max-width: 768px) {
             .login-wrapper { flex-direction: column; border-radius: var(--radius-lg); margin: 16px; max-width: 100%; }
             .login-left { flex: auto; padding: 32px 24px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
@@ -156,7 +156,7 @@
     <div class="bg-orb bg-orb--2"></div>
     <div class="bg-orb bg-orb--3"></div>
     <div class="toast-container-apple" id="toastContainer"></div>
-    <div class="login-wrapper" id="loginWrapper">
+    <div class="login-wrapper">
         <div class="login-left">
             <div class="text-center">
                 <div class="logo-icon"><i class="fas fa-university"></i></div>
@@ -214,15 +214,35 @@
                 </button>
             </form>
             <div class="text-center mt-4">
-                <small style="color:#86868b;">Não tem conta? Contacte o</small>
-                <a class="link-apple" href="#">Administrador do Sistema</a>
+                <small style="color:#86868b;">Não tem conta? </small>
+                <a class="link-apple" href="registo.html">Criar uma agora</a>
             </div>
             <hr style="border-color:rgba(0,0,0,0.08);margin:20px 0;">
             <div class="text-center"><small style="color:#b0b0b8;">Versão 2.0 · Maio 2026</small></div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (function() {
+            // Base de dados padrão
+            const DEFAULT_USERS = [
+                { email: 'admin@isctem.ac.mz', senha: 'admin123', nome: 'Administrador', funcao: 'Admin' },
+                { email: 'gestor@isctem.ac.mz', senha: 'gestor123', nome: 'Gestor Académico', funcao: 'Gestor' },
+                { email: 'docente@isctem.ac.mz', senha: 'docente123', nome: 'Professor Exemplo', funcao: 'Docente' }
+            ];
+
+            function getUsers() {
+                const stored = localStorage.getItem('sgr_users');
+                if (stored) {
+                    try { return JSON.parse(stored); } catch(e) { }
+                }
+                localStorage.setItem('sgr_users', JSON.stringify(DEFAULT_USERS));
+                return [...DEFAULT_USERS];
+            }
+
+            const usuarios = getUsers();
+
             const loginForm = document.getElementById('loginForm');
             const emailInput = document.getElementById('email');
             const passInput = document.getElementById('password');
@@ -263,37 +283,64 @@
                 }
             }
 
-            emailInput.addEventListener('input', function() {
-                const val = this.value.trim();
-                if (val.length === 0) { setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Use o seu email institucional completo'); return; }
-                if (EMAIL_REGEX.test(val)) { setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓'); }
-                else if (val.includes('@') && !val.endsWith('@isctem.ac.mz') && val.split('@')[1]?.length > 0) { setFieldState(emailGlass, emailHint, 'error', 'O domínio deve ser @isctem.ac.mz'); }
-                else if (val.length > 0 && !val.includes('@')) { setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Inclua o @isctem.ac.mz completo'); }
-                else if (val.endsWith('@isctem.ac.mz') && val.split('@')[0].length === 0) { setFieldState(emailGlass, emailHint, 'error', 'Insira o nome de utilizador antes do @'); }
-                else { setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Formato: utilizador@isctem.ac.mz'); }
-            });
+            function debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
 
-            passInput.addEventListener('input', function() {
-                const val = this.value;
-                if (val.length === 0) { setFieldState(passGlass, passHint, 'neutral', '<i class="fas fa-info-circle"></i> Mínimo 6 caracteres'); return; }
-                if (val.length >= 6) {
+            const validateEmail = debounce(function() {
+                const val = emailInput.value.trim();
+                if (val.length === 0) {
+                    setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Use o seu email institucional completo');
+                } else if (EMAIL_REGEX.test(val)) {
+                    setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓');
+                } else {
+                    setFieldState(emailGlass, emailHint, 'error', 'Formato inválido. Use utilizador@isctem.ac.mz');
+                }
+            }, 300);
+
+            const validatePassword = debounce(function() {
+                const val = passInput.value;
+                if (val.length === 0) {
+                    setFieldState(passGlass, passHint, 'neutral', '<i class="fas fa-info-circle"></i> Mínimo 6 caracteres');
+                } else if (val.length >= 6) {
                     const strength = val.length >= 10 ? 'Forte' : val.length >= 8 ? 'Média' : 'Básica';
                     setFieldState(passGlass, passHint, 'success', `Palavra-passe válida (força: ${strength}) ✓`);
-                } else { setFieldState(passGlass, passHint, 'error', `Faltam ${6 - val.length} caracter(es) para o mínimo`); }
-            });
+                } else {
+                    setFieldState(passGlass, passHint, 'error', `Faltam ${6 - val.length} caracter(es) para o mínimo`);
+                }
+            }, 300);
+
+            emailInput.addEventListener('input', validateEmail);
+            passInput.addEventListener('input', validatePassword);
 
             togglePassBtn.addEventListener('click', function() {
                 const icon = this.querySelector('i');
-                if (passInput.type === 'password') { passInput.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); this.title = 'Ocultar palavra-passe'; }
-                else { passInput.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); this.title = 'Mostrar palavra-passe'; }
+                if (passInput.type === 'password') {
+                    passInput.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash');
+                    this.title = 'Ocultar palavra-passe';
+                } else {
+                    passInput.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye');
+                    this.title = 'Mostrar palavra-passe';
+                }
             });
 
             document.getElementById('recoverLink').addEventListener('click', function(e) {
                 e.preventDefault();
                 const emailVal = emailInput.value.trim();
-                if (emailVal && EMAIL_REGEX.test(emailVal)) { showToast(`Instruções enviadas para <strong>${emailVal}</strong>. Verifique a sua caixa de entrada.`, 'success'); }
-                else if (emailVal && !EMAIL_REGEX.test(emailVal)) { showToast('Insira um email institucional válido antes de solicitar a recuperação.', 'warning'); }
-                else { showToast('Insira o seu email institucional e clique novamente.', 'warning'); }
+                if (emailVal && EMAIL_REGEX.test(emailVal)) {
+                    const user = usuarios.find(u => u.email === emailVal);
+                    if (user) {
+                        showToast(`Instruções enviadas para <strong>${emailVal}</strong>. Verifique a sua caixa de entrada.`, 'success');
+                    } else {
+                        showToast('Email não registado. Crie uma conta primeiro.', 'warning');
+                    }
+                } else {
+                    showToast('Insira um email institucional válido para recuperar o acesso.', 'warning');
+                }
             });
 
             loginForm.addEventListener('submit', function(e) {
@@ -301,17 +348,39 @@
                 const email = emailInput.value.trim();
                 const password = passInput.value;
                 let hasError = false;
-                if (!email) { setFieldState(emailGlass, emailHint, 'error', 'O email institucional é obrigatório'); hasError = true; }
-                else if (!EMAIL_REGEX.test(email)) { setFieldState(emailGlass, emailHint, 'error', 'Formato inválido. Use: utilizador@isctem.ac.mz'); hasError = true; }
-                else { setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓'); }
-                if (!password) { setFieldState(passGlass, passHint, 'error', 'A palavra-passe é obrigatória'); hasError = true; }
-                else if (password.length < 6) { setFieldState(passGlass, passHint, 'error', 'Mínimo 6 caracteres'); hasError = true; }
-                else { setFieldState(passGlass, passHint, 'success', 'Palavra-passe válida ✓'); }
+
+                if (!email || !EMAIL_REGEX.test(email)) {
+                    setFieldState(emailGlass, emailHint, 'error', 'Email institucional inválido.');
+                    hasError = true;
+                } else {
+                    setFieldState(emailGlass, emailHint, 'success', 'Email válido ✓');
+                }
+
+                if (password.length < 6) {
+                    setFieldState(passGlass, passHint, 'error', 'Mínimo 6 caracteres.');
+                    hasError = true;
+                } else {
+                    setFieldState(passGlass, passHint, 'success', 'Palavra-passe válida ✓');
+                }
+
                 if (hasError) {
-                    showToast('Por favor, corrija os campos assinalados antes de continuar.', 'error');
-                    if (!email || !EMAIL_REGEX.test(email)) emailInput.focus(); else passInput.focus();
+                    showToast('Corrija os campos antes de continuar.', 'error');
                     return;
                 }
+
+                const user = usuarios.find(u => u.email === email);
+                if (!user) {
+                    setFieldState(emailGlass, emailHint, 'error', 'Email não registado no sistema.');
+                    showToast('Este email não está registado. Crie uma conta primeiro.', 'error');
+                    return;
+                }
+
+                if (user.senha !== password) {
+                    setFieldState(passGlass, passHint, 'error', 'Palavra-passe incorreta.');
+                    showToast('Palavra-passe incorreta.', 'error');
+                    return;
+                }
+
                 submitBtn.classList.add('loading');
                 submitBtn.disabled = true;
                 setTimeout(() => {
@@ -319,9 +388,9 @@
                     submitBtn.disabled = false;
                     showToast('Autenticação bem-sucedida! A redirecionar...', 'success');
                     setTimeout(() => {
-                        const lowerEmail = email.toLowerCase();
-                        if (lowerEmail.includes('gestor')) window.location.href = 'dashboard_gestor.html';
-                        else if (lowerEmail.includes('admin')) window.location.href = 'dashboard_admin.html';
+                        const role = user.funcao.toLowerCase();
+                        if (role.includes('admin')) window.location.href = 'dashboard_admin.html';
+                        else if (role.includes('gestor')) window.location.href = 'dashboard_gestor.html';
                         else window.location.href = 'dashboard_docente.html';
                     }, 600);
                 }, 1200);

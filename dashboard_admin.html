@@ -69,7 +69,7 @@
 <div class="main-content">
     <div class="topbar"><div><h4>Admin Sistema</h4></div></div>
     <div class="row g-4">
-        <div class="col-md-3"><div class="card-dashboard"><h6>Utilizadores</h6><h2 id="totalUsers">320</h2></div></div>
+        <div class="col-md-3"><div class="card-dashboard"><h6>Utilizadores</h6><h2 id="totalUsers">0</h2></div></div>
         <div class="col-md-3"><div class="card-dashboard"><h6>Salas</h6><h2>45</h2></div></div>
         <div class="col-md-3"><div class="card-dashboard"><h6>Requisições</h6><h2>164</h2></div></div>
         <div class="col-md-3"><div class="card-dashboard"><h6>Ocupação</h6><h2>87%</h2></div></div>
@@ -147,17 +147,26 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (function() {
-        // Dados iniciais de exemplo
-        const usuarios = [
-            { email: 'admin@isctem.ac.mz', nome: 'Administrador', funcao: 'Admin' },
-            { email: 'gestor@isctem.ac.mz', nome: 'Gestor Académico', funcao: 'Gestor' },
-            { email: 'docente@isctem.ac.mz', nome: 'Professor Exemplo', funcao: 'Docente' },
-            { email: 'maria.silva@isctem.ac.mz', nome: 'Maria Silva', funcao: 'Docente' },
-            { email: 'joao.pereira@isctem.ac.mz', nome: 'João Pereira', funcao: 'Gestor' }
-        ];
-
-        const toastContainer = document.getElementById('toastContainer');
         const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
+        const toastContainer = document.getElementById('toastContainer');
+
+        function getUsers() {
+            const stored = localStorage.getItem('sgr_users');
+            if (!stored) {
+                const defaults = [
+                    { email: 'admin@isctem.ac.mz', senha: 'admin123', nome: 'Administrador', funcao: 'Admin' },
+                    { email: 'gestor@isctem.ac.mz', senha: 'gestor123', nome: 'Gestor Académico', funcao: 'Gestor' },
+                    { email: 'docente@isctem.ac.mz', senha: 'docente123', nome: 'Professor Exemplo', funcao: 'Docente' }
+                ];
+                localStorage.setItem('sgr_users', JSON.stringify(defaults));
+                return [...defaults];
+            }
+            return JSON.parse(stored);
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('sgr_users', JSON.stringify(users));
+        }
 
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
@@ -170,6 +179,8 @@
                 setTimeout(() => toast.remove(), 350);
             }, 3800);
         }
+
+        let usuarios = getUsers();
 
         function atualizarTabela() {
             const tbody = document.getElementById('usersTableBody');
@@ -192,6 +203,7 @@
         function apagarUtilizador(index) {
             if (confirm(`Tem certeza que deseja apagar o utilizador "${usuarios[index].nome}"?`)) {
                 const removido = usuarios.splice(index, 1)[0];
+                saveUsers(usuarios);
                 atualizarTabela();
                 showToast(`Utilizador "${removido.email}" apagado com sucesso.`, 'success');
             }
@@ -205,7 +217,6 @@
             }
         });
 
-        // Validação em tempo real do email
         const novoEmail = document.getElementById('novoEmail');
         const emailFeedback = document.getElementById('emailFeedback');
         novoEmail.addEventListener('input', function() {
@@ -222,18 +233,15 @@
             }
         });
 
-        // Validação da senha
         const novaSenha = document.getElementById('novaSenha');
         const senhaFeedback = document.getElementById('senhaFeedback');
         novaSenha.addEventListener('input', function() {
             const len = this.value.length;
             if (len === 0) senhaFeedback.textContent = '';
-            else if (len < 6) senhaFeedback.textContent = `Faltam ${6 - len} caracteres`;
-            else senhaFeedback.textContent = 'Palavra-passe válida ✓';
-            senhaFeedback.className = len >= 6 ? 'text-success' : 'text-danger';
+            else if (len < 6) { senhaFeedback.textContent = `Faltam ${6 - len} caracteres`; senhaFeedback.className = 'text-danger'; }
+            else { senhaFeedback.textContent = 'Palavra-passe válida ✓'; senhaFeedback.className = 'text-success'; }
         });
 
-        // Criar utilizador
         document.getElementById('btnCriarUtilizador').addEventListener('click', function() {
             const email = novoEmail.value.trim();
             const nome = document.getElementById('novoNome').value.trim();
@@ -261,11 +269,11 @@
                 return;
             }
 
-            usuarios.push({ email, nome, funcao });
+            usuarios.push({ email, senha, nome, funcao });
+            saveUsers(usuarios);
             atualizarTabela();
             showToast(`Utilizador "${email}" criado com sucesso.`, 'success');
 
-            // Limpar formulário e fechar modal
             document.getElementById('formNovoUtilizador').reset();
             emailFeedback.textContent = 'ex: nome@isctem.ac.mz';
             emailFeedback.className = 'text-muted';
@@ -273,7 +281,6 @@
             bootstrap.Modal.getInstance(document.getElementById('modalNovoUtilizador')).hide();
         });
 
-        // Inicializar tabela
         atualizarTabela();
     })();
 </script>
