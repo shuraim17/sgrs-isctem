@@ -11,7 +11,6 @@
             --glass-bg: rgba(255, 255, 255, 0.18);
             --glass-border: rgba(255, 255, 255, 0.35);
             --apple-blue: #0071e3;
-            --apple-blue-hover: #0077ed;
             --text-primary: #1d1d1f;
             --text-secondary: #86868b;
             --sf-font: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -21,461 +20,134 @@
             --radius-xl: 32px;
             --transition-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
         }
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: var(--sf-font);
-            background: #f0f0f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            margin: 0; min-height: 100vh; font-family: var(--sf-font);
+            background: #f0f0f5; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow-x: hidden; -webkit-font-smoothing: antialiased;
         }
         .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.55;
-            pointer-events: none;
-            z-index: 0;
-            animation: floatOrb 18s ease-in-out infinite;
+            position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.55;
+            pointer-events: none; z-index: 0; animation: floatOrb 18s ease-in-out infinite;
         }
-        .bg-orb--1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #a5c8ff 0%, #7aa9ff 40%, transparent 70%);
-            top: -180px;
-            left: -120px;
-        }
-        .bg-orb--2 {
-            width: 420px;
-            height: 420px;
-            background: radial-gradient(circle, #c4b5fd 0%, #a78bfa 40%, transparent 70%);
-            bottom: -160px;
-            right: -100px;
-            animation-delay: -7s;
-        }
-        .bg-orb--3 {
-            width: 340px;
-            height: 340px;
-            background: radial-gradient(circle, #fecaca 0%, #fca5a5 40%, transparent 70%);
-            top: 50%;
-            left: 55%;
-            animation-delay: -12s;
-            opacity: 0.4;
-        }
+        .bg-orb--1 { width: 500px; height: 500px; background: radial-gradient(circle, #a5c8ff 0%, #7aa9ff 40%, transparent 70%); top: -180px; left: -120px; }
+        .bg-orb--2 { width: 420px; height: 420px; background: radial-gradient(circle, #c4b5fd 0%, #a78bfa 40%, transparent 70%); bottom: -160px; right: -100px; animation-delay: -7s; }
+        .bg-orb--3 { width: 340px; height: 340px; background: radial-gradient(circle, #fecaca 0%, #fca5a5 40%, transparent 70%); top: 50%; left: 55%; animation-delay: -12s; opacity: 0.4; }
         @keyframes floatOrb {
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-            20% {
-                transform: translate(40px, -30px) scale(1.08);
-            }
-            40% {
-                transform: translate(-25px, 35px) scale(0.94);
-            }
-            60% {
-                transform: translate(30px, 20px) scale(1.05);
-            }
-            80% {
-                transform: translate(-35px, -25px) scale(0.96);
-            }
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            20% { transform: translate(40px, -30px) scale(1.08); }
+            40% { transform: translate(-25px, 35px) scale(0.94); }
+            60% { transform: translate(30px, 20px) scale(1.05); }
+            80% { transform: translate(-35px, -25px) scale(0.96); }
         }
         .login-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 920px;
-            max-width: 95vw;
-            display: flex;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            background: var(--glass-bg);
+            position: relative; z-index: 1; width: 920px; max-width: 95vw; display: flex;
+            border-radius: var(--radius-xl); overflow: hidden; backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px); background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5);
         }
         .login-left {
-            flex: 0 0 44%;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 48px 36px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-            color: #1d1d1f;
-            position: relative;
+            flex: 0 0 44%; background: rgba(255,255,255,0.25); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); padding: 48px 36px; display: flex;
+            flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,0.3);
+            color: #1d1d1f; position: relative;
         }
-        .login-left>* {
-            position: relative;
-            z-index: 1;
-        }
+        .login-left > * { position: relative; z-index: 1; }
         .logo-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: #1d1d1f;
-            margin: 0 auto 20px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            width: 64px; height: 64px; border-radius: var(--radius-md);
+            background: rgba(255,255,255,0.55); backdrop-filter: blur(12px); display: flex;
+            align-items: center; justify-content: center; font-size: 2rem; color: #1d1d1f;
+            margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
         }
-        .login-left h2 {
-            font-weight: 700;
-            font-size: 1.6rem;
-            letter-spacing: -0.3px;
-            color: #1d1d1f;
-        }
+        .login-left h2 { font-weight: 700; font-size: 1.6rem; letter-spacing: -0.3px; color: #1d1d1f; }
         .feature-pill {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            transition: all 0.3s var(--transition-smooth);
-            cursor: default;
+            display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+            border-radius: var(--radius-md); background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(8px); margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.45);
+            transition: all 0.3s var(--transition-smooth); cursor: default;
         }
-        .feature-pill:hover {
-            background: rgba(255, 255, 255, 0.6);
-            transform: translateX(4px);
-        }
-        .feature-pill .fp-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-sm);
-            background: rgba(255, 255, 255, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #1d1d1f;
-            flex-shrink: 0;
-        }
-        .feature-pill h6 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .feature-pill small {
-            color: #666;
-            font-size: 0.78rem;
-        }
+        .feature-pill:hover { background: rgba(255,255,255,0.6); transform: translateX(4px); }
+        .feature-pill .fp-icon { width: 44px; height: 44px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #1d1d1f; flex-shrink: 0; }
+        .feature-pill h6 { margin: 0; font-weight: 600; font-size: 0.9rem; }
+        .feature-pill small { color: #666; font-size: 0.78rem; }
         .login-right {
-            flex: 1;
-            padding: 48px 40px;
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(18px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
+            flex: 1; padding: 48px 40px; background: rgba(255,255,255,0.35);
+            backdrop-filter: blur(18px); display: flex; flex-direction: column; justify-content: center; position: relative;
         }
-        .login-right>* {
-            position: relative;
-            z-index: 1;
-        }
-        .login-right h3 {
-            font-weight: 700;
-            font-size: 1.5rem;
-            letter-spacing: -0.3px;
-            color: #1d1d1f;
-        }
-        .subtitle {
-            color: #6e6e73;
-            font-size: 0.9rem;
-            margin-bottom: 28px;
-        }
-        .form-group-apple {
-            margin-bottom: 20px;
-        }
-        .form-group-apple label {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #1d1d1f;
-            margin-bottom: 6px;
-            display: block;
-        }
+        .login-right > * { position: relative; z-index: 1; }
+        .login-right h3 { font-weight: 700; font-size: 1.5rem; letter-spacing: -0.3px; color: #1d1d1f; }
+        .subtitle { color: #6e6e73; font-size: 0.9rem; margin-bottom: 28px; }
+        .form-group-apple { margin-bottom: 20px; }
+        .form-group-apple label { font-weight: 600; font-size: 0.85rem; color: #1d1d1f; margin-bottom: 6px; display: block; }
         .input-glass {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(10px);
-            border: 1.5px solid rgba(200, 200, 210, 0.5);
-            border-radius: var(--radius-md);
-            padding: 6px 6px 6px 16px;
-            transition: all 0.3s var(--transition-smooth);
-            gap: 8px;
+            display: flex; align-items: center; background: rgba(255,255,255,0.55);
+            backdrop-filter: blur(10px); border: 1.5px solid rgba(200,200,210,0.5);
+            border-radius: var(--radius-md); padding: 6px 6px 6px 16px;
+            transition: all 0.3s var(--transition-smooth); gap: 8px;
         }
-        .input-glass:focus-within {
-            border-color: var(--apple-blue);
-            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.12);
-            background: rgba(255, 255, 255, 0.75);
-        }
-        .input-glass.input-glass--error {
-            border-color: #e53e3e;
-            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
-        }
-        .input-glass.input-glass--success {
-            border-color: #38a169;
-            box-shadow: 0 0 0 4px rgba(56, 161, 105, 0.1);
-        }
-        .input-glass i {
-            color: #86868b;
-            font-size: 0.95rem;
-            flex-shrink: 0;
-        }
+        .input-glass:focus-within { border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.12); background: rgba(255,255,255,0.75); }
+        .input-glass.input-glass--error { border-color: #e53e3e; box-shadow: 0 0 0 4px rgba(229,62,62,0.1); }
+        .input-glass.input-glass--success { border-color: #38a169; box-shadow: 0 0 0 4px rgba(56,161,105,0.1); }
+        .input-glass i { color: #86868b; font-size: 0.95rem; flex-shrink: 0; }
         .input-glass input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 0.95rem;
-            color: #1d1d1f;
-            font-family: var(--sf-font);
-            padding: 10px 0;
-            min-width: 0;
+            flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem;
+            color: #1d1d1f; font-family: var(--sf-font); padding: 10px 0; min-width: 0;
         }
-        .input-glass input::placeholder {
-            color: #b0b0b8;
-        }
-        .input-glass .btn-icon {
-            background: transparent;
-            border: none;
-            color: #86868b;
-            cursor: pointer;
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .input-glass .btn-icon:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #1d1d1f;
-        }
-        .field-hint {
-            font-size: 0.75rem;
-            color: #86868b;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            min-height: 18px;
-            transition: all 0.3s;
-        }
-        .field-hint.error {
-            color: #e53e3e;
-        }
-        .field-hint.success {
-            color: #38a169;
-        }
+        .input-glass input::placeholder { color: #b0b0b8; }
+        .input-glass .btn-icon { background: transparent; border: none; color: #86868b; cursor: pointer; padding: 8px 10px; border-radius: var(--radius-sm); transition: all 0.2s; flex-shrink: 0; }
+        .input-glass .btn-icon:hover { background: rgba(0,0,0,0.05); color: #1d1d1f; }
+        .field-hint { font-size: 0.75rem; color: #86868b; margin-top: 5px; display: flex; align-items: center; gap: 4px; min-height: 18px; transition: all 0.3s; }
+        .field-hint.error { color: #e53e3e; }
+        .field-hint.success { color: #38a169; }
         .btn-apple {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 14px 28px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 0.95rem;
-            font-family: var(--sf-font);
-            border: none;
-            cursor: pointer;
-            background: #1d1d1f;
-            color: #fff;
-            transition: all 0.3s var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+            padding: 14px 28px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.95rem;
+            font-family: var(--sf-font); border: none; cursor: pointer; background: #1d1d1f; color: #fff;
+            transition: all 0.3s var(--transition-smooth); position: relative; overflow: hidden;
         }
-        .btn-apple:hover {
-            background: #2d2d2f;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-        }
-        .btn-apple:active {
-            transform: scale(0.97);
-        }
-        .btn-apple:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .link-apple {
-            color: var(--apple-blue);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .link-apple:hover {
-            text-decoration: underline;
-            color: #005bb5;
-        }
-        .checkbox-apple {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: #555;
-        }
-        .checkbox-apple input {
-            display: none;
-        }
+        .btn-apple:hover { background: #2d2d2f; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+        .btn-apple:active { transform: scale(0.97); }
+        .btn-apple:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .link-apple { color: var(--apple-blue); text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s; cursor: pointer; }
+        .link-apple:hover { text-decoration: underline; color: #005bb5; }
+        .checkbox-apple { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: #555; }
+        .checkbox-apple input { display: none; }
         .checkbox-apple .checkmark {
-            width: 20px;
-            height: 20px;
-            border-radius: 6px;
-            border: 2px solid #c8c8d0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s;
-            flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.5);
+            width: 20px; height: 20px; border-radius: 6px; border: 2px solid #c8c8d0;
+            display: flex; align-items: center; justify-content: center; transition: all 0.25s;
+            flex-shrink: 0; background: rgba(255,255,255,0.5);
         }
-        .checkbox-apple input:checked+.checkmark {
-            background: var(--apple-blue);
-            border-color: var(--apple-blue);
-        }
-        .checkbox-apple input:checked+.checkmark::after {
-            content: '\f00c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: #fff;
-            font-size: 0.65rem;
-        }
-        .toast-container-apple {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .checkbox-apple input:checked + .checkmark { background: var(--apple-blue); border-color: var(--apple-blue); }
+        .checkbox-apple input:checked + .checkmark::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: #fff; font-size: 0.65rem; }
+        .toast-container-apple { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast-apple {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: var(--radius-md);
-            padding: 14px 20px;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1d1d1f;
-            animation: slideInToast 0.4s var(--transition-smooth);
-            min-width: 280px;
-            max-width: 420px;
+            background: rgba(255,255,255,0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.5);
+            border-radius: var(--radius-md); padding: 14px 20px; box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+            display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 500;
+            color: #1d1d1f; animation: slideInToast 0.4s var(--transition-smooth); min-width: 280px; max-width: 420px;
         }
-        .toast-apple.toast-error {
-            border-left: 4px solid #e53e3e;
-        }
-        .toast-apple.toast-success {
-            border-left: 4px solid #38a169;
-        }
-        .toast-apple.toast-warning {
-            border-left: 4px solid #f59e0b;
-        }
-        @keyframes slideInToast {
-            from {
-                opacity: 0;
-                transform: translateX(60px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        @keyframes slideOutToast {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(60px);
-            }
-        }
+        .toast-apple.toast-error { border-left: 4px solid #e53e3e; }
+        .toast-apple.toast-success { border-left: 4px solid #38a169; }
+        .toast-apple.toast-warning { border-left: 4px solid #f59e0b; }
+        @keyframes slideInToast { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOutToast { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(60px); } }
         .spinner-apple {
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: none;
+            width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .btn-apple.loading .spinner-apple {
-            display: inline-block;
-        }
-        .btn-apple.loading .btn-text {
-            display: none;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-apple.loading .spinner-apple { display: inline-block; }
+        .btn-apple.loading .btn-text { display: none; }
         @media (max-width: 768px) {
-            .login-wrapper {
-                flex-direction: column;
-                border-radius: var(--radius-lg);
-                margin: 16px;
-                max-width: 100%;
-            }
-            .login-left {
-                flex: auto;
-                padding: 32px 24px;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            }
-            .login-right {
-                padding: 32px 24px;
-                border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-            }
-            .feature-pill {
-                padding: 10px 12px;
-                gap: 10px;
-            }
-            .feature-pill .fp-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 1rem;
-            }
-            .toast-container-apple {
-                top: 8px;
-                right: 8px;
-                left: 8px;
-            }
-            .toast-apple {
-                min-width: auto;
-                max-width: 100%;
-                font-size: 0.82rem;
-                padding: 12px 14px;
-            }
+            .login-wrapper { flex-direction: column; border-radius: var(--radius-lg); margin: 16px; max-width: 100%; }
+            .login-left { flex: auto; padding: 32px 24px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+            .login-right { padding: 32px 24px; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+            .feature-pill { padding: 10px 12px; gap: 10px; }
+            .feature-pill .fp-icon { width: 36px; height: 36px; font-size: 1rem; }
+            .toast-container-apple { top: 8px; right: 8px; left: 8px; }
+            .toast-apple { min-width: auto; max-width: 100%; font-size: 0.82rem; padding: 12px 14px; }
         }
     </style>
 </head>
@@ -566,10 +238,8 @@
             function showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 toast.className = `toast-apple toast-${type}`;
-                const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger',
-                    warning: 'fa-exclamation-triangle text-warning' };
-                toast.innerHTML =
-                    `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
+                const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger', warning: 'fa-exclamation-triangle text-warning' };
+                toast.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
                 toastContainer.appendChild(toast);
                 setTimeout(() => {
                     toast.style.animation = 'slideOutToast 0.35s ease forwards';
@@ -592,80 +262,75 @@
                     hintEl.innerHTML = message;
                 }
             }
+
             emailInput.addEventListener('input', function() {
                 const val = this.value.trim();
-                if (val.length === 0) { setFieldState(emailGlass, emailHint, 'neutral',
-                        '<i class="fas fa-info-circle"></i> Use o seu email institucional completo'); return; }
-                if (EMAIL_REGEX.test(val)) { setFieldState(emailGlass, emailHint, 'success',
-                        'Email institucional válido ✓'); } else if (val.includes('@') && !val.endsWith(
-                        '@isctem.ac.mz') && val.split('@')[1]?.length > 0) { setFieldState(emailGlass, emailHint,
-                        'error', 'O domínio deve ser @isctem.ac.mz'); } else if (val.length > 0 && !val.includes(
-                        '@')) { setFieldState(emailGlass, emailHint, 'neutral',
-                        '<i class="fas fa-info-circle"></i> Inclua o @isctem.ac.mz completo'); } else if (val.endsWith(
-                        '@isctem.ac.mz') && val.split('@')[0].length === 0) { setFieldState(emailGlass, emailHint,
-                        'error', 'Insira o nome de utilizador antes do @'); } else { setFieldState(emailGlass,
-                        emailHint, 'neutral',
-                        '<i class="fas fa-info-circle"></i> Formato: utilizador@isctem.ac.mz'); }
+                if (val.length === 0) { setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Use o seu email institucional completo'); return; }
+                if (EMAIL_REGEX.test(val)) { setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓'); }
+                else if (val.includes('@') && !val.endsWith('@isctem.ac.mz') && val.split('@')[1]?.length > 0) { setFieldState(emailGlass, emailHint, 'error', 'O domínio deve ser @isctem.ac.mz'); }
+                else if (val.length > 0 && !val.includes('@')) { setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Inclua o @isctem.ac.mz completo'); }
+                else if (val.endsWith('@isctem.ac.mz') && val.split('@')[0].length === 0) { setFieldState(emailGlass, emailHint, 'error', 'Insira o nome de utilizador antes do @'); }
+                else { setFieldState(emailGlass, emailHint, 'neutral', '<i class="fas fa-info-circle"></i> Formato: utilizador@isctem.ac.mz'); }
             });
+
             passInput.addEventListener('input', function() {
                 const val = this.value;
-                if (val.length === 0) { setFieldState(passGlass, passHint, 'neutral',
-                        '<i class="fas fa-info-circle"></i> Mínimo 6 caracteres'); return; }
-                if (val.length >= 6) { const strength = val.length >= 10 ? 'Forte' : val.length >= 8 ? 'Média' :
-                        'Básica';
-                    setFieldState(passGlass, passHint, 'success',
-                        `Palavra-passe válida (força: ${strength}) ✓`); } else { setFieldState(passGlass, passHint,
-                        'error', `Faltam ${6 - val.length} caracter(es) para o mínimo`); }
+                if (val.length === 0) { setFieldState(passGlass, passHint, 'neutral', '<i class="fas fa-info-circle"></i> Mínimo 6 caracteres'); return; }
+                if (val.length >= 6) {
+                    const strength = val.length >= 10 ? 'Forte' : val.length >= 8 ? 'Média' : 'Básica';
+                    setFieldState(passGlass, passHint, 'success', `Palavra-passe válida (força: ${strength}) ✓`);
+                } else { setFieldState(passGlass, passHint, 'error', `Faltam ${6 - val.length} caracter(es) para o mínimo`); }
             });
+
             togglePassBtn.addEventListener('click', function() {
                 const icon = this.querySelector('i');
-                if (passInput.type === 'password') { passInput.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                    this.title = 'Ocultar palavra-passe'; } else { passInput.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                    this.title = 'Mostrar palavra-passe'; }
+                if (passInput.type === 'password') { passInput.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); this.title = 'Ocultar palavra-passe'; }
+                else { passInput.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); this.title = 'Mostrar palavra-passe'; }
             });
-            document.getElementById('recoverLink').addEventListener('click', function(e) { e.preventDefault();
-                const emailVal = emailInput.value.trim(); if (emailVal && EMAIL_REGEX.test(emailVal)) { showToast(
-                        `Instruções enviadas para <strong>${emailVal}</strong>. Verifique a sua caixa de entrada.`,
-                        'success'); } else if (emailVal && !EMAIL_REGEX.test(emailVal)) { showToast(
-                        'Insira um email institucional válido antes de solicitar a recuperação.', 'warning'); } else {
-                    showToast('Insira o seu email institucional e clique novamente.', 'warning'); } });
-            loginForm.addEventListener('submit', function(e) { e.preventDefault();
+
+            document.getElementById('recoverLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                const emailVal = emailInput.value.trim();
+                if (emailVal && EMAIL_REGEX.test(emailVal)) { showToast(`Instruções enviadas para <strong>${emailVal}</strong>. Verifique a sua caixa de entrada.`, 'success'); }
+                else if (emailVal && !EMAIL_REGEX.test(emailVal)) { showToast('Insira um email institucional válido antes de solicitar a recuperação.', 'warning'); }
+                else { showToast('Insira o seu email institucional e clique novamente.', 'warning'); }
+            });
+
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 const email = emailInput.value.trim();
                 const password = passInput.value;
-                let hasError = false; if (!email) { setFieldState(emailGlass, emailHint, 'error',
-                        'O email institucional é obrigatório');
-                    hasError = true; } else if (!EMAIL_REGEX.test(email)) { setFieldState(emailGlass, emailHint,
-                        'error', 'Formato inválido. Use: utilizador@isctem.ac.mz');
-                    hasError = true; } else { setFieldState(emailGlass, emailHint, 'success',
-                        'Email institucional válido ✓'); } if (!password) { setFieldState(passGlass, passHint, 'error',
-                        'A palavra-passe é obrigatória');
-                    hasError = true; } else if (password.length < 6) { setFieldState(passGlass, passHint, 'error',
-                        'Mínimo 6 caracteres');
-                    hasError = true; } else { setFieldState(passGlass, passHint, 'success',
-                        'Palavra-passe válida ✓'); } if (hasError) { showToast(
-                        'Por favor, corrija os campos assinalados antes de continuar.', 'error'); if (!email || !
-                        EMAIL_REGEX.test(email)) emailInput.focus();
-                    else passInput.focus(); return; }
+                let hasError = false;
+                if (!email) { setFieldState(emailGlass, emailHint, 'error', 'O email institucional é obrigatório'); hasError = true; }
+                else if (!EMAIL_REGEX.test(email)) { setFieldState(emailGlass, emailHint, 'error', 'Formato inválido. Use: utilizador@isctem.ac.mz'); hasError = true; }
+                else { setFieldState(emailGlass, emailHint, 'success', 'Email institucional válido ✓'); }
+                if (!password) { setFieldState(passGlass, passHint, 'error', 'A palavra-passe é obrigatória'); hasError = true; }
+                else if (password.length < 6) { setFieldState(passGlass, passHint, 'error', 'Mínimo 6 caracteres'); hasError = true; }
+                else { setFieldState(passGlass, passHint, 'success', 'Palavra-passe válida ✓'); }
+                if (hasError) {
+                    showToast('Por favor, corrija os campos assinalados antes de continuar.', 'error');
+                    if (!email || !EMAIL_REGEX.test(email)) emailInput.focus(); else passInput.focus();
+                    return;
+                }
                 submitBtn.classList.add('loading');
                 submitBtn.disabled = true;
-                setTimeout(() => { submitBtn.classList.remove('loading');
+                setTimeout(() => {
+                    submitBtn.classList.remove('loading');
                     submitBtn.disabled = false;
                     showToast('Autenticação bem-sucedida! A redirecionar...', 'success');
-                    setTimeout(() => { const lowerEmail = email.toLowerCase(); if (lowerEmail.includes(
-                            'gestor')) { window.location.href = 'dashboard_gestor.html'; } else if (
-                            lowerEmail.includes('admin')) { window.location.href =
-                            'dashboard_admin.html'; } else { window.location.href =
-                            'dashboard_docente.html'; } }, 600); }, 1200); });
-            [emailInput, passInput].forEach(input => { input.addEventListener('focus', function() { this.closest(
-                        '.input-glass').style.transform = 'scale(1.01)'; });
-                input.addEventListener('blur', function() { this.closest('.input-glass').style.transform =
-                        'scale(1)'; }); });
-            console.log('🍎 SGRS v2.0 — Liquid Glass Edition');
-            console.log('👋 Dica: Use gestor@isctem.ac.mz, admin@isctem.ac.mz ou docente@isctem.ac.mz para testar.');
+                    setTimeout(() => {
+                        const lowerEmail = email.toLowerCase();
+                        if (lowerEmail.includes('gestor')) window.location.href = 'dashboard_gestor.html';
+                        else if (lowerEmail.includes('admin')) window.location.href = 'dashboard_admin.html';
+                        else window.location.href = 'dashboard_docente.html';
+                    }, 600);
+                }, 1200);
+            });
+
+            [emailInput, passInput].forEach(input => {
+                input.addEventListener('focus', function() { this.closest('.input-glass').style.transform = 'scale(1.01)'; });
+                input.addEventListener('blur', function() { this.closest('.input-glass').style.transform = 'scale(1)'; });
+            });
         })();
     </script>
 </body>
