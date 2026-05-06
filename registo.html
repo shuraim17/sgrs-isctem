@@ -216,6 +216,7 @@
                 <i class="fas fa-lock"></i>
                 <input type="password" id="regConfirmarSenha" placeholder="Repita a palavra-passe" required>
             </div>
+            <div class="field-hint muted" id="confirmarFeedback"></div>
         </div>
         <div class="mb-3">
             <label>Função</label>
@@ -251,6 +252,7 @@
         const senhaFeedback = document.getElementById('senhaFeedback');
         const confirmarInput = document.getElementById('regConfirmarSenha');
         const confirmarGlass = document.getElementById('confirmarGlass');
+        const confirmarFeedback = document.getElementById('confirmarFeedback');
         const toastContainer = document.getElementById('toastContainer');
 
         function showToast(message, type = 'success') {
@@ -336,6 +338,26 @@
             } else {
                 setFieldState(senhaGlass, senhaFeedback, 'success', 'Palavra-passe válida ✓');
             }
+            // Validar confirmação em tempo real também
+            if (confirmarInput.value.length > 0) {
+                if (senhaInput.value === confirmarInput.value) {
+                    setFieldState(confirmarGlass, confirmarFeedback, 'success', 'As palavras-passe coincidem ✓');
+                } else {
+                    setFieldState(confirmarGlass, confirmarFeedback, 'error', 'As palavras-passe não coincidem');
+                }
+            }
+        });
+
+        confirmarInput.addEventListener('input', function() {
+            const conf = this.value;
+            const senha = senhaInput.value;
+            if (conf.length === 0) {
+                setFieldState(confirmarGlass, confirmarFeedback, 'neutral', '');
+            } else if (conf === senha) {
+                setFieldState(confirmarGlass, confirmarFeedback, 'success', 'As palavras-passe coincidem ✓');
+            } else {
+                setFieldState(confirmarGlass, confirmarFeedback, 'error', 'As palavras-passe não coincidem');
+            }
         });
 
         form.addEventListener('submit', function(e) {
@@ -347,49 +369,25 @@
             const funcao = document.getElementById('regFuncao').value;
             let hasError = false;
 
-            if (!emailVal) {
-                setFieldState(emailGlass, emailFeedback, 'error', 'Email obrigatório');
-                hasError = true;
-            } else if (!EMAIL_REGEX.test(emailVal)) {
+            if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
                 setFieldState(emailGlass, emailFeedback, 'error', 'Email institucional inválido');
                 hasError = true;
-            } else {
-                setFieldState(emailGlass, emailFeedback, 'success', 'Email válido ✓');
             }
-
-            if (!nomeVal) {
-                setFieldState(nomeGlass, nomeFeedback, 'error', 'Nome obrigatório');
-                hasError = true;
-            } else if (!NAME_REGEX.test(nomeVal)) {
-                const numbersOrSpecial = /[^A-Za-zÀ-ÖØ-öø-ÿ\s]/.test(nomeVal);
-                if (numbersOrSpecial) {
-                    setFieldState(nomeGlass, nomeFeedback, 'error', 'Apenas letras e espaços são permitidos');
-                } else {
-                    setFieldState(nomeGlass, nomeFeedback, 'error', 'Nome inválido');
-                }
+            if (!nomeVal || !NAME_REGEX.test(nomeVal)) {
+                setFieldState(nomeGlass, nomeFeedback, 'error', 'Nome inválido');
                 hasError = true;
             } else if (nomeVal.split(' ').filter(Boolean).length < 2) {
                 setFieldState(nomeGlass, nomeFeedback, 'error', 'Insira nome e sobrenome');
                 hasError = true;
-            } else {
-                setFieldState(nomeGlass, nomeFeedback, 'success', 'Nome válido ✓');
             }
-
             if (senhaVal.length < 6) {
                 setFieldState(senhaGlass, senhaFeedback, 'error', 'Mínimo 6 caracteres');
                 hasError = true;
-            } else {
-                setFieldState(senhaGlass, senhaFeedback, 'success', 'Palavra-passe válida ✓');
             }
-
             if (senhaVal !== senhaConfirm) {
-                setFieldState(confirmarGlass, null, 'error', '');
-                showToast('As palavras-passe não coincidem.', 'error');
+                setFieldState(confirmarGlass, confirmarFeedback, 'error', 'As palavras-passe não coincidem');
                 hasError = true;
-            } else if (senhaConfirm.length > 0) {
-                confirmarGlass.classList.remove('input-glass--error');
             }
-
             if (!funcao) {
                 showToast('Selecione uma função.', 'error');
                 hasError = true;
@@ -419,10 +417,6 @@
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 2000);
-        });
-
-        confirmarInput.addEventListener('input', function() {
-            confirmarGlass.classList.remove('input-glass--error');
         });
     })();
 </script>
