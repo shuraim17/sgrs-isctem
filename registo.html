@@ -7,47 +7,216 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --glass-bg: rgba(255,255,255,0.25); --apple-blue: #0071e3; --sf-font: 'Segoe UI', sans-serif; }
-        body { margin:0; font-family: var(--sf-font); background:#f0f0f5; display:flex; align-items:center; justify-content:center; min-height:100vh; }
-        .bg-orb { position:fixed; border-radius:50%; filter:blur(120px); opacity:0.4; }
-        .bg-orb--1 { width:500px; height:500px; background:radial-gradient(circle, #d4b8f0, #b388ff); top:-120px; left:-100px; }
-        .bg-orb--2 { width:420px; height:420px; background:radial-gradient(circle, #b3e5fc, #81d4fa); bottom:-110px; right:-80px; }
-        .container { position:relative; z-index:1; background:var(--glass-bg); backdrop-filter:blur(25px); border-radius:24px; padding:40px; max-width:500px; width:90%; }
-        .input-glass { display:flex; align-items:center; background:rgba(255,255,255,0.5); border-radius:14px; padding:10px 16px; gap:10px; margin-bottom:15px; }
-        .input-glass input, .input-glass select { background:transparent; border:none; outline:none; flex:1; }
-        .btn-glass { background:#1d1d1f; color:white; border:none; padding:12px 24px; border-radius:14px; width:100%; cursor:pointer; }
-        .toast-apple { background:rgba(255,255,255,0.75); border-radius:18px; padding:14px 20px; margin-bottom:10px; position:fixed; top:20px; right:20px; z-index:9999; }
+        :root {
+            --glass-bg: rgba(255,255,255,0.25);
+            --glass-border: rgba(255,255,255,0.4);
+            --apple-blue: #0071e3;
+            --sf-font: 'Segoe UI', sans-serif;
+            --radius-md: 18px;
+            --transition-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        body {
+            margin: 0;
+            font-family: var(--sf-font);
+            background: #f0f0f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-orb--1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #d4b8f0, #b388ff);
+            top: -120px;
+            left: -100px;
+        }
+        .bg-orb--2 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #b3e5fc, #81d4fa);
+            bottom: -110px;
+            right: -80px;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            color: #1d1d1f;
+        }
+        .input-glass {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(200,200,210,0.5);
+            border-radius: 14px;
+            padding: 10px 16px;
+            gap: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s var(--transition-smooth);
+        }
+        .input-glass:focus-within {
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 4px rgba(0,113,227,0.12);
+            background: rgba(255,255,255,0.75);
+        }
+        .input-glass.input-glass--error {
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 4px rgba(229,62,62,0.1);
+        }
+        .input-glass.input-glass--success {
+            border-color: #38a169;
+            box-shadow: 0 0 0 4px rgba(56,161,105,0.1);
+        }
+        .input-glass i {
+            color: #86868b;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .input-glass input,
+        .input-glass select {
+            background: transparent;
+            border: none;
+            outline: none;
+            flex: 1;
+            font-family: var(--sf-font);
+            color: #1d1d1f;
+        }
+        .field-hint {
+            font-size: 0.75rem;
+            margin-top: -10px;
+            margin-bottom: 8px;
+            margin-left: 5px;
+            transition: all 0.3s;
+        }
+        .field-hint.error { color: #e53e3e; }
+        .field-hint.success { color: #38a169; }
+        .field-hint.muted { color: #86868b; }
+        .btn-glass {
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+        }
+        .btn-glass:hover {
+            background: #2d2d2f;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        }
+        .btn-glass:active { transform: scale(0.97); }
+        .btn-glass:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .toast-container-apple {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-apple {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 18px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            animation: slideInToast 0.4s var(--transition-smooth);
+            min-width: 280px;
+            max-width: 420px;
+        }
+        .toast-apple.toast-error { border-left: 4px solid #e53e3e; }
+        .toast-apple.toast-success { border-left: 4px solid #38a169; }
+        .toast-apple.toast-warning { border-left: 4px solid #f59e0b; }
+        @keyframes slideInToast {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOutToast {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(60px); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 25px; }
+            .toast-container-apple { top: 8px; right: 8px; left: 8px; }
+            .toast-apple { min-width: auto; max-width: 100%; font-size: 0.82rem; padding: 12px 14px; }
+        }
     </style>
 </head>
 <body>
 <div class="bg-orb bg-orb--1"></div>
 <div class="bg-orb bg-orb--2"></div>
-<div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999;"></div>
+
+<div class="toast-container-apple" id="toastContainer"></div>
 
 <div class="container">
     <div class="text-center mb-4">
         <i class="fas fa-university fa-3x" style="color:#6a1b9a;"></i>
         <h3>Criar Conta</h3>
+        <p class="text-muted">Preencha os dados para se registar no SGRS</p>
     </div>
-    <form id="formRegisto">
+    <form id="formRegisto" novalidate>
         <div class="mb-3">
-            <label>Email</label>
-            <div class="input-glass"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="nome@isctem.ac.mz" required></div>
-            <small id="emailFeedback"></small>
+            <label>Email Institucional</label>
+            <div class="input-glass" id="emailGlass">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="regEmail" placeholder="nome@isctem.ac.mz" required>
+            </div>
+            <div class="field-hint muted" id="emailFeedback">ex: nome@isctem.ac.mz</div>
         </div>
         <div class="mb-3">
             <label>Nome Completo</label>
-            <div class="input-glass"><i class="fas fa-user"></i><input type="text" id="regNome" placeholder="Nome" required></div>
+            <div class="input-glass" id="nomeGlass">
+                <i class="fas fa-user"></i>
+                <input type="text" id="regNome" placeholder="O seu nome completo" required>
+            </div>
+            <div class="field-hint muted" id="nomeFeedback">Apenas letras e espaços</div>
         </div>
         <div class="mb-3">
             <label>Palavra-passe</label>
-            <div class="input-glass"><i class="fas fa-lock"></i><input type="password" id="regSenha" minlength="6" required></div>
-            <small id="senhaFeedback"></small>
+            <div class="input-glass" id="senhaGlass">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres" required minlength="6">
+            </div>
+            <div class="field-hint muted" id="senhaFeedback"></div>
         </div>
         <div class="mb-3">
             <label>Confirmar Palavra-passe</label>
-            <div class="input-glass"><i class="fas fa-lock"></i><input type="password" id="regConfirmarSenha" required></div>
-            <small id="confirmarFeedback"></small>
+            <div class="input-glass" id="confirmarGlass">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="regConfirmarSenha" placeholder="Repita a palavra-passe" required>
+            </div>
+            <div class="field-hint muted" id="confirmarFeedback"></div>
         </div>
         <div class="mb-3">
             <label>Função</label>
@@ -57,12 +226,24 @@
                     <option value="">Selecionar...</option>
                     <option value="Docente">Docente</option>
                     <option value="Gestor">Gestor Académico</option>
+                    <option value="Admin">Administrador</option>
                 </select>
             </div>
         </div>
+        <!-- Campo extra para chave de administrador (oculto por padrão) -->
+        <div class="mb-3" id="adminKeyGroup" style="display: none;">
+            <label>Chave de Administrador</label>
+            <div class="input-glass" id="adminKeyGlass">
+                <i class="fas fa-key"></i>
+                <input type="password" id="adminKey" placeholder="Insira a chave secreta" autocomplete="off">
+            </div>
+            <div class="field-hint muted" id="adminKeyFeedback">Necessária para criar conta de administrador</div>
+        </div>
         <button type="submit" class="btn-glass"><i class="fas fa-user-plus me-2"></i>Registar</button>
     </form>
-    <p class="text-center mt-3"><a href="index.html">Já tem conta?</a></p>
+    <p class="text-center mt-3">
+        <a href="index.html" class="text-decoration-none" style="color:var(--apple-blue);">Já tem conta? Iniciar sessão</a>
+    </p>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -70,56 +251,225 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAH9cA7UTOUzzHFKswBAkAOjdZIyynaMQg",
-        authDomain: "sgrs-isctem.firebaseapp.com",
-        projectId: "sgrs-isctem",
-        storageBucket: "sgrs-isctem.firebasestorage.app",
-        messagingSenderId: "1029014740161",
-        appId: "1:1029014740161:web:e80c034c58df4424928840"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    (function() {
+        const firebaseConfig = {
+            apiKey: "AIzaSyAH9cA7UTOUzzHFKswBAkAOjdZIyynaMQg",
+            authDomain: "sgrs-isctem.firebaseapp.com",
+            projectId: "sgrs-isctem",
+            storageBucket: "sgrs-isctem.firebasestorage.app",
+            messagingSenderId: "1029014740161",
+            appId: "1:1029014740161:web:e80c034c58df4424928840"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-    const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
-    const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+        const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
+        const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+        // Chave secreta para criar administradores (pode ser alterada)
+        const ADMIN_SECRET_KEY = 'isctem2026admin';
 
-    function showToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = 'toast-apple';
-        toast.innerHTML = `<span>${message}</span>`;
-        document.getElementById('toastContainer').appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-    }
+        const form = document.getElementById('formRegisto');
+        const emailInput = document.getElementById('regEmail');
+        const emailGlass = document.getElementById('emailGlass');
+        const emailFeedback = document.getElementById('emailFeedback');
+        const nomeInput = document.getElementById('regNome');
+        const nomeGlass = document.getElementById('nomeGlass');
+        const nomeFeedback = document.getElementById('nomeFeedback');
+        const senhaInput = document.getElementById('regSenha');
+        const senhaGlass = document.getElementById('senhaGlass');
+        const senhaFeedback = document.getElementById('senhaFeedback');
+        const confirmarInput = document.getElementById('regConfirmarSenha');
+        const confirmarGlass = document.getElementById('confirmarGlass');
+        const confirmarFeedback = document.getElementById('confirmarFeedback');
+        const funcaoSelect = document.getElementById('regFuncao');
+        const adminKeyGroup = document.getElementById('adminKeyGroup');
+        const adminKeyInput = document.getElementById('adminKey');
+        const adminKeyGlass = document.getElementById('adminKeyGlass');
+        const adminKeyFeedback = document.getElementById('adminKeyFeedback');
+        const toastContainer = document.getElementById('toastContainer');
 
-    document.getElementById('formRegisto').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const email = document.getElementById('regEmail').value.trim();
-        const nome = document.getElementById('regNome').value.trim();
-        const senha = document.getElementById('regSenha').value;
-        const confirmar = document.getElementById('regConfirmarSenha').value;
-        const funcao = document.getElementById('regFuncao').value;
-
-        if (!EMAIL_REGEX.test(email) || !NAME_REGEX.test(nome) || senha.length < 6 || senha !== confirmar || !funcao) {
-            showToast('Dados inválidos. Verifique os campos.', 'error');
-            return;
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast-apple toast-${type}`;
+            const icons = {
+                success: 'fa-check-circle text-success',
+                error: 'fa-exclamation-circle text-danger',
+                warning: 'fa-exclamation-triangle text-warning'
+            };
+            toast.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.35s ease forwards';
+                setTimeout(() => toast.remove(), 350);
+            }, 4000);
         }
 
-        try {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-            const user = userCredential.user;
-            await db.collection('users').doc(user.uid).set({
-                nome: nome,
-                funcao: funcao,
-                email: email
-            });
-            showToast('Conta criada com sucesso! Redirecionando...', 'success');
-            setTimeout(() => window.location.href = 'index.html', 2000);
-        } catch (error) {
-            showToast('Erro: ' + error.message, 'error');
+        function setFieldState(glass, feedback, state, message) {
+            glass.classList.remove('input-glass--error', 'input-glass--success');
+            feedback.classList.remove('error', 'success', 'muted');
+            if (state === 'error') {
+                glass.classList.add('input-glass--error');
+                feedback.classList.add('error');
+                feedback.textContent = message;
+            } else if (state === 'success') {
+                glass.classList.add('input-glass--success');
+                feedback.classList.add('success');
+                feedback.textContent = message;
+            } else {
+                feedback.classList.add('muted');
+                feedback.textContent = message;
+            }
         }
-    });
+
+        // Mostrar/ocultar campo de chave conforme função selecionada
+        funcaoSelect.addEventListener('change', function() {
+            if (this.value === 'Admin') {
+                adminKeyGroup.style.display = 'block';
+            } else {
+                adminKeyGroup.style.display = 'none';
+                adminKeyInput.value = '';
+                setFieldState(adminKeyGlass, adminKeyFeedback, 'neutral', 'Necessária para criar conta de administrador');
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val === '') {
+                setFieldState(emailGlass, emailFeedback, 'neutral', 'ex: nome@isctem.ac.mz');
+            } else if (EMAIL_REGEX.test(val)) {
+                setFieldState(emailGlass, emailFeedback, 'success', 'Email válido ✓');
+            } else {
+                setFieldState(emailGlass, emailFeedback, 'error', 'Formato inválido. Use @isctem.ac.mz');
+            }
+        });
+
+        nomeInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val === '') {
+                setFieldState(nomeGlass, nomeFeedback, 'neutral', 'Apenas letras e espaços');
+            } else if (NAME_REGEX.test(val)) {
+                setFieldState(nomeGlass, nomeFeedback, 'success', 'Nome válido ✓');
+            } else {
+                const numbersOrSpecial = /[^A-Za-zÀ-ÖØ-öø-ÿ\s]/.test(val);
+                if (numbersOrSpecial) {
+                    setFieldState(nomeGlass, nomeFeedback, 'error', 'Caracteres especiais ou números não permitidos');
+                } else {
+                    setFieldState(nomeGlass, nomeFeedback, 'error', 'Nome inválido');
+                }
+            }
+        });
+
+        senhaInput.addEventListener('input', function() {
+            const len = this.value.length;
+            if (len === 0) {
+                setFieldState(senhaGlass, senhaFeedback, 'neutral', '');
+            } else if (len < 6) {
+                setFieldState(senhaGlass, senhaFeedback, 'error', `Faltam ${6 - len} caracteres`);
+            } else {
+                setFieldState(senhaGlass, senhaFeedback, 'success', 'Palavra-passe válida ✓');
+            }
+            // Validar confirmação em tempo real também
+            if (confirmarInput.value.length > 0) {
+                if (senhaInput.value === confirmarInput.value) {
+                    setFieldState(confirmarGlass, confirmarFeedback, 'success', 'As palavras-passe coincidem ✓');
+                } else {
+                    setFieldState(confirmarGlass, confirmarFeedback, 'error', 'As palavras-passe não coincidem');
+                }
+            }
+        });
+
+        confirmarInput.addEventListener('input', function() {
+            const conf = this.value;
+            const senha = senhaInput.value;
+            if (conf.length === 0) {
+                setFieldState(confirmarGlass, confirmarFeedback, 'neutral', '');
+            } else if (conf === senha) {
+                setFieldState(confirmarGlass, confirmarFeedback, 'success', 'As palavras-passe coincidem ✓');
+            } else {
+                setFieldState(confirmarGlass, confirmarFeedback, 'error', 'As palavras-passe não coincidem');
+            }
+        });
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailVal = emailInput.value.trim();
+            const nomeVal = nomeInput.value.trim();
+            const senhaVal = senhaInput.value;
+            const senhaConfirm = confirmarInput.value;
+            const funcao = funcaoSelect.value;
+            let hasError = false;
+
+            if (!emailVal || !EMAIL_REGEX.test(emailVal)) {
+                setFieldState(emailGlass, emailFeedback, 'error', 'Email institucional inválido');
+                hasError = true;
+            } else {
+                setFieldState(emailGlass, emailFeedback, 'success', 'Email válido ✓');
+            }
+
+            if (!nomeVal || !NAME_REGEX.test(nomeVal)) {
+                setFieldState(nomeGlass, nomeFeedback, 'error', 'Nome inválido');
+                hasError = true;
+            } else if (nomeVal.split(' ').filter(Boolean).length < 2) {
+                setFieldState(nomeGlass, nomeFeedback, 'error', 'Insira nome e sobrenome');
+                hasError = true;
+            } else {
+                setFieldState(nomeGlass, nomeFeedback, 'success', 'Nome válido ✓');
+            }
+
+            if (senhaVal.length < 6) {
+                setFieldState(senhaGlass, senhaFeedback, 'error', 'Mínimo 6 caracteres');
+                hasError = true;
+            } else {
+                setFieldState(senhaGlass, senhaFeedback, 'success', 'Palavra-passe válida ✓');
+            }
+
+            if (senhaVal !== senhaConfirm) {
+                setFieldState(confirmarGlass, confirmarFeedback, 'error', 'As palavras-passe não coincidem');
+                hasError = true;
+            } else if (senhaConfirm.length > 0) {
+                setFieldState(confirmarGlass, confirmarFeedback, 'success', 'Palavras-passe coincidem ✓');
+            }
+
+            if (!funcao) {
+                showToast('Selecione uma função.', 'error');
+                hasError = true;
+            }
+
+            // Verificar chave de administrador se for Admin
+            if (funcao === 'Admin') {
+                const adminKey = adminKeyInput.value.trim();
+                if (adminKey !== ADMIN_SECRET_KEY) {
+                    setFieldState(adminKeyGlass, adminKeyFeedback, 'error', 'Chave de administrador incorreta');
+                    hasError = true;
+                } else {
+                    setFieldState(adminKeyGlass, adminKeyFeedback, 'success', 'Chave válida ✓');
+                }
+            }
+
+            if (hasError) {
+                const firstError = document.querySelector('.input-glass--error');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(emailVal, senhaVal);
+                const user = userCredential.user;
+                await db.collection('users').doc(user.uid).set({
+                    nome: nomeVal,
+                    funcao: funcao,
+                    email: emailVal
+                });
+                showToast('Conta criada com sucesso! Redirecionando para o login...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            } catch (error) {
+                showToast('Erro ao criar conta: ' + error.message, 'error');
+            }
+        });
+    })();
 </script>
 </body>
 </html>
