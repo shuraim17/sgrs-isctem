@@ -227,7 +227,9 @@
         // Verificar sessão
         const loggedEmail = sessionStorage.getItem('loggedEmail');
         const loggedNome = sessionStorage.getItem('loggedNome');
-        if (!loggedEmail) {
+        const loggedFuncao = (sessionStorage.getItem('loggedFuncao') || '').toLowerCase();
+
+        if (!loggedEmail || (!loggedFuncao.includes('docente') && !loggedFuncao.includes('admin') && !loggedFuncao.includes('gestor'))) {
             window.location.href = 'index.html';
             return;
         }

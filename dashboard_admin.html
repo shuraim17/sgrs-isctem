@@ -90,7 +90,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
-    if (!sessionStorage.getItem('loggedEmail') || sessionStorage.getItem('loggedFuncao') !== 'Admin') {
+    const loggedFuncao = (sessionStorage.getItem('loggedFuncao') || '').toLowerCase();
+    if (!sessionStorage.getItem('loggedEmail') || !loggedFuncao.includes('admin')) {
         window.location.href = 'index.html';
     }
 
@@ -113,21 +114,37 @@
     }
 
     async function carregarUsuarios() {
-        const snapshot = await db.collection('users').get();
         const tbody = document.getElementById('usersTableBody');
-        tbody.innerHTML = '';
-        let count = 0;
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            count++;
-            tbody.innerHTML += `<tr>
-                <td>${data.email}</td>
-                <td>${data.nome}</td>
-                <td>${data.funcao}</td>
-                <td><button class="btn btn-sm btn-danger" onclick="apagarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button></td>
-            </tr>`;
-        });
-        document.getElementById('totalUsers').textContent = count;
+        const totalUsersEl = document.getElementById('totalUsers');
+
+        try {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">A carregar utilizadores...</td></tr>';
+            const snapshot = await db.collection('users').get();
+            tbody.innerHTML = '';
+            let count = 0;
+
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Nenhum utilizador encontrado.</td></tr>';
+                totalUsersEl.textContent = '0';
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                count++;
+                tbody.innerHTML += `<tr>
+                    <td>${data.email || 'N/A'}</td>
+                    <td>${data.nome || 'N/A'}</td>
+                    <td>${data.funcao || 'Docente'}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="apagarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+            });
+            totalUsersEl.textContent = count;
+        } catch (error) {
+            console.error("Erro ao carregar:", error);
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Erro ao carregar dados: ${error.message}</td></tr>`;
+            showToast('Erro ao carregar lista.', 'error');
+        }
     }
 
     window.apagarUsuario = async function(uid) {

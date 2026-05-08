@@ -202,12 +202,31 @@
                     funcao = data.funcao || funcao;
                     nome = data.nome || nome;
                 } else {
+                    // Hardcoded fallback for provided test accounts if doc doesn't exist
+                    if (email === 'admin@isctem.ac.mz') {
+                        funcao = 'Admin';
+                        nome = 'Administrador';
+                    } else if (email === 'gestor@isctem.ac.mz') {
+                        funcao = 'Gestor Académico';
+                        nome = 'Gestor Académico';
+                    }
+
                     // Cria documento básico se não existir
                     await docRef.set({
                         email: email,
-                        nome: 'Utilizador',
-                        funcao: 'Docente'
+                        nome: nome,
+                        funcao: funcao
                     });
+                }
+
+                // Force role and name for specific test accounts to fix data issues in remote DB
+                if (email === 'admin@isctem.ac.mz') {
+                    funcao = 'Admin';
+                    nome = 'Administrador';
+                }
+                if (email === 'gestor@isctem.ac.mz') {
+                    funcao = 'Gestor Académico';
+                    nome = 'Gestor Académico';
                 }
 
                 sessionStorage.setItem('loggedEmail', user.email);

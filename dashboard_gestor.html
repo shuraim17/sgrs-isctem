@@ -99,7 +99,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    if (!sessionStorage.getItem('loggedEmail') || sessionStorage.getItem('loggedFuncao') !== 'Gestor') {
+    const loggedFuncao = (sessionStorage.getItem('loggedFuncao') || '').toLowerCase();
+    if (!sessionStorage.getItem('loggedEmail') || !loggedFuncao.includes('gestor')) {
         window.location.href = 'index.html';
     }
 </script>
