@@ -3,98 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin | SGRS ISCTEM</title>
+    <title>Admin | SGRS ISCTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --glass-bg: rgba(255,255,255,0.25);
-            --glass-border: rgba(255,255,255,0.4);
-            --apple-blue: #0071e3;
-            --sf-font: 'Segoe UI', sans-serif;
-            --sidebar-width: 260px;
-        }
-        body { margin:0; font-family: var(--sf-font); background:#f0f0f5; display:flex; min-height:100vh; }
-        .bg-orb { position:fixed; border-radius:50%; filter:blur(120px); opacity:0.4; pointer-events:none; z-index:0; }
+        :root { --glass-bg: rgba(255,255,255,0.25); --sidebar-width: 260px; }
+        body { margin:0; font-family: 'Segoe UI', sans-serif; background:#f0f0f5; display:flex; min-height:100vh; }
+        .bg-orb { position:fixed; border-radius:50%; filter:blur(120px); opacity:0.4; }
         .bg-orb--1 { width:500px; height:500px; background:radial-gradient(circle, #d4b8f0, #b388ff); top:-120px; left:-100px; }
         .bg-orb--2 { width:420px; height:420px; background:radial-gradient(circle, #b3e5fc, #81d4fa); bottom:-110px; right:-80px; }
-        .sidebar { width:var(--sidebar-width); height:100vh; background:rgba(255,255,255,0.35); backdrop-filter:blur(25px); border-right:1px solid var(--glass-border); position:fixed; left:0; top:0; z-index:100; padding:24px 16px; display:flex; flex-direction:column; }
-        .sidebar-header { text-align:center; margin-bottom:30px; color:#1d1d1f; }
-        .sidebar-menu { list-style:none; padding:0; margin:0; flex:1; }
-        .sidebar-menu li a { color:#1d1d1f; text-decoration:none; padding:12px 16px; display:flex; align-items:center; gap:12px; border-radius:14px; margin-bottom:4px; font-weight:500; }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active { background:rgba(255,255,255,0.65); }
-        .main-content { margin-left:var(--sidebar-width); flex:1; padding:30px; position:relative; z-index:1; }
-        .topbar { background:rgba(255,255,255,0.4); backdrop-filter:blur(20px); border-radius:24px; padding:16px 28px; margin-bottom:30px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--glass-border); }
-        .card-dashboard { background:rgba(255,255,255,0.35); backdrop-filter:blur(15px); border-radius:24px; padding:24px; border:1px solid var(--glass-border); }
-        .btn-glass { background:rgba(29,29,31,0.9); color:white; border:none; padding:10px 22px; border-radius:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
-        .btn-glass:hover { background:#2d2d2f; }
-        .input-glass { background:rgba(255,255,255,0.5); border:1px solid rgba(200,200,210,0.5); border-radius:14px; padding:10px 16px; display:flex; align-items:center; gap:10px; }
-        .input-glass input, .input-glass select { background:transparent; border:none; outline:none; flex:1; }
-        .modal-content { background:rgba(255,255,255,0.45); backdrop-filter:blur(30px); border-radius:28px; border:1px solid var(--glass-border); }
-        .toast-container-apple { position:fixed; top:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
-        .toast-apple { background:rgba(255,255,255,0.75); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.5); border-radius:18px; padding:14px 20px; box-shadow:0 8px 28px rgba(0,0,0,0.12); display:flex; align-items:center; gap:10px; font-size:0.9rem; font-weight:500; color:#1d1d1f; animation:slideInToast 0.4s ease; min-width:280px; }
-        .toast-apple.toast-error { border-left:4px solid #e53e3e; }
-        .toast-apple.toast-success { border-left:4px solid #38a169; }
-        @keyframes slideInToast { from{opacity:0;transform:translateX(60px);} to{opacity:1;transform:translateX(0);} }
-        @keyframes slideOutToast { from{opacity:1;transform:translateX(0);} to{opacity:0;transform:translateX(60px);} }
+        .sidebar { width:var(--sidebar-width); background:rgba(255,255,255,0.35); backdrop-filter:blur(25px); position:fixed; top:0; left:0; height:100vh; padding:24px; }
+        .main-content { margin-left:var(--sidebar-width); flex:1; padding:30px; }
+        .card-dashboard { background:rgba(255,255,255,0.35); border-radius:24px; padding:24px; }
+        .btn-glass { background:rgba(29,29,31,0.9); color:white; border:none; padding:10px 22px; border-radius:14px; cursor:pointer; }
+        .modal-content { background:rgba(255,255,255,0.45); backdrop-filter:blur(30px); }
+        .toast-apple { background:rgba(255,255,255,0.75); border-radius:18px; padding:14px 20px; position:fixed; top:20px; right:20px; z-index:9999; }
         @media (max-width:768px) {
-            .sidebar { width:100%; height:auto; position:relative; flex-direction:row; flex-wrap:wrap; padding:12px; }
-            .main-content { margin-left:0; padding:16px; }
-            .sidebar-menu { display:flex; flex-wrap:wrap; gap:8px; }
-            .sidebar-menu li a { padding:8px 12px; font-size:0.85rem; }
-            .topbar { flex-direction:column; align-items:flex-start; gap:8px; }
+            .sidebar { width:100%; height:auto; position:relative; }
+            .main-content { margin-left:0; }
         }
     </style>
 </head>
 <body>
 <div class="bg-orb bg-orb--1"></div>
 <div class="bg-orb bg-orb--2"></div>
-<div class="toast-container-apple" id="toastContainer"></div>
+<div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999;"></div>
 
 <div class="sidebar">
-    <div class="sidebar-header">
-        <i class="fas fa-university fa-2x" style="color:#6a1b9a;"></i>
-        <h5 class="mt-2">SGRS</h5>
-        <small>Administrador</small>
-    </div>
-    <ul class="sidebar-menu">
-        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalUtilizadores"><i class="fas fa-users"></i> Utilizadores</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalSalas"><i class="fas fa-door-open"></i> Salas</a></li>
-        <li><a href="#"><i class="fas fa-cogs"></i> Configurações</a></li>
-        <li class="mt-auto"><a href="index.html"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+    <div class="text-center"><i class="fas fa-university fa-2x" style="color:#6a1b9a;"></i><h5>SGRS Admin</h5></div>
+    <ul class="list-unstyled mt-4">
+        <li><a href="#" class="active nav-link">Dashboard</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalUtilizadores" class="nav-link">Utilizadores</a></li>
+        <li><a href="index.html" class="nav-link text-danger">Sair</a></li>
     </ul>
 </div>
 
 <div class="main-content">
-    <div class="topbar"><div><h4>Admin Sistema</h4></div></div>
+    <div class="topbar bg-glass mb-4 p-3 rounded-4"><h4>Painel Admin</h4></div>
     <div class="row g-4">
-        <div class="col-md-3"><div class="card-dashboard"><h6>Utilizadores</h6><h2 id="totalUsers">0</h2></div></div>
-        <div class="col-md-3"><div class="card-dashboard"><h6>Salas</h6><h2>45</h2></div></div>
-        <div class="col-md-3"><div class="card-dashboard"><h6>Requisições</h6><h2>164</h2></div></div>
-        <div class="col-md-3"><div class="card-dashboard"><h6>Ocupação</h6><h2>87%</h2></div></div>
+        <div class="col-md-3"><div class="card-dashboard"><h6>Utilizadores</h6><h2 id="totalUsers"></h2></div></div>
     </div>
 </div>
 
 <!-- Modal Utilizadores -->
 <div class="modal fade" id="modalUtilizadores" tabindex="-1">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content p-3">
+        <div class="modal-content p-4">
             <div class="modal-header">
-                <h5><i class="fas fa-users me-2"></i>Gerir Utilizadores</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5>Gerir Utilizadores</h5>
+                <button class="btn-glass" data-bs-toggle="modal" data-bs-target="#modalNovoUtilizador">+ Novo</button>
             </div>
             <div class="modal-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6>Lista de Utilizadores</h6>
-                    <button class="btn-glass" data-bs-toggle="modal" data-bs-target="#modalNovoUtilizador"><i class="fas fa-plus"></i> Novo Utilizador</button>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-borderless align-middle">
-                        <thead><tr><th>Email</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
-                        <tbody id="usersTableBody"></tbody>
-                    </table>
-                </div>
+                <table class="table">
+                    <thead><tr><th>Email</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -103,192 +66,111 @@
 <!-- Modal Novo Utilizador -->
 <div class="modal fade" id="modalNovoUtilizador" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content p-3">
-            <div class="modal-header">
-                <h5>Novo Utilizador</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formNovoUtilizador" novalidate>
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <div class="input-glass"><i class="fas fa-envelope"></i><input type="email" id="novoEmail" placeholder="utilizador@isctem.ac.mz" required></div>
-                        <small id="emailFeedback" class="text-muted">ex: nome@isctem.ac.mz</small>
-                    </div>
-                    <div class="mb-3">
-                        <label>Nome Completo</label>
-                        <div class="input-glass"><i class="fas fa-user"></i><input type="text" id="novoNome" placeholder="Nome do utilizador" required></div>
-                    </div>
-                    <div class="mb-3">
-                        <label>Palavra-passe</label>
-                        <div class="input-glass"><i class="fas fa-lock"></i><input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres" required minlength="6"></div>
-                        <small id="senhaFeedback" class="text-muted"></small>
-                    </div>
-                    <div class="mb-3">
-                        <label>Função</label>
-                        <div class="input-glass"><i class="fas fa-user-tag"></i>
-                            <select id="novaFuncao" required>
-                                <option value="">Selecionar...</option>
-                                <option value="Docente">Docente</option>
-                                <option value="Gestor">Gestor Académico</option>
-                                <option value="Admin">Administrador</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-glass" id="btnCriarUtilizador"><i class="fas fa-save"></i> Criar</button>
-            </div>
+        <div class="modal-content p-4">
+            <h5>Novo Utilizador</h5>
+            <form id="formNovoUtilizador">
+                <div class="input-glass mb-3"><i class="fas fa-envelope"></i><input type="email" id="novoEmail" placeholder="Email" required></div>
+                <div class="input-glass mb-3"><i class="fas fa-user"></i><input type="text" id="novoNome" placeholder="Nome" required></div>
+                <div class="input-glass mb-3"><i class="fas fa-lock"></i><input type="password" id="novaSenha" placeholder="Senha" required></div>
+                <select id="novaFuncao" class="form-select mb-3">
+                    <option value="">Função</option>
+                    <option value="Docente">Docente</option>
+                    <option value="Gestor">Gestor</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <button type="submit" class="btn-glass">Criar</button>
+            </form>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
-    (function() {
-        // Verificar sessão
-        if (!sessionStorage.getItem('loggedEmail')) {
-            window.location.href = 'index.html';
-            return;
-        }
+    if (!sessionStorage.getItem('loggedEmail') || sessionStorage.getItem('loggedFuncao') !== 'Admin') {
+        window.location.href = 'index.html';
+    }
 
-        const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
-        const toastContainer = document.getElementById('toastContainer');
+    const firebaseConfig = {
+        apiKey: "AIzaSyAH9cA7UTOUzzHFKswBAkAOjdZIyynaMQg",
+        authDomain: "sgrs-isctem.firebaseapp.com",
+        projectId: "sgrs-isctem",
+        storageBucket: "sgrs-isctem.firebasestorage.app",
+        messagingSenderId: "1029014740161",
+        appId: "1:1029014740161:web:e80c034c58df4424928840"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        function getUsers() {
-            const stored = localStorage.getItem('sgr_users');
-            if (!stored) {
-                const defaults = [
-                    { email: 'admin@isctem.ac.mz', senha: 'admin123', nome: 'Administrador', funcao: 'Admin' },
-                    { email: 'gestor@isctem.ac.mz', senha: 'gestor123', nome: 'Gestor Académico', funcao: 'Gestor' },
-                    { email: 'docente@isctem.ac.mz', senha: 'docente123', nome: 'Professor Exemplo', funcao: 'Docente' }
-                ];
-                localStorage.setItem('sgr_users', JSON.stringify(defaults));
-                return [...defaults];
-            }
-            return JSON.parse(stored);
-        }
+    function showToast(msg, type='success') {
+        const t = document.createElement('div'); t.className='toast-apple'; t.textContent=msg;
+        document.getElementById('toastContainer').appendChild(t);
+        setTimeout(()=>t.remove(),4000);
+    }
 
-        function saveUsers(users) {
-            localStorage.setItem('sgr_users', JSON.stringify(users));
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast-apple toast-${type}`;
-            const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger' };
-            toast.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
-            toastContainer.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'slideOutToast 0.35s ease forwards';
-                setTimeout(() => toast.remove(), 350);
-            }, 3800);
-        }
-
-        let usuarios = getUsers();
-
-        function atualizarTabela() {
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
-            usuarios.forEach((user, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.email}</td>
-                    <td>${user.nome}</td>
-                    <td><span class="badge bg-light text-dark">${user.funcao}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-danger" data-index="${index}" title="Apagar"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-            document.getElementById('totalUsers').textContent = usuarios.length;
-        }
-
-        function apagarUtilizador(index) {
-            if (confirm(`Tem certeza que deseja apagar o utilizador "${usuarios[index].nome}"?`)) {
-                const removido = usuarios.splice(index, 1)[0];
-                saveUsers(usuarios);
-                atualizarTabela();
-                showToast(`Utilizador "${removido.email}" apagado com sucesso.`, 'success');
-            }
-        }
-
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-outline-danger')) {
-                const btn = e.target.closest('.btn-outline-danger');
-                const index = btn.getAttribute('data-index');
-                if (index !== null) apagarUtilizador(parseInt(index));
-            }
+    async function carregarUsuarios() {
+        const snapshot = await db.collection('users').get();
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        let count = 0;
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            count++;
+            tbody.innerHTML += `<tr>
+                <td>${data.email}</td>
+                <td>${data.nome}</td>
+                <td>${data.funcao}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="apagarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
         });
+        document.getElementById('totalUsers').textContent = count;
+    }
 
-        const novoEmail = document.getElementById('novoEmail');
-        const emailFeedback = document.getElementById('emailFeedback');
-        novoEmail.addEventListener('input', function() {
-            const val = this.value.trim();
-            if (val === '') {
-                emailFeedback.textContent = 'ex: nome@isctem.ac.mz';
-                emailFeedback.className = 'text-muted';
-            } else if (EMAIL_REGEX.test(val)) {
-                emailFeedback.textContent = 'Email válido ✓';
-                emailFeedback.className = 'text-success';
-            } else {
-                emailFeedback.textContent = 'Formato inválido. Use @isctem.ac.mz';
-                emailFeedback.className = 'text-danger';
+    window.apagarUsuario = async function(uid) {
+        if (!confirm('Tem certeza? Essa ação não pode ser desfeita.')) return;
+        try {
+            await db.collection('users').doc(uid).delete();
+            try {
+                const response = await fetch('/api/deleteUser', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid })
+                });
+                if (!response.ok) throw new Error('Falha na cloud function');
+            } catch (e) {
+                console.warn('Cloud function não disponível. Utilizador removido apenas da base de dados.');
             }
-        });
+            showToast('Utilizador removido.');
+            carregarUsuarios();
+        } catch (error) {
+            showToast('Erro: ' + error.message, 'error');
+        }
+    };
 
-        const novaSenha = document.getElementById('novaSenha');
-        const senhaFeedback = document.getElementById('senhaFeedback');
-        novaSenha.addEventListener('input', function() {
-            const len = this.value.length;
-            if (len === 0) senhaFeedback.textContent = '';
-            else if (len < 6) { senhaFeedback.textContent = `Faltam ${6 - len} caracteres`; senhaFeedback.className = 'text-danger'; }
-            else { senhaFeedback.textContent = 'Palavra-passe válida ✓'; senhaFeedback.className = 'text-success'; }
-        });
-
-        document.getElementById('btnCriarUtilizador').addEventListener('click', function() {
-            const email = novoEmail.value.trim();
-            const nome = document.getElementById('novoNome').value.trim();
-            const senha = novaSenha.value;
-            const funcao = document.getElementById('novaFuncao').value;
-
-            if (!email || !EMAIL_REGEX.test(email)) {
-                showToast('Email institucional inválido.', 'error');
-                return;
-            }
-            if (!nome) {
-                showToast('O nome é obrigatório.', 'error');
-                return;
-            }
-            if (senha.length < 6) {
-                showToast('A palavra-passe deve ter no mínimo 6 caracteres.', 'error');
-                return;
-            }
-            if (!funcao) {
-                showToast('Selecione uma função.', 'error');
-                return;
-            }
-            if (usuarios.some(u => u.email === email)) {
-                showToast('Este email já está registado.', 'error');
-                return;
-            }
-
-            usuarios.push({ email, senha, nome, funcao });
-            saveUsers(usuarios);
-            atualizarTabela();
-            showToast(`Utilizador "${email}" criado com sucesso.`, 'success');
-
-            document.getElementById('formNovoUtilizador').reset();
-            emailFeedback.textContent = 'ex: nome@isctem.ac.mz';
-            emailFeedback.className = 'text-muted';
-            senhaFeedback.textContent = '';
+    document.getElementById('formNovoUtilizador').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('novoEmail').value.trim();
+        const nome = document.getElementById('novoNome').value.trim();
+        const senha = document.getElementById('novaSenha').value;
+        const funcao = document.getElementById('novaFuncao').value;
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+            const uid = userCredential.user.uid;
+            await db.collection('users').doc(uid).set({ nome, funcao, email });
+            showToast('Utilizador criado!');
             bootstrap.Modal.getInstance(document.getElementById('modalNovoUtilizador')).hide();
-        });
+            document.getElementById('formNovoUtilizador').reset();
+            carregarUsuarios();
+        } catch (error) {
+            showToast('Erro: ' + error.message, 'error');
+        }
+    });
 
-        atualizarTabela();
-    })();
+    carregarUsuarios();
 </script>
 </body>
 </html>
