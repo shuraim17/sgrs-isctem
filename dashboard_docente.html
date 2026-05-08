@@ -8,39 +8,87 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.5);
             --apple-blue: #0071e3;
-            --sf-font: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            --sidebar-width: 260px;
+            --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --radius-apple: 24px;
+            --sidebar-width: 280px;
+            --transition-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
         }
-        body { margin:0; font-family: var(--sf-font); background:#f0f0f5; display:flex; min-height:100vh; }
-        .bg-orb { position:fixed; border-radius:50%; filter:blur(120px); opacity:0.4; pointer-events:none; z-index:0; }
-        .bg-orb--1 { width:480px; height:480px; background:radial-gradient(circle, #c4d9ff, #8bb3ff); top:-120px; left:-100px; }
-        .bg-orb--2 { width:380px; height:380px; background:radial-gradient(circle, #fecaca, #fca5a5); bottom:-100px; right:-80px; }
-        .sidebar { width:var(--sidebar-width); min-height:100vh; background:rgba(255,255,255,0.35); backdrop-filter:blur(25px); border-right:1px solid var(--glass-border); position:fixed; left:0; top:0; z-index:100; padding:24px 16px; display:flex; flex-direction:column; }
-        .sidebar-header { text-align:center; margin-bottom:30px; color:#1d1d1f; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { margin:0; font-family: var(--sf-font); background:#fbfbfd; display:flex; min-height:100vh; color: #1d1d1f; }
+        /* Liquid Glass Background */
+        .liquid-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden; background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+        }
+        .bg-orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
+            animation: floatLiquid 30s infinite alternate var(--transition-apple);
+        }
+        .bg-orb--1 { width: 600px; height: 600px; background: radial-gradient(circle, #c4d9ff, #8bb3ff); top:-150px; left:-120px; }
+        .bg-orb--2 { width: 500px; height: 500px; background: radial-gradient(circle, #fecaca, #fca5a5); bottom:-150px; right:-100px; animation-delay: -7s; }
+        @keyframes floatLiquid {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, -50px) scale(1.1); }
+            100% { transform: translate(-20px, 40px) scale(0.95); }
+        }
+        .sidebar {
+            width:var(--sidebar-width); background:rgba(255,255,255,0.4); backdrop-filter:blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            position:fixed; top:0; left:0; height:100vh; padding:32px 24px;
+            border-right: 1px solid var(--glass-border); z-index: 100; display: flex; flex-direction: column;
+        }
+        .sidebar-header { text-align:center; margin-bottom:40px; color:#1d1d1f; }
         .sidebar-menu { list-style:none; padding:0; margin:0; flex:1; }
-        .sidebar-menu li a { color:#1d1d1f; text-decoration:none; padding:12px 16px; display:flex; align-items:center; gap:12px; border-radius:14px; margin-bottom:4px; font-weight:500; }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active { background:rgba(255,255,255,0.65); }
-        .main-content { margin-left:var(--sidebar-width); flex:1; padding:30px; position:relative; z-index:1; }
-        .topbar { background:rgba(255,255,255,0.4); backdrop-filter:blur(20px); border-radius:24px; padding:16px 28px; margin-bottom:30px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--glass-border); }
-        .card-dashboard { background:rgba(255,255,255,0.35); backdrop-filter:blur(15px); border-radius:24px; padding:24px; border:1px solid var(--glass-border); transition: all 0.3s; }
-        .card-dashboard:hover { transform: translateY(-4px); }
-        .btn-glass { background:rgba(29,29,31,0.9); color:white; border:none; padding:10px 22px; border-radius:14px; font-weight:600; display:inline-flex; align-items:center; gap:8px; cursor:pointer; transition: all 0.3s; }
-        .btn-glass:hover { background:#2d2d2f; transform: translateY(-1px); }
-        .input-glass { background:rgba(255,255,255,0.5); border:1px solid rgba(200,200,210,0.5); border-radius:14px; padding:10px 16px; display:flex; align-items:center; gap:10px; }
+        .sidebar-menu li a {
+            color:#424245; text-decoration:none; padding:12px 16px; display:flex; align-items:center;
+            gap:12px; border-radius:14px; margin-bottom:8px; font-weight:500;
+            transition: all 0.3s var(--transition-apple);
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active { background:rgba(255,255,255,0.6); color: var(--apple-blue); transform: translateX(4px); }
+        .main-content { margin-left:var(--sidebar-width); flex:1; padding:48px; position:relative; z-index:1; }
+        .topbar {
+            background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); border-radius:24px;
+            padding:20px 32px; margin-bottom:40px; display:flex; justify-content:space-between;
+            align-items:center; border:1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.03);
+        }
+        .card-dashboard {
+            background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); border-radius:var(--radius-apple);
+            padding:32px; border:1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            transition: transform 0.4s var(--transition-apple);
+        }
+        .card-dashboard:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+        .btn-glass {
+            background:#000; color:white; border:none; padding:12px 24px; border-radius:16px;
+            font-weight:600; display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+            transition: all 0.3s var(--transition-apple);
+        }
+        .btn-glass:hover { background: #1d1d1f; transform: scale(1.02); }
+        .input-glass {
+            background:rgba(255,255,255,0.6); border:1px solid rgba(0,0,0,0.08);
+            border-radius:16px; padding:12px 16px; display:flex; align-items:center;
+            gap:12px; transition: all 0.4s var(--transition-apple);
+        }
+        .input-glass:focus-within { background: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.15); }
         .input-glass input, .input-glass select { background:transparent; border:none; outline:none; flex:1; }
-        .modal-content { background:rgba(255,255,255,0.45); backdrop-filter:blur(30px); border-radius:28px; border:1px solid var(--glass-border); }
-        .status-badge { padding:4px 14px; border-radius:20px; font-weight:600; font-size:0.8rem; }
+        .modal-content {
+            background:rgba(255,255,255,0.6); backdrop-filter:blur(50px) saturate(200%);
+            -webkit-backdrop-filter: blur(50px) saturate(200%);
+            border-radius:32px; border:1px solid var(--glass-border); padding: 24px;
+        }
+        .status-badge { padding:6px 16px; border-radius:20px; font-weight:600; font-size:0.85rem; }
         .status-pendente { background:#fff3e0; color:#e65100; }
         .status-aprovada { background:#e8f5e9; color:#2e7d32; }
-        .toast-container-apple { position:fixed; top:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
-        .toast-apple { background:rgba(255,255,255,0.75); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.5); border-radius:18px; padding:14px 20px; box-shadow:0 8px 28px rgba(0,0,0,0.12); display:flex; align-items:center; gap:10px; font-size:0.9rem; font-weight:500; color:#1d1d1f; animation:slideInToast 0.4s ease; min-width:280px; }
-        .toast-apple.toast-error { border-left:4px solid #e53e3e; }
-        .toast-apple.toast-success { border-left:4px solid #38a169; }
+        .toast-apple {
+            background:rgba(255,255,255,0.85); backdrop-filter:blur(20px); border-radius:20px;
+            padding:16px 24px; position:fixed; top:32px; right:32px; z-index:9999;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid var(--glass-border);
+            display:flex; align-items:center; gap:12px; font-size:0.95rem; font-weight:500;
+            animation: slideInToast 0.4s var(--transition-apple);
+        }
         @keyframes slideInToast { from{opacity:0;transform:translateX(60px);} to{opacity:1;transform:translateX(0);} }
-        @keyframes slideOutToast { from{opacity:1;transform:translateX(0);} to{opacity:0;transform:translateX(60px);} }
 
         /* Estilos específicos para disponibilidade */
         .availability-grid {
@@ -86,30 +134,32 @@
     </style>
 </head>
 <body>
-<div class="bg-orb bg-orb--1"></div>
-<div class="bg-orb bg-orb--2"></div>
+<div class="liquid-container">
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+</div>
 <div class="toast-container-apple" id="toastContainer"></div>
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <i class="fas fa-university fa-2x" style="color:#0071e3;"></i>
-        <h5 class="mt-2">SGRS</h5>
-        <small>Docente</small>
+        <i class="fa-solid fa-chalkboard-user fa-2x" style="color:var(--apple-blue);"></i>
+        <h5 class="mt-2">SGRS Docente</h5>
+        <small class="text-muted">Portal do Professor</small>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fas fa-plus-circle"></i> Nova Requisição</a></li>
-        <li><a href="#"><i class="fas fa-list-alt"></i> Minhas Requisições</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalDisponibilidade"><i class="fas fa-calendar-alt"></i> Disponibilidade</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalComprovativos"><i class="fas fa-file-pdf"></i> Comprovativos</a></li>
-        <li class="mt-auto"><a href="index.html" class="text-danger"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        <li><a href="#" class="active"><i class="fa-solid fa-grip"></i> Dashboard</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fa-solid fa-calendar-plus"></i> Nova Requisição</a></li>
+        <li><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalDisponibilidade"><i class="fa-solid fa-calendar-days"></i> Disponibilidade</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalComprovativos"><i class="fa-solid fa-file-invoice"></i> Comprovativos</a></li>
+        <li class="mt-auto"><a href="index.html" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
     </ul>
 </div>
 
 <div class="main-content" id="mainContent">
     <div class="topbar">
-        <div><h4 class="mb-0" id="nomeDocente">Olá, Docente</h4><small class="text-muted">Docente</small></div>
-        <div><button class="btn-glass" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fas fa-plus"></i> Nova Requisição</button></div>
+        <div><h4 class="mb-0" id="nomeDocente">Olá, Docente</h4><small class="text-muted">Área Pessoal</small></div>
+        <div><button class="btn-glass" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fa-solid fa-plus me-2"></i> Nova Requisição</button></div>
     </div>
     <div class="row g-4 mb-4">
         <div class="col-md-3"><div class="card-dashboard"><h6>Total Requisições</h6><h2>24</h2></div></div>

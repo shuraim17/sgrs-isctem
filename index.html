@@ -8,102 +8,129 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.18);
-            --glass-border: rgba(255, 255, 255, 0.35);
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.5);
             --apple-blue: #0071e3;
-            --sf-font: 'Segoe UI', 'SF Pro Display', sans-serif;
-            --radius-md: 18px;
+            --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --radius-apple: 22px;
+            --transition-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
         }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body {
             margin: 0; min-height: 100vh; font-family: var(--sf-font);
-            background: #f0f0f5; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow-x: hidden;
+            background: #fbfbfd; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow-x: hidden; color: #1d1d1f;
+        }
+        /* Liquid Glass Background */
+        .liquid-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden; background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
         }
         .bg-orb {
-            position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.55;
-            pointer-events: none; z-index: 0; animation: floatOrb 18s ease-in-out infinite;
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6;
+            animation: floatLiquid 25s infinite alternate var(--transition-apple);
         }
-        .bg-orb--1 { width: 500px; height: 500px; background: radial-gradient(circle, #a5c8ff 0%, #7aa9ff 40%, transparent 70%); top: -180px; left: -120px; }
-        .bg-orb--2 { width: 420px; height: 420px; background: radial-gradient(circle, #c4b5fd 0%, #a78bfa 40%, transparent 70%); bottom: -160px; right: -100px; animation-delay: -7s; }
-        .bg-orb--3 { width: 340px; height: 340px; background: radial-gradient(circle, #fecaca 0%, #fca5a5 40%, transparent 70%); top: 50%; left: 55%; animation-delay: -12s; opacity: 0.4; }
-        @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            20% { transform: translate(40px, -30px) scale(1.08); }
-            40% { transform: translate(-25px, 35px) scale(0.94); }
-            60% { transform: translate(30px, 20px) scale(1.05); }
-            80% { transform: translate(-35px, -25px) scale(0.96); }
+        .bg-orb--1 { width: 600px; height: 600px; background: radial-gradient(circle, #818cf8 0%, #c084fc 100%); top: -200px; left: -150px; }
+        .bg-orb--2 { width: 500px; height: 500px; background: radial-gradient(circle, #38bdf8 0%, #818cf8 100%); bottom: -150px; right: -100px; animation-delay: -5s; }
+        .bg-orb--3 { width: 400px; height: 400px; background: radial-gradient(circle, #f472b6 0%, #fb7185 100%); top: 40%; left: 60%; animation-delay: -10s; opacity: 0.3; }
+        @keyframes floatLiquid {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            33% { transform: translate(50px, -40px) rotate(120deg) scale(1.1); }
+            66% { transform: translate(-30px, 60px) rotate(240deg) scale(0.9); }
+            100% { transform: translate(20px, -20px) rotate(360deg) scale(1.05); }
         }
+        /* Login Card */
         .login-wrapper {
-            position: relative; z-index: 1; width: 920px; max-width: 95vw; display: flex;
-            border-radius: 32px; overflow: hidden; backdrop-filter: blur(28px);
+            position: relative; z-index: 1; width: 980px; max-width: 95vw; display: flex;
+            border-radius: 36px; overflow: hidden; backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
             background: var(--glass-bg); border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 70px rgba(0,0,0,0.12);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.1);
+            animation: cardAppear 1s var(--transition-apple);
         }
+        @keyframes cardAppear { from { opacity: 0; transform: scale(0.98) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .login-left {
-            flex: 0 0 44%; background: rgba(255,255,255,0.25); backdrop-filter: blur(20px);
-            padding: 48px 36px; display: flex; flex-direction: column; justify-content: center;
-            border-right: 1px solid rgba(255,255,255,0.3); color: #1d1d1f;
+            flex: 0 0 42%; background: rgba(255,255,255,0.15);
+            padding: 60px 48px; display: flex; flex-direction: column; justify-content: center;
+            border-right: 1px solid rgba(255,255,255,0.2); text-align: center;
         }
         .logo-icon {
-            width: 64px; height: 64px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; background: rgba(255,255,255,0.55); margin: 0 auto 20px;
+            width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; background: rgba(255,255,255,0.7); margin: 0 auto 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06); color: var(--apple-blue);
         }
-        .login-right {
-            flex: 1; padding: 48px 40px; background: rgba(255,255,255,0.35); backdrop-filter: blur(18px);
-        }
-        .form-group-apple { margin-bottom: 20px; }
+        .login-left h2 { font-weight: 700; font-size: 2rem; letter-spacing: -0.5px; margin-bottom: 12px; }
+        .login-left p { color: #424245; font-size: 1.1rem; line-height: 1.4; }
+        .login-right { flex: 1; padding: 60px 56px; background: rgba(255,255,255,0.2); }
+        .login-right h3 { font-weight: 600; font-size: 1.6rem; margin-bottom: 32px; letter-spacing: -0.3px; }
+        .form-group-apple { margin-bottom: 24px; }
+        .form-group-apple label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #424245; margin-left: 4px; }
         .input-glass {
-            display: flex; align-items: center; background: rgba(255,255,255,0.55); border: 1.5px solid rgba(200,200,210,0.5);
-            border-radius: 14px; padding: 6px 6px 6px 16px; gap: 8px;
+            display: flex; align-items: center; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 16px; padding: 12px 16px; gap: 12px; transition: all 0.4s var(--transition-apple);
         }
-        .input-glass:focus-within { border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.12); }
-        .input-glass input { flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem; }
+        .input-glass:focus-within { background: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.15); transform: translateY(-1px); }
+        .input-glass i { color: #86868b; font-size: 1rem; }
+        .input-glass input { flex: 1; border: none; background: transparent; outline: none; font-size: 1rem; color: #1d1d1f; font-weight: 400; }
         .btn-apple {
-            width: 100%; padding: 14px; border-radius: 14px; font-weight: 600; border: none;
-            background: #1d1d1f; color: #fff; cursor: pointer;
+            width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; border: none;
+            background: #000; color: #fff; cursor: pointer; font-size: 1rem;
+            transition: all 0.3s var(--transition-apple); margin-top: 12px;
         }
-        .toast-container-apple { position: fixed; top: 24px; right: 24px; z-index: 9999; }
+        .btn-apple:hover { background: #1d1d1f; transform: scale(1.01); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        .btn-apple:active { transform: scale(0.98); }
+        .btn-icon { background: none; border: none; color: #86868b; cursor: pointer; padding: 4px; transition: color 0.2s; }
+        .btn-icon:hover { color: var(--apple-blue); }
+        .toast-container-apple { position: fixed; top: 32px; right: 32px; z-index: 9999; }
         .toast-apple {
-            background: rgba(255,255,255,0.75); border-radius: 18px; padding: 14px 20px; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px; padding: 16px 24px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.5);
+            display: flex; align-items: center; gap: 12px; font-size: 0.95rem; font-weight: 500;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08); animation: toastSlide 0.5s var(--transition-apple);
         }
+        @keyframes toastSlide { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .footer-links { text-align: center; margin-top: 32px; }
+        .footer-links a { color: var(--apple-blue); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: opacity 0.2s; }
+        .footer-links a:hover { opacity: 0.8; text-decoration: underline; }
         @media (max-width: 768px) {
-            .login-wrapper { flex-direction: column; }
-            .login-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.3); }
+            .login-wrapper { flex-direction: column; border-radius: 0; max-width: 100vw; height: 100vh; }
+            .login-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 40px 24px; }
+            .login-right { padding: 40px 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-orb bg-orb--1"></div>
-    <div class="bg-orb bg-orb--2"></div>
-    <div class="bg-orb bg-orb--3"></div>
+    <div class="liquid-container">
+        <div class="bg-orb bg-orb--1"></div>
+        <div class="bg-orb bg-orb--2"></div>
+        <div class="bg-orb bg-orb--3"></div>
+    </div>
     <div class="toast-container-apple" id="toastContainer"></div>
     <div class="login-wrapper">
         <div class="login-left">
             <div class="text-center">
-                <div class="logo-icon"><i class="fas fa-university"></i></div>
-                <h2>ISCTEM</h2>
-                <p>Sistema de Gestão de Requisição de Salas</p>
+                <div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div>
+                <h2>SGRS ISCTEM</h2>
+                <p>O futuro da gestão académica começa aqui. Simples, fluido e inteligente.</p>
             </div>
         </div>
         <div class="login-right">
-            <h3>Bem-vindo ao SGRS</h3>
+            <h3>Iniciar Sessão</h3>
             <form id="loginForm" novalidate>
                 <div class="form-group-apple">
-                    <label>Email Institucional</label>
+                    <label>E-mail Institucional</label>
                     <div class="input-glass" id="emailGlass">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" placeholder="exemplo@isctem.ac.mz" required>
+                        <i class="fa-solid fa-at"></i>
+                        <input type="email" id="email" placeholder="nome@isctem.ac.mz" required>
                     </div>
                     <div class="field-hint" id="emailHint"></div>
                 </div>
                 <div class="form-group-apple">
                     <label>Palavra-passe</label>
                     <div class="input-glass" id="passGlass">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="Mínimo 6 caracteres" required minlength="6">
-                        <button type="button" id="togglePassword" class="btn-icon"><i class="fas fa-eye"></i></button>
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password" placeholder="Insira a sua senha" required minlength="6">
+                        <button type="button" id="togglePassword" class="btn-icon"><i class="fa-solid fa-eye"></i></button>
                     </div>
                     <div class="field-hint" id="passHint"></div>
                 </div>
