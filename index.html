@@ -120,6 +120,7 @@
         </div>
     </div>
 
+    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -189,25 +190,45 @@
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                const doc = await db.collection('users').doc(user.uid).get();
-                if (!doc.exists) {
-                    await auth.signOut();
-                    showToast('Conta não encontrada.', 'error');
-                    return;
+
+                // Buscar dados adicionais no Firestore
+                const docRef = db.collection('users').doc(user.uid);
+                const doc = await docRef.get();
+                let funcao = 'Docente';
+                let nome = 'Utilizador';
+
+                if (doc.exists) {
+                    const data = doc.data();
+                    funcao = data.funcao || funcao;
+                    nome = data.nome || nome;
+                } else {
+                    // Cria documento básico se não existir
+                    await docRef.set({
+                        email: email,
+                        nome: 'Utilizador',
+                        funcao: 'Docente'
+                    });
                 }
-                const userData = doc.data();
+
                 sessionStorage.setItem('loggedEmail', user.email);
-                sessionStorage.setItem('loggedNome', userData.nome);
-                sessionStorage.setItem('loggedFuncao', userData.funcao);
+                sessionStorage.setItem('loggedNome', nome);
+                sessionStorage.setItem('loggedFuncao', funcao);
                 sessionStorage.setItem('loggedUid', user.uid);
 
-                showToast('Login bem-sucedido!', 'success');
+                showToast('Login bem-sucedido! Redireccionando...', 'success');
+
+                // Redireccionamento forçado após 500ms
                 setTimeout(() => {
-                    const role = userData.funcao.toLowerCase();
-                    if (role.includes('admin')) window.location.href = 'dashboard_admin.html';
-                    else if (role.includes('gestor')) window.location.href = 'dashboard_gestor.html';
-                    else window.location.href = 'dashboard_docente.html';
+                    const role = funcao.toLowerCase();
+                    if (role.includes('admin')) {
+                        window.location.replace('dashboard_admin.html');
+                    } else if (role.includes('gestor')) {
+                        window.location.replace('dashboard_gestor.html');
+                    } else {
+                        window.location.replace('dashboard_docente.html');
+                    }
                 }, 800);
+
             } catch (error) {
                 showToast('Falha no login: ' + error.message, 'error');
             }
