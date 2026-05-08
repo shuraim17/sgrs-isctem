@@ -14,7 +14,8 @@
             --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --radius-apple: 24px;
             --sidebar-width: 280px;
-            --transition-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+            --transition-apple: cubic-bezier(0.2, 0, 0, 1);
+            --transition-fast: 0.25s var(--transition-apple);
         }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body { margin:0; font-family: var(--sf-font); background:#fbfbfd; display:flex; min-height:100vh; color: #1d1d1f; }
@@ -48,16 +49,21 @@
             transition: all 0.3s var(--transition-apple);
         }
         .sidebar-menu li a:hover, .sidebar-menu li a.active { background:rgba(255,255,255,0.6); color: var(--apple-blue); transform: translateX(4px); }
-        .main-content { margin-left:var(--sidebar-width); flex:1; padding:48px; position:relative; z-index:1; }
+        .main-content {
+            margin-left:var(--sidebar-width); flex:1; padding:48px; position:relative; z-index:1;
+            animation: fadeIn 0.4s var(--transition-apple);
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .topbar {
             background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); border-radius:24px;
             padding:20px 32px; margin-bottom:40px; display:flex; justify-content:space-between;
             align-items:center; border:1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.03);
+            transition: all var(--transition-fast);
         }
         .card-dashboard {
             background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); border-radius:var(--radius-apple);
             padding:32px; border:1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.04);
-            transition: transform 0.4s var(--transition-apple);
+            transition: all var(--transition-fast);
         }
         .card-dashboard:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
         .btn-glass {
@@ -123,13 +129,21 @@
         .cell.ocupada { background: #f8d7da; color: #721c24; }
         .cell.parcial { background: #fff3cd; color: #856404; }
 
+        .mobile-toggle {
+            display: none; position: fixed; top: 20px; left: 20px; z-index: 1001;
+            background: rgba(255,255,255,0.8); border: 1px solid var(--glass-border);
+            padding: 10px; border-radius: 12px; backdrop-filter: blur(10px);
+        }
         @media (max-width:768px) {
-            .sidebar { width:100%; height:auto; position:relative; flex-direction:row; flex-wrap:wrap; padding:12px; }
-            .main-content { margin-left:0; padding:16px; }
-            .sidebar-menu { display:flex; flex-wrap:wrap; gap:8px; }
-            .sidebar-menu li a { padding:8px 12px; font-size:0.85rem; }
+            .sidebar {
+                transform: translateX(-100%); transition: transform 0.4s var(--transition-apple);
+                width: 280px; z-index: 1000;
+            }
+            .sidebar.active { transform: translateX(0); box-shadow: 0 0 50px rgba(0,0,0,0.1); }
+            .main-content { margin-left:0; padding: 80px 24px 24px; }
             .topbar { flex-direction:column; align-items:flex-start; gap:8px; }
             .availability-grid { grid-template-columns: 60px repeat(5, 1fr); font-size: 0.7rem; }
+            .mobile-toggle { display: block; }
         }
     </style>
 </head>
@@ -140,7 +154,9 @@
 </div>
 <div class="toast-container-apple" id="toastContainer"></div>
 
-<div class="sidebar">
+<button class="mobile-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+
+<div class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <i class="fa-solid fa-chalkboard-user fa-2x" style="color:var(--apple-blue);"></i>
         <h5 class="mt-2">SGRS Docente</h5>
@@ -162,10 +178,10 @@
         <div><button class="btn-glass" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fa-solid fa-plus me-2"></i> Nova Requisição</button></div>
     </div>
     <div class="row g-4 mb-4">
-        <div class="col-md-3"><div class="card-dashboard"><h6>Total Requisições</h6><h2>24</h2></div></div>
-        <div class="col-md-3"><div class="card-dashboard"><h6>Pendentes</h6><h2 class="text-warning">3</h2></div></div>
-        <div class="col-md-3"><div class="card-dashboard"><h6>Aprovadas</h6><h2 class="text-success">18</h2></div></div>
-        <div class="col-md-3"><div class="card-dashboard"><h6>Próximo Evento</h6><h2>2d</h2></div></div>
+        <div class="col-md-3"><div class="card-dashboard"><h6>Total Requisições</h6><h2 class="stat-val"><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2></div></div>
+        <div class="col-md-3"><div class="card-dashboard"><h6>Pendentes</h6><h2 class="stat-val text-warning"><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2></div></div>
+        <div class="col-md-3"><div class="card-dashboard"><h6>Aprovadas</h6><h2 class="stat-val text-success"><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2></div></div>
+        <div class="col-md-3"><div class="card-dashboard"><h6>Próximo Evento</h6><h2 class="stat-val"><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2></div></div>
     </div>
     <div class="card-dashboard p-4">
         <h5 class="mb-3">Requisições Recentes</h5>
@@ -287,6 +303,20 @@
         // Exibir nome
         document.getElementById('nomeDocente').textContent = 'Olá, ' + (loggedNome || 'Docente');
         document.getElementById('reqEmailDisplay').textContent = loggedEmail;
+
+        // Simulate fast data load
+        setTimeout(() => {
+            const stats = document.querySelectorAll('.stat-val');
+            const values = ['24', '3', '18', '2d'];
+            stats.forEach((s, i) => { if(values[i]) s.textContent = values[i]; });
+        }, 500);
+
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('active');
+            const icon = document.querySelector('#sidebarToggle i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-xmark');
+        });
 
         const toastContainer = document.getElementById('toastContainer');
 

@@ -13,7 +13,8 @@
             --apple-blue: #0071e3;
             --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --radius-apple: 22px;
-            --transition-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+            --transition-apple: cubic-bezier(0.2, 0, 0, 1); /* Faster, more responsive curve */
+            --transition-fast: 0.25s var(--transition-apple);
         }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body {
@@ -46,9 +47,9 @@
             -webkit-backdrop-filter: blur(40px) saturate(180%);
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             box-shadow: 0 30px 90px rgba(0,0,0,0.1);
-            animation: cardAppear 1s var(--transition-apple);
+            animation: cardAppear 0.5s var(--transition-apple);
         }
-        @keyframes cardAppear { from { opacity: 0; transform: scale(0.98) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes cardAppear { from { opacity: 0; transform: scale(0.96) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .login-left {
             flex: 0 0 42%; background: rgba(255,255,255,0.15);
             padding: 60px 48px; display: flex; flex-direction: column; justify-content: center;
@@ -63,11 +64,14 @@
         .login-left p { color: #424245; font-size: 1.1rem; line-height: 1.4; }
         .login-right { flex: 1; padding: 60px 56px; background: rgba(255,255,255,0.2); }
         .login-right h3 { font-weight: 600; font-size: 1.6rem; margin-bottom: 32px; letter-spacing: -0.3px; }
-        .form-group-apple { margin-bottom: 24px; }
+        .form-group-apple { margin-bottom: 24px; animation: slideInFields 0.4s var(--transition-apple) backwards; }
+        @keyframes slideInFields { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .form-group-apple:nth-child(1) { animation-delay: 0.1s; }
+        .form-group-apple:nth-child(2) { animation-delay: 0.2s; }
         .form-group-apple label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #424245; margin-left: 4px; }
         .input-glass {
             display: flex; align-items: center; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 16px; padding: 12px 16px; gap: 12px; transition: all 0.4s var(--transition-apple);
+            border-radius: 16px; padding: 12px 16px; gap: 12px; transition: all var(--transition-fast);
         }
         .input-glass:focus-within { background: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.15); transform: translateY(-1px); }
         .input-glass i { color: #86868b; font-size: 1rem; }
@@ -75,7 +79,8 @@
         .btn-apple {
             width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; border: none;
             background: #000; color: #fff; cursor: pointer; font-size: 1rem;
-            transition: all 0.3s var(--transition-apple); margin-top: 12px;
+            transition: all var(--transition-fast); margin-top: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-apple:hover { background: #1d1d1f; transform: scale(1.01); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         .btn-apple:active { transform: scale(0.98); }
@@ -139,6 +144,7 @@
                 </div>
                 <button type="submit" class="btn-apple" id="submitBtn">
                     <span class="btn-text">Entrar</span>
+                    <i class="fa-solid fa-spinner fa-spin d-none" id="loginSpinner"></i>
                 </button>
             </form>
             <div class="text-center mt-4">
@@ -202,6 +208,10 @@
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('loginSpinner');
+            const btnText = submitBtn.querySelector('.btn-text');
+
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
@@ -215,6 +225,10 @@
             }
 
             try {
+                submitBtn.disabled = true;
+                spinner.classList.remove('d-none');
+                btnText.textContent = 'A autenticar...';
+
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
 
@@ -277,6 +291,9 @@
 
             } catch (error) {
                 showToast('Falha no login: ' + error.message, 'error');
+                submitBtn.disabled = false;
+                spinner.classList.add('d-none');
+                btnText.textContent = 'Entrar';
             }
         });
     </script>

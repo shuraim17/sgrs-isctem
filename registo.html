@@ -13,7 +13,8 @@
             --apple-blue: #0071e3;
             --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --radius-apple: 24px;
-            --transition-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+            --transition-apple: cubic-bezier(0.2, 0, 0, 1);
+            --transition-fast: 0.25s var(--transition-apple);
         }
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body {
@@ -43,9 +44,11 @@
             -webkit-backdrop-filter: blur(40px) saturate(180%);
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             box-shadow: 0 25px 70px rgba(0,0,0,0.1); padding: 48px;
-            animation: cardAppear 0.8s var(--transition-apple);
+            animation: cardAppear 0.5s var(--transition-apple);
         }
-        @keyframes cardAppear { from { opacity: 0; transform: scale(0.98) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes cardAppear { from { opacity: 0; transform: scale(0.96) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes slideInFields { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
         .input-glass {
             display: flex;
             align-items: center;
@@ -55,8 +58,14 @@
             padding: 10px 16px;
             gap: 10px;
             margin-bottom: 15px;
-            transition: all 0.3s var(--transition-smooth);
+            transition: all var(--transition-fast);
+            animation: slideInFields 0.4s var(--transition-apple) backwards;
         }
+        .mb-3:nth-child(1) .input-glass { animation-delay: 0.1s; }
+        .mb-3:nth-child(2) .input-glass { animation-delay: 0.15s; }
+        .mb-3:nth-child(3) .input-glass { animation-delay: 0.2s; }
+        .mb-3:nth-child(4) .input-glass { animation-delay: 0.25s; }
+        .mb-3:nth-child(5) .input-glass { animation-delay: 0.3s; }
         .input-glass:focus-within {
             border-color: var(--apple-blue);
             box-shadow: 0 0 0 4px rgba(0,113,227,0.12);
@@ -103,7 +112,7 @@
             font-weight: 600;
             width: 100%;
             cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
+            transition: all var(--transition-fast);
         }
         .btn-glass:hover {
             background: #2d2d2f;
