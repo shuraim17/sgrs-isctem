@@ -222,8 +222,11 @@
                     tel = '+258' + tel;
                 }
 
-                const verifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
-                const confirmationResult = await auth.signInWithPhoneNumber(tel, verifier);
+                if (!window.recaptchaVerifier) {
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                }
+
+                const confirmationResult = await auth.signInWithPhoneNumber(tel, window.recaptchaVerifier);
                 const code = prompt('Insira o código de verificação enviado para o seu SMS (' + tel + '):');
 
                 if (code) {
