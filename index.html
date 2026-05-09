@@ -216,25 +216,33 @@
                     return;
                 }
 
+                // Sanitizar: remover tudo exceto dígitos
+                tel = tel.replace(/\D/g, '');
+
                 // Garantir formato internacional (+258 para Moçambique)
-                if (!tel.startsWith('+')) {
-                    tel = '+258' + tel.trim();
+                if (!tel.startsWith('258')) {
+                    tel = '+258' + tel;
+                } else if (!tel.startsWith('+')) {
+                    tel = '+' + tel;
                 }
 
                 console.log("A iniciar recuperação para:", tel);
 
-                if (!window.recaptchaVerifier) {
-                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 
-                        'size': 'normal',
-                        'callback': (response) => {
-                            console.log("ReCaptcha resolvido com sucesso.");
-                        },
-                        'expired-callback': () => {
-                            showToast('ReCaptcha expirou. Tente novamente.', 'warning');
-                        }
-                    });
+                if (window.recaptchaVerifier) {
+                    window.recaptchaVerifier.clear();
+                    document.getElementById('recaptcha-container').innerHTML = '';
                 }
-                
+
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 
+                    'size': 'normal',
+                    'callback': (response) => {
+                        console.log("ReCaptcha resolvido.");
+                    },
+                    'expired-callback': () => {
+                        showToast('ReCaptcha expirou. Tente novamente.', 'warning');
+                    }
+                });
+
                 const confirmationResult = await auth.signInWithPhoneNumber(tel, window.recaptchaVerifier);
                 console.log("SMS enviado com sucesso para:", tel);
                 const code = prompt('Insira o código de verificação enviado para o seu SMS (' + tel + '):');
