@@ -363,9 +363,9 @@
             if (val === '') {
                 setFieldState(telGlass, telFeedback, 'neutral', 'Ex: 841234567');
             } else if (TEL_REGEX.test(val)) {
-                setFieldState(telGlass, telFeedback, 'success', 'Número válido ✓');
+                setFieldState(telGlass, telFeedback, 'success', 'Número de Moçambique válido ✓');
             } else {
-                setFieldState(telGlass, telFeedback, 'error', 'Formato inválido (9 dígitos, operadora nacional)');
+                setFieldState(telGlass, telFeedback, 'error', 'Deve iniciar com 82, 83, 84, 85, 86 ou 87 e ter 9 dígitos.');
             }
         });
 
@@ -489,19 +489,28 @@
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(emailVal, senhaVal);
                 const user = userCredential.user;
-                await db.collection('users').doc(user.uid).set({
-                    nome: nomeVal,
-                    funcao: funcao,
-                    email: emailVal,
-                    telemovel: telVal
-                });
-                showToast('Conta criada com sucesso! Redirecionando para o login...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
+                
+                try {
+                    await db.collection('users').doc(user.uid).set({
+                        nome: nomeVal,
+                        funcao: funcao,
+                        email: emailVal,
+                        telemovel: telVal
+                    });
+                    showToast('Conta criada com sucesso! Redirecionando para o login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } catch (dbError) {
+                    // Se falhar a criação no Firestore, removemos o usuário do Auth
+                    // para evitar o erro de "email already in use" na próxima tentativa
+                    console.error("Erro no Firestore, a remover utilizador do Auth:", dbError);
+                    await user.delete();
+                    showToast('Erro de permissão na base de dados. Tente novamente ou contacte o administrador.', 'error');
+                }
             } catch (error) {
                 if (error.code === 'auth/email-already-in-use') {
-                    setFieldState(emailGlass, emailFeedback, 'error', 'Este email já está em uso por outra conta.');
+                    setFieldState(emailGlass, emailFeedback, 'error', 'Este email já está em uso.');
                     showToast('O email já está registado.', 'error');
                 } else {
                     showToast('Erro ao criar conta: ' + error.message, 'error');
