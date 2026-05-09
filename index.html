@@ -232,7 +232,17 @@
                     await auth.sendPasswordResetEmail(email);
                 }
             } catch (error) {
-                showToast('Erro na recuperação: ' + error.message, 'error');
+                if (error.code === 'auth/operation-not-allowed') {
+                    showToast('Recuperação via SMS não ativada. Enviando email de recuperação...', 'warning');
+                    try {
+                        await auth.sendPasswordResetEmail(email);
+                        showToast('Email de recuperação enviado com sucesso!', 'success');
+                    } catch (e) {
+                        showToast('Erro ao enviar email: ' + e.message, 'error');
+                    }
+                } else {
+                    showToast('Erro na recuperação: ' + error.message, 'error');
+                }
             }
         });
 
