@@ -68,6 +68,7 @@
         .mb-3:nth-child(3) .input-glass { animation-delay: 0.2s; }
         .mb-3:nth-child(4) .input-glass { animation-delay: 0.25s; }
         .mb-3:nth-child(5) .input-glass { animation-delay: 0.3s; }
+        .mb-3:nth-child(6) .input-glass { animation-delay: 0.35s; }
         .input-glass:focus-within {
             border-color: var(--apple-blue);
             box-shadow: 0 0 0 4px rgba(0,113,227,0.12);
@@ -205,6 +206,14 @@
             <div class="field-hint muted" id="telFeedback">Ex: 841234567 (9 dígitos)</div>
         </div>
         <div class="mb-3">
+            <label>E-mail Secundário (Recuperação)</label>
+            <div class="input-glass" id="emailSecGlass">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="regEmailSec" placeholder="seuemail@gmail.com" required>
+            </div>
+            <div class="field-hint muted" id="emailSecFeedback">Para recuperação de conta</div>
+        </div>
+        <div class="mb-3">
             <label>Nome Completo</label>
             <div class="input-glass" id="nomeGlass">
                 <i class="fa-solid fa-signature"></i>
@@ -287,6 +296,9 @@
         const telInput = document.getElementById('regTel');
         const telGlass = document.getElementById('telGlass');
         const telFeedback = document.getElementById('telFeedback');
+        const emailSecInput = document.getElementById('regEmailSec');
+        const emailSecGlass = document.getElementById('emailSecGlass');
+        const emailSecFeedback = document.getElementById('emailSecFeedback');
         const nomeInput = document.getElementById('regNome');
         const nomeGlass = document.getElementById('nomeGlass');
         const nomeFeedback = document.getElementById('nomeFeedback');
@@ -369,6 +381,22 @@
             }
         });
 
+        emailSecInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            const genericEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (val === '') {
+                setFieldState(emailSecGlass, emailSecFeedback, 'neutral', 'Para recuperação de conta');
+            } else if (genericEmailRegex.test(val)) {
+                if (val.toLowerCase() === emailInput.value.trim().toLowerCase()) {
+                    setFieldState(emailSecGlass, emailSecFeedback, 'error', 'O email secundário não pode ser igual ao institucional');
+                } else {
+                    setFieldState(emailSecGlass, emailSecFeedback, 'success', 'Email secundário válido ✓');
+                }
+            } else {
+                setFieldState(emailSecGlass, emailSecFeedback, 'error', 'Formato de email inválido');
+            }
+        });
+
         nomeInput.addEventListener('input', function() {
             const val = this.value.trim();
             if (val === '') {
@@ -420,6 +448,7 @@
             e.preventDefault();
             const emailVal = emailInput.value.trim();
             const telVal = telInput.value.trim().replace(/\D/g, ''); // Apenas dígitos
+            const emailSecVal = emailSecInput.value.trim();
             const nomeVal = nomeInput.value.trim();
             const senhaVal = senhaInput.value;
             const senhaConfirm = confirmarInput.value;
@@ -438,6 +467,17 @@
                 hasError = true;
             } else {
                 setFieldState(telGlass, telFeedback, 'success', 'Número válido ✓');
+            }
+
+            const genericEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailSecVal || !genericEmailRegex.test(emailSecVal)) {
+                setFieldState(emailSecGlass, emailSecFeedback, 'error', 'Email secundário inválido');
+                hasError = true;
+            } else if (emailSecVal.toLowerCase() === emailVal.toLowerCase()) {
+                setFieldState(emailSecGlass, emailSecFeedback, 'error', 'O email secundário deve ser diferente');
+                hasError = true;
+            } else {
+                setFieldState(emailSecGlass, emailSecFeedback, 'success', 'Email secundário válido ✓');
             }
 
             if (!nomeVal || !NAME_REGEX.test(nomeVal)) {
@@ -495,6 +535,7 @@
                         nome: nomeVal,
                         funcao: funcao,
                         email: emailVal,
+                        emailSecundario: emailSecVal,
                         telemovel: telVal
                     });
                     showToast('Conta criada com sucesso! Redirecionando para o login...', 'success');
