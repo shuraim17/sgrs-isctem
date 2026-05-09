@@ -218,17 +218,25 @@
 
                 // Garantir formato internacional (+258 para Moçambique)
                 if (!tel.startsWith('+')) {
-                    tel = '+258' + tel;
+                    tel = '+258' + tel.trim();
                 }
 
+                console.log("A iniciar recuperação para:", tel);
+
                 if (!window.recaptchaVerifier) {
-                    // Mudar para visible (normal) para aparecer ao lado do link como solicitado
                     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                        'size': 'normal'
+                        'size': 'normal',
+                        'callback': (response) => {
+                            console.log("ReCaptcha resolvido com sucesso.");
+                        },
+                        'expired-callback': () => {
+                            showToast('ReCaptcha expirou. Tente novamente.', 'warning');
+                        }
                     });
                 }
 
                 const confirmationResult = await auth.signInWithPhoneNumber(tel, window.recaptchaVerifier);
+                console.log("SMS enviado com sucesso para:", tel);
                 const code = prompt('Insira o código de verificação enviado para o seu SMS (' + tel + '):');
 
                 if (code) {
