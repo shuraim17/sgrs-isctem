@@ -200,6 +200,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        auth.useDeviceLanguage(); // Localizar ReCaptcha e SMS
         const db = firebase.firestore();
         let confirmationResultGlobal = null;
 
@@ -259,20 +260,18 @@
 
                 console.log("A iniciar recuperação para:", tel);
 
-                if (window.recaptchaVerifier) {
-                    window.recaptchaVerifier.clear();
-                    document.getElementById('recaptcha-container').innerHTML = '';
+                if (!window.recaptchaVerifier) {
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                        'size': 'normal',
+                        'callback': (response) => {
+                            console.log("ReCaptcha resolvido.");
+                        },
+                        'expired-callback': () => {
+                            showToast('ReCaptcha expirou. Tente novamente.', 'warning');
+                        }
+                    });
+                    await window.recaptchaVerifier.render();
                 }
-
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'normal',
-                    'callback': (response) => {
-                        console.log("ReCaptcha resolvido.");
-                    },
-                    'expired-callback': () => {
-                        showToast('ReCaptcha expirou. Tente novamente.', 'warning');
-                    }
-                });
 
                 const confirmationResult = await auth.signInWithPhoneNumber(tel, window.recaptchaVerifier);
                 console.log("SMS enviado com sucesso para:", tel);
