@@ -116,6 +116,7 @@
     <ul class="list-unstyled mt-4">
         <li><a href="#" class="active nav-link"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a></li>
         <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalUtilizadores" class="nav-link"><i class="fa-solid fa-users me-2"></i> Utilizadores</a></li>
+        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalHorario" class="nav-link"><i class="fa-solid fa-clock me-2"></i> Horário Faculdade</a></li>
         <li class="mt-auto"><a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Sair</a></li>
     </ul>
 </div>
@@ -154,6 +155,36 @@
                     <tbody id="usersTableBody"></tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Horário -->
+<div class="modal fade" id="modalHorario" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <h5>Configurar Horário de Funcionamento</h5>
+            <p class="text-muted small">Define o intervalo de tempo permitido para requisições.</p>
+            <form id="formHorario">
+                <div class="mb-3">
+                    <label class="form-label small">Hora de Abertura</label>
+                    <div class="input-glass"><i class="fas fa-sun"></i><input type="time" id="horaAbertura" required></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Hora de Fecho</label>
+                    <div class="input-glass"><i class="fas fa-moon"></i><input type="time" id="horaFecho" required></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Dias de Funcionamento</label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" id="diaSeg" checked disabled>
+                            <label class="form-check-label small" for="diaSeg">Seg-Sáb (Padrão)</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-glass w-100">Guardar Configurações</button>
+            </form>
         </div>
     </div>
 </div>
@@ -282,7 +313,39 @@
         }
     });
 
+    async function carregarConfiguracoes() {
+        try {
+            const doc = await db.collection('settings').doc('schedule').get();
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById('horaAbertura').value = data.abertura || "06:30";
+                document.getElementById('horaFecho').value = data.fecho || "17:45";
+            } else {
+                document.getElementById('horaAbertura').value = "06:30";
+                document.getElementById('horaFecho').value = "17:45";
+            }
+        } catch (e) {
+            console.error("Erro ao carregar configurações", e);
+        }
+    }
+
+    document.getElementById('formHorario').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const abertura = document.getElementById('horaAbertura').value;
+        const fecho = document.getElementById('horaFecho').value;
+        try {
+            await db.collection('settings').doc('schedule').set({
+                abertura, fecho, dias: "Seg-Sáb"
+            });
+            showToast('Horário atualizado com sucesso!');
+            bootstrap.Modal.getInstance(document.getElementById('modalHorario')).hide();
+        } catch (error) {
+            showToast('Erro ao salvar: ' + error.message, 'error');
+        }
+    });
+
     carregarUsuarios();
+    carregarConfiguracoes();
 
     document.getElementById('sidebarToggle').addEventListener('click', () => {
         document.getElementById('sidebar').classList.toggle('active');

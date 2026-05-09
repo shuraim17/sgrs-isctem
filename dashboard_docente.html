@@ -292,8 +292,24 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
     (function() {
+        const firebaseConfig = {
+            apiKey: "AIzaSyAH9cA7UTOUzzHFKswBAkAOjdZIyynaMQg",
+            authDomain: "sgrs-isctem.firebaseapp.com",
+            projectId: "sgrs-isctem",
+            storageBucket: "sgrs-isctem.firebasestorage.app",
+            messagingSenderId: "1029014740161",
+            appId: "1:1029014740161:web:e80c034c58df4424928840"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // Verificar sessão
         const loggedEmail = sessionStorage.getItem('loggedEmail');
         const loggedNome = sessionStorage.getItem('loggedNome');
@@ -348,7 +364,7 @@
         modalRequisicao.addEventListener('show.bs.modal', resetForm);
         modalRequisicao.addEventListener('hidden.bs.modal', resetForm);
 
-        document.getElementById('btnSubmeterReq').addEventListener('click', function() {
+        document.getElementById('btnSubmeterReq').addEventListener('click', async function() {
             const data = document.getElementById('reqData').value;
             const inicio = document.getElementById('reqInicio').value;
             const fim = document.getElementById('reqFim').value;
@@ -356,8 +372,25 @@
             if (!data) { showToast('Selecione uma data.', 'error'); return; }
             const hoje = new Date(); hoje.setHours(0,0,0,0);
             if (new Date(data + 'T00:00:00') < hoje) { showToast('Data não pode ser no passado.', 'error'); return; }
+
+            // Validar dia da semana (Seg-Sáb)
+            const diaSemana = new Date(data + 'T12:00:00').getDay();
+            if (diaSemana === 0) { showToast('Não são permitidas requisições ao Domingo.', 'error'); return; }
+
             if (!inicio || !fim) { showToast('Defina início e fim.', 'error'); return; }
             if (inicio >= fim) { showToast('Hora de fim deve ser posterior à de início.', 'error'); return; }
+
+            // Validar Horário da Faculdade
+            try {
+                const settings = await db.collection('settings').doc('schedule').get();
+                if (settings.exists) {
+                    const { abertura, fecho } = settings.data();
+                    if (inicio < abertura || fim > fecho) {
+                        showToast(`Fora do horário: A faculdade funciona das ${abertura} às ${fecho}.`, 'error');
+                        return;
+                    }
+                }
+            } catch (e) {}
 
             showToast(`Requisição #REQ-${Date.now().toString().slice(-6)} submetida com sucesso!`, 'success');
             resetForm();
@@ -370,42 +403,65 @@
             construirGrelhaDisponibilidade();
         });
 
-        function construirGrelhaDisponibilidade() {
+        async function construirGrelhaDisponibilidade() {
             const grid = document.getElementById('availabilityGrid');
-            const dias = ['Seg 06', 'Ter 07', 'Qua 08', 'Qui 09', 'Sex 10'];
-            const horas = ['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
+            grid.innerHTML = '<div class="text-center w-100 p-5"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+            let abertura = "06:30";
+            let fecho = "17:45";
+
+            try {
+                const settings = await db.collection('settings').doc('schedule').get();
+                if (settings.exists) {
+                    abertura = settings.data().abertura || abertura;
+                    fecho = settings.data().fecho || fecho;
+                }
+            } catch (e) { console.warn("Usando horário padrão"); }
+
+            const dias = ['Seg 06', 'Ter 07', 'Qua 08', 'Qui 09', 'Sex 10', 'Sáb 11'];
+            const hA = parseInt(abertura.split(':')[0]);
+            const hF = parseInt(fecho.split(':')[0]);
+            const horas = [];
+            for (let h = hA; h <= hF; h++) {
+                horas.push(`${h}:00`);
+            }
 
             let html = '<div class="time-slot"></div>';
             dias.forEach(d => html += `<div class="day-header">${d}</div>`);
 
-            // Dados simulados (podem ser substituídos por uma API)
+            // Dados simulados expandidos para Sábado
             const estados = [
-                ['disponivel','ocupada','disponivel','parcial','disponivel'],
-                ['ocupada','disponivel','ocupada','disponivel','parcial'],
-                ['disponivel','parcial','disponivel','ocupada','disponivel'],
-                ['parcial','disponivel','ocupada','disponivel','ocupada'],
-                ['disponivel','ocupada','disponivel','disponivel','disponivel'],
-                ['disponivel','disponivel','parcial','ocupada','disponivel'],
-                ['ocupada','disponivel','disponivel','disponivel','parcial'],
-                ['disponivel','parcial','disponivel','disponivel','ocupada'],
-                ['disponivel','disponivel','ocupada','parcial','disponivel']
+                ['disponivel','ocupada','disponivel','parcial','disponivel','disponivel'],
+                ['ocupada','disponivel','ocupada','disponivel','parcial','disponivel'],
+                ['disponivel','parcial','disponivel','ocupada','disponivel','ocupada'],
+                ['parcial','disponivel','ocupada','disponivel','ocupada','disponivel'],
+                ['disponivel','ocupada','disponivel','disponivel','disponivel','parcial'],
+                ['disponivel','disponivel','parcial','ocupada','disponivel','disponivel'],
+                ['ocupada','disponivel','disponivel','disponivel','parcial','ocupada'],
+                ['disponivel','parcial','disponivel','disponivel','ocupada','disponivel'],
+                ['disponivel','disponivel','ocupada','parcial','disponivel','disponivel'],
+                ['disponivel','disponivel','disponivel','disponivel','disponivel','disponivel'],
+                ['disponivel','disponivel','disponivel','disponivel','disponivel','disponivel'],
+                ['disponivel','disponivel','disponivel','disponivel','disponivel','disponivel']
             ];
 
             horas.forEach((h, idx) => {
                 html += `<div class="time-slot">${h}</div>`;
-                for (let i = 0; i < 5; i++) {
-                    const estado = estados[idx] ? estados[idx][i] : 'disponivel';
+                for (let i = 0; i < 6; i++) {
+                    const estado = estados[idx] ? (estados[idx][i] || 'disponivel') : 'disponivel';
                     html += `<div class="cell ${estado}">${estado.charAt(0).toUpperCase() + estado.slice(1)}</div>`;
                 }
             });
 
+            grid.style.gridTemplateColumns = `80px repeat(${dias.length}, 1fr)`;
             grid.innerHTML = html;
         }
 
         // ============= COMPROVATIVOS =============
         window.gerarComprovativo = function(reqId, data, horario, espaco) {
             const nome = loggedNome || 'Docente';
-            const email = loggedEmail || 'docente@isctem.ac.mz';
+            const baseUrl = window.location.origin + '/comprovativo.html';
+            const publicUrl = `${baseUrl}?id=${reqId}&d=${encodeURIComponent(nome)}&e=${encodeURIComponent(espaco)}&dt=${data}&h=${encodeURIComponent(horario)}`;
 
             const conteudo = `
             <!DOCTYPE html>
@@ -415,8 +471,8 @@
                 <title>Comprovativo ${reqId}</title>
                 <style>
                     body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; color: #1d1d1f; }
-                    .header { text-align: center; border-bottom: 2px solid #6a1b9a; padding-bottom: 20px; margin-bottom: 30px; }
-                    .header h2 { color: #6a1b9a; }
+                    .header { text-align: center; border-bottom: 2px solid #0071e3; padding-bottom: 20px; margin-bottom: 30px; }
+                    .header h2 { color: #0071e3; }
                     .info { margin: 20px 0; }
                     .info strong { display: inline-block; width: 120px; }
                     .qr-code { text-align: center; margin: 30px 0; }
@@ -432,15 +488,14 @@
                 <div class="info">
                     <p><strong>Requisição:</strong> ${reqId}</p>
                     <p><strong>Docente:</strong> ${nome}</p>
-                    <p><strong>Email:</strong> ${email}</p>
                     <p><strong>Espaço:</strong> ${espaco}</p>
                     <p><strong>Data:</strong> ${data}</p>
                     <p><strong>Horário:</strong> ${horario}</p>
                     <p><strong>Estado:</strong> Aprovada</p>
                 </div>
                 <div class="qr-code">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(reqId + '|' + email + '|' + data)}" alt="QR Code">
-                    <p><small>Código de verificação: ${reqId}-${Date.now().toString(36).toUpperCase()}</small></p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(publicUrl)}" alt="QR Code">
+                    <p><small>Faça scan para baixar o comprovativo digital no telemóvel</small></p>
                 </div>
                 <p class="no-print" style="text-align: center;">
                     <button onclick="window.print()" style="padding:10px 20px; background:#1d1d1f; color:white; border:none; border-radius:8px; cursor:pointer;">Imprimir / Guardar PDF</button>
@@ -457,10 +512,7 @@
             novaJanela.document.write(conteudo);
             novaJanela.document.close();
             novaJanela.focus();
-            // Pequeno timeout para garantir que a página carregue antes de oferecer impressão
-            setTimeout(() => {
-                novaJanela.print();
-            }, 500);
+            setTimeout(() => { novaJanela.print(); }, 500);
         };
     })();
 </script>

@@ -128,7 +128,7 @@
                         <i class="fa-solid fa-at"></i>
                         <input type="email" id="email" placeholder="nome@isctem.ac.mz" required>
                     </div>
-                    <div class="field-hint" id="emailHint"></div>
+                    <div class="field-hint muted" id="emailHint" style="font-size:0.75rem; margin-top:5px;">Use o seu @isctem.ac.mz</div>
                 </div>
                 <div class="form-group-apple">
                     <label>Palavra-passe</label>
@@ -137,7 +137,7 @@
                         <input type="password" id="password" placeholder="Insira a sua senha" required minlength="6">
                         <button type="button" id="togglePassword" class="btn-icon"><i class="fa-solid fa-eye"></i></button>
                     </div>
-                    <div class="field-hint" id="passHint"></div>
+                    <div class="field-hint muted" id="passHint" style="font-size:0.75rem; margin-top:5px;">Mínimo 6 caracteres</div>
                 </div>
                 <div class="d-flex justify-content-between mb-4">
                     <a href="#" id="recoverLink">Recuperar acesso?</a>
@@ -157,6 +157,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <div id="recaptcha-container"></div>
 
     <script>
         const firebaseConfig = {
@@ -195,14 +197,42 @@
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
             if (!EMAIL_REGEX.test(email)) {
-                showToast('Insira um email institucional válido.', 'error');
+                showToast('Para recuperar via SMS, insira o seu email primeiro.', 'warning');
                 return;
             }
+
             try {
-                await auth.sendPasswordResetEmail(email);
-                showToast('Email de recuperação enviado! Verifique a sua caixa de entrada.', 'success');
+                showToast('A verificar conta...', 'info');
+                // Buscar telemóvel associado ao email
+                const userSnapshot = await db.collection('users').where('email', '==', email).get();
+                if (userSnapshot.empty) {
+                    showToast('Utilizador não encontrado no sistema.', 'error');
+                    return;
+                }
+
+                const userData = userSnapshot.docs[0].data();
+                let tel = userData.telemovel;
+                if (!tel) {
+                    showToast('Nenhum número de telefone associado a esta conta.', 'error');
+                    return;
+                }
+
+                // Garantir formato internacional (+258 para Moçambique)
+                if (!tel.startsWith('+')) {
+                    tel = '+258' + tel;
+                }
+
+                const verifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                const confirmationResult = await auth.signInWithPhoneNumber(tel, verifier);
+                const code = prompt('Insira o código de verificação enviado para o seu SMS (' + tel + '):');
+
+                if (code) {
+                    await confirmationResult.confirm(code);
+                    showToast('Identidade verificada! Pode agora redefinir a sua senha via e-mail.', 'success');
+                    await auth.sendPasswordResetEmail(email);
+                }
             } catch (error) {
-                showToast('Erro ao enviar email: ' + error.message, 'error');
+                showToast('Erro na recuperação: ' + error.message, 'error');
             }
         });
 
@@ -242,14 +272,18 @@
                     const data = doc.data();
                     funcao = data.funcao || funcao;
                     nome = data.nome || nome;
-                } else {
-                    // Se não existe no Firestore mas o Auth permitiu (ex: via console do Firebase),
-                    // criamos um perfil padrão de Docente.
-                    await docRef.set({
-                        email: email,
-                        nome: nome,
-                        funcao: funcao
-                    });
+                }
+
+                // Garantir que a conta mestre de admin tenha sempre as permissões correctas
+                if (email === 'admin@isctem.ac.mz') {
+                    funcao = 'Admin';
+                    nome = 'Administrador';
+                    if (!doc.exists || doc.data().funcao !== 'Admin') {
+                        await docRef.set({ email, nome, funcao }, { merge: true });
+                    }
+                } else if (!doc.exists) {
+                    // Perfil padrão para outros se não existir no Firestore
+                    await docRef.set({ email, nome, funcao });
                 }
 
                 sessionStorage.setItem('loggedEmail', user.email);
