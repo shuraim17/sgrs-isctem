@@ -2,27 +2,32 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Regras simplificadas e robustas
-    match /users/{userId} {
-      // Qualquer pessoa autenticada pode ler os perfis (para verificar roles no dashboard)
-      allow read: if request.auth != null;
+    // Função para verificar se o utilizador logado é Admin
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.funcao == 'Admin';
+    }
 
-      // Permitir criar o próprio perfil
+    match /users/{userId} {
+      // PERMISSÃO PÚBLICA DE LEITURA: Necessária para encontrar o telemóvel por email
+      // antes de o utilizador estar autenticado (na recuperação de senha).
+      allow read: if true;
+
+      // Criação: Permitir que o utilizador crie o seu próprio perfil inicial
       allow create: if request.auth != null && request.auth.uid == userId;
 
-      // Permitir atualizar o próprio perfil (protegendo o campo 'funcao')
+      // Atualização: Permitir que o utilizador atualize o seu perfil, mas bloqueia mudança de função
       allow update: if request.auth != null && request.auth.uid == userId
-                    && (request.resource.data.funcao == resource.data.funcao || !('funcao' in resource.data));
+                    && request.resource.data.funcao == resource.data.funcao;
 
-      // Admin tem acesso total (baseado no campo 'funcao' do documento do admin)
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.funcao == 'Admin';
+      // Admin: Pode gerir todos os utilizadores
+      allow write: if isAdmin();
     }
 
     match /settings/{settingId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.funcao == 'Admin';
+      allow write: if isAdmin();
     }
   }
 }
