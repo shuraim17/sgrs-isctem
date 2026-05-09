@@ -139,8 +139,9 @@
                     </div>
                     <div class="field-hint muted" id="passHint" style="font-size:0.75rem; margin-top:5px;">Mínimo 6 caracteres</div>
                 </div>
-                <div class="d-flex justify-content-between mb-4">
+                <div class="d-flex justify-content-between mb-4 align-items-center">
                     <a href="#" id="recoverLink">Recuperar acesso?</a>
+                    <div id="recaptcha-container" style="transform: scale(0.8); transform-origin: right;"></div>
                 </div>
                 <button type="submit" class="btn-apple" id="submitBtn">
                     <span class="btn-text">Entrar</span>
@@ -157,8 +158,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-    <div id="recaptcha-container"></div>
 
     <script>
         const firebaseConfig = {
@@ -223,7 +222,10 @@
                 }
 
                 if (!window.recaptchaVerifier) {
-                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                    // Mudar para visible (normal) para aparecer ao lado do link como solicitado
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                        'size': 'normal'
+                    });
                 }
 
                 const confirmationResult = await auth.signInWithPhoneNumber(tel, window.recaptchaVerifier);
