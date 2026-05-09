@@ -419,7 +419,7 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             const emailVal = emailInput.value.trim();
-            const telVal = telInput.value.trim();
+            const telVal = telInput.value.trim().replace(/\D/g, ''); // Apenas dígitos
             const nomeVal = nomeInput.value.trim();
             const senhaVal = senhaInput.value;
             const senhaConfirm = confirmarInput.value;
