@@ -27,11 +27,11 @@ async def run_tests():
         await page.select_option('#regFuncao', 'Admin')
         await page.fill('#adminKey', 'isctem2026admin')
         await page.click('button[type="submit"]')
-
+        
         # Redirection to login first according to registo.html logic
         await page.wait_for_url('**/index.html', timeout=10000)
         print("✅ Admin registration successful. Logging in...")
-
+        
         await page.fill('#email', admin_email)
         await page.fill('#password', 'admin123')
         await page.click('#submitBtn')
@@ -50,7 +50,7 @@ async def run_tests():
         await page.select_option('#regFuncao', 'Gestor')
         await page.click('button[type="submit"]')
         await page.wait_for_url('**/index.html', timeout=10000)
-
+        
         await page.fill('#email', gestor_email)
         await page.fill('#password', 'gestor123')
         await page.click('#submitBtn')
@@ -69,7 +69,7 @@ async def run_tests():
         await page.select_option('#regFuncao', 'Docente')
         await page.click('button[type="submit"]')
         await page.wait_for_url('**/index.html', timeout=10000)
-
+        
         await page.fill('#email', docente_email)
         await page.fill('#password', 'docente123')
         await page.click('#submitBtn')

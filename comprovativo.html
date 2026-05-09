@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprovativo de Requisição | SGRS ISCTEM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --apple-blue: #0071e3;
+            --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body { font-family: var(--sf-font); background: #fbfbfd; color: #1d1d1f; padding: 40px 20px; }
+        .receipt-card {
+            max-width: 600px; margin: 0 auto; background: #fff; border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06); padding: 40px; border: 1px solid #d2d2d7;
+        }
+        .header { text-align: center; border-bottom: 2px solid #0071e3; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h2 { color: #0071e3; font-weight: 700; margin-bottom: 5px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #f5f5f7; padding-bottom: 10px; }
+        .info-label { font-weight: 600; color: #86868b; }
+        .status-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
+        .footer { margin-top: 40px; text-align: center; font-size: 0.8rem; color: #86868b; }
+        .btn-apple {
+            background: #000; color: #fff; border: none; padding: 12px 24px; border-radius: 12px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 20px;
+        }
+        .btn-apple:hover { transform: scale(1.02); }
+        @media print { .btn-apple, .no-print { display: none; } body { padding: 0; } .receipt-card { box-shadow: none; border: none; } }
+    </style>
+</head>
+<body>
+    <div class="receipt-card" id="receiptContent">
+        <div class="text-center p-5" id="loading">
+            <i class="fas fa-spinner fa-spin fa-3x text-muted"></i>
+            <p class="mt-3">A carregar comprovativo...</p>
+        </div>
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h2>SGRS – ISCTEM</h2>
+                <p class="mb-0">Comprovativo Oficial de Requisição</p>
+            </div>
+            <div class="info-row"><span class="info-label">Nº Requisição</span><span id="resId"></span></div>
+            <div class="info-row"><span class="info-label">Docente</span><span id="resDocente"></span></div>
+            <div class="info-row"><span class="info-label">Espaço</span><span id="resEspaco"></span></div>
+            <div class="info-row"><span class="info-label">Data</span><span id="resData"></span></div>
+            <div class="info-row"><span class="info-label">Horário</span><span id="resHorario"></span></div>
+            <div class="info-row"><span class="info-label">Estado</span><span class="status-badge">Aprovada</span></div>
+            
+            <button class="btn-apple" onclick="window.print()"><i class="fas fa-download me-2"></i> Baixar / Imprimir PDF</button>
+            
+            <div class="footer">
+                <p>Este é um documento digital autêntico gerado pelo Sistema de Gestão de Requisição de Salas.</p>
+                <p>ISCTEM – Instituto Superior de Ciências e Tecnologia de Moçambique &copy; 2026</p>
+            </div>
+        </div>
+        <div id="error" class="text-center text-danger" style="display: none;">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+            <h5>Erro ao carregar comprovativo</h5>
+            <p>A requisição não foi encontrada ou o link é inválido.</p>
+        </div>
+    </div>
+
+    <script>
+        // Simulação de carregamento de dados via URL params
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const docente = params.get('d') || 'Utilizador';
+            const espaco = params.get('e') || 'Sala 101';
+            const data = params.get('dt') || '06/05/2026';
+            const horario = params.get('h') || '10:00–12:00';
+
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                if (!id) {
+                    document.getElementById('error').style.display = 'block';
+                } else {
+                    document.getElementById('resId').textContent = id;
+                    document.getElementById('resDocente').textContent = docente;
+                    document.getElementById('resEspaco').textContent = espaco;
+                    document.getElementById('resData').textContent = data;
+                    document.getElementById('resHorario').textContent = horario;
+                    document.getElementById('content').style.display = 'block';
+                }
+            }, 800);
+        };
+    </script>
+</body>
+</html>

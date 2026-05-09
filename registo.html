@@ -50,7 +50,7 @@
         }
         @keyframes cardAppear { from { opacity: 0; transform: scale(0.96) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         @keyframes slideInFields { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
+        
         .input-glass {
             display: flex;
             align-items: center;
@@ -194,7 +194,15 @@
                 <i class="fa-solid fa-at"></i>
                 <input type="email" id="regEmail" placeholder="nome@isctem.ac.mz" required>
             </div>
-            <div class="field-hint muted" id="emailFeedback">Use o seu e-mail institucional</div>
+            <div class="field-hint muted" id="emailFeedback">Use o seu e-mail institucional (@isctem.ac.mz)</div>
+        </div>
+        <div class="mb-3">
+            <label>Telemóvel (Nr)</label>
+            <div class="input-glass" id="telGlass">
+                <i class="fa-solid fa-phone"></i>
+                <input type="tel" id="regTel" placeholder="84XXXXXXX" required>
+            </div>
+            <div class="field-hint muted" id="telFeedback">Ex: 841234567 (9 dígitos)</div>
         </div>
         <div class="mb-3">
             <label>Nome Completo</label>
@@ -267,6 +275,7 @@
         const db = firebase.firestore();
 
         const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
+        const TEL_REGEX = /^(82|83|84|85|86|87)\d{7}$/;
         const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
         // Chave secreta para criar administradores (pode ser alterada)
         const ADMIN_SECRET_KEY = 'isctem2026admin';
@@ -275,6 +284,9 @@
         const emailInput = document.getElementById('regEmail');
         const emailGlass = document.getElementById('emailGlass');
         const emailFeedback = document.getElementById('emailFeedback');
+        const telInput = document.getElementById('regTel');
+        const telGlass = document.getElementById('telGlass');
+        const telFeedback = document.getElementById('telFeedback');
         const nomeInput = document.getElementById('regNome');
         const nomeGlass = document.getElementById('nomeGlass');
         const nomeFeedback = document.getElementById('nomeFeedback');
@@ -338,11 +350,22 @@
         emailInput.addEventListener('input', function() {
             const val = this.value.trim();
             if (val === '') {
-                setFieldState(emailGlass, emailFeedback, 'neutral', 'ex: nome@isctem.ac.mz');
+                setFieldState(emailGlass, emailFeedback, 'neutral', 'Use @isctem.ac.mz');
             } else if (EMAIL_REGEX.test(val)) {
                 setFieldState(emailGlass, emailFeedback, 'success', 'Email válido ✓');
             } else {
                 setFieldState(emailGlass, emailFeedback, 'error', 'Formato inválido. Use @isctem.ac.mz');
+            }
+        });
+
+        telInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val === '') {
+                setFieldState(telGlass, telFeedback, 'neutral', 'Ex: 841234567');
+            } else if (TEL_REGEX.test(val)) {
+                setFieldState(telGlass, telFeedback, 'success', 'Número válido ✓');
+            } else {
+                setFieldState(telGlass, telFeedback, 'error', 'Formato inválido (9 dígitos, operadora nacional)');
             }
         });
 
@@ -396,6 +419,7 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             const emailVal = emailInput.value.trim();
+            const telVal = telInput.value.trim();
             const nomeVal = nomeInput.value.trim();
             const senhaVal = senhaInput.value;
             const senhaConfirm = confirmarInput.value;
@@ -407,6 +431,13 @@
                 hasError = true;
             } else {
                 setFieldState(emailGlass, emailFeedback, 'success', 'Email válido ✓');
+            }
+
+            if (!telVal || !TEL_REGEX.test(telVal)) {
+                setFieldState(telGlass, telFeedback, 'error', 'Número de telefone inválido');
+                hasError = true;
+            } else {
+                setFieldState(telGlass, telFeedback, 'success', 'Número válido ✓');
             }
 
             if (!nomeVal || !NAME_REGEX.test(nomeVal)) {
@@ -461,14 +492,20 @@
                 await db.collection('users').doc(user.uid).set({
                     nome: nomeVal,
                     funcao: funcao,
-                    email: emailVal
+                    email: emailVal,
+                    telemovel: telVal
                 });
                 showToast('Conta criada com sucesso! Redirecionando para o login...', 'success');
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 2000);
             } catch (error) {
-                showToast('Erro ao criar conta: ' + error.message, 'error');
+                if (error.code === 'auth/email-already-in-use') {
+                    setFieldState(emailGlass, emailFeedback, 'error', 'Este email já está em uso por outra conta.');
+                    showToast('O email já está registado.', 'error');
+                } else {
+                    showToast('Erro ao criar conta: ' + error.message, 'error');
+                }
             }
         });
     })();

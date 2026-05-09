@@ -21,6 +21,6 @@ test('Mobile menu toggle works on Admin Dashboard', async ({ page }) => {
 
     // Check if sidebar is visible
     await expect(sidebar).toHaveClass(/active/);
-
+    
     await page.screenshot({ path: 'verification/mobile_menu_open.png' });
 });
