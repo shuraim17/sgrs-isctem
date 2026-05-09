@@ -270,8 +270,14 @@
 
                 if (doc.exists) {
                     const data = doc.data();
-                    funcao = data.funcao || funcao;
-                    nome = data.nome || nome;
+                    // Resiliência: verificar múltiplos nomes de campos possíveis para o cargo/função
+                    funcao = data.funcao || data.Gestor || data.Docente || data.role || data.Funcao || funcao;
+                    nome = data.nome || data.Nome || nome;
+
+                    // Se o campo não for 'funcao', vamos padronizar para evitar erros futuros
+                    if (!data.funcao && (data.Gestor || data.Docente || data.role)) {
+                        await docRef.update({ funcao: funcao });
+                    }
                 }
 
                 // Garantir que a conta mestre de admin tenha sempre as permissões correctas

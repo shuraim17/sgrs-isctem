@@ -258,10 +258,11 @@
             snapshot.forEach(doc => {
                 const data = doc.data();
                 count++;
+                const displayFuncao = data.funcao || data.Gestor || data.Docente || data.role || 'Docente';
                 tbody.innerHTML += `<tr>
                     <td>${data.email || 'N/A'}</td>
                     <td>${data.nome || 'N/A'}</td>
-                    <td>${data.funcao || 'Docente'}</td>
+                    <td>${displayFuncao}</td>
                     <td><button class="btn btn-sm btn-danger" onclick="apagarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
             });
