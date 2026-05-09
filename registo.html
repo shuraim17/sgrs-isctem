@@ -504,9 +504,14 @@
                 } catch (dbError) {
                     // Se falhar a criação no Firestore, removemos o usuário do Auth
                     // para evitar o erro de "email already in use" na próxima tentativa
-                    console.error("Erro no Firestore, a remover utilizador do Auth:", dbError);
-                    await user.delete();
-                    showToast('Erro de permissão na base de dados. Tente novamente ou contacte o administrador.', 'error');
+                    console.error("Erro no Firestore:", dbError);
+                    try {
+                        await user.delete();
+                        console.log("Utilizador removido do Auth com sucesso.");
+                    } catch (deleteError) {
+                        console.error("Erro ao remover utilizador do Auth:", deleteError);
+                    }
+                    showToast('Erro de permissão na base de dados: ' + dbError.message, 'error');
                 }
             } catch (error) {
                 if (error.code === 'auth/email-already-in-use') {

@@ -139,8 +139,9 @@
                     </div>
                     <div class="field-hint muted" id="passHint" style="font-size:0.75rem; margin-top:5px;">Mínimo 6 caracteres</div>
                 </div>
-                <div class="d-flex justify-content-between mb-4">
+                <div class="d-flex justify-content-between mb-4 align-items-center">
                     <a href="#" id="recoverLink">Recuperar acesso?</a>
+                    <div id="recaptcha-container" style="transform: scale(0.8); transform-origin: right;"></div>
                 </div>
                 <button type="submit" class="btn-apple" id="submitBtn">
                     <span class="btn-text">Entrar</span>
@@ -157,8 +158,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-    <div id="recaptcha-container"></div>
 
     <script>
         const firebaseConfig = {
@@ -219,11 +218,25 @@
 
                 // Garantir formato internacional (+258 para Moçambique)
                 if (!tel.startsWith('+')) {
-                    tel = '+258' + tel;
+                    tel = '+258' + tel.trim();
                 }
 
-                const verifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
-                const confirmationResult = await auth.signInWithPhoneNumber(tel, verifier);
+                console.log("A iniciar recuperação para:", tel);
+
+                if (!window.recaptchaVerifier) {
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 
+                        'size': 'normal',
+                        'callback': (response) => {
+                            console.log("ReCaptcha resolvido com sucesso.");
+                        },
+                        'expired-callback': () => {
+                            showToast('ReCaptcha expirou. Tente novamente.', 'warning');
+                        }
+                    });
+                }
+                
+                const confirmationResult = await auth.signInWithPhoneNumber(tel, window.recaptchaVerifier);
+                console.log("SMS enviado com sucesso para:", tel);
                 const code = prompt('Insira o código de verificação enviado para o seu SMS (' + tel + '):');
                 
                 if (code) {
@@ -232,7 +245,17 @@
                     await auth.sendPasswordResetEmail(email);
                 }
             } catch (error) {
-                showToast('Erro na recuperação: ' + error.message, 'error');
+                if (error.code === 'auth/operation-not-allowed') {
+                    showToast('Recuperação via SMS não ativada. Enviando email de recuperação...', 'warning');
+                    try {
+                        await auth.sendPasswordResetEmail(email);
+                        showToast('Email de recuperação enviado com sucesso!', 'success');
+                    } catch (e) {
+                        showToast('Erro ao enviar email: ' + e.message, 'error');
+                    }
+                } else {
+                    showToast('Erro na recuperação: ' + error.message, 'error');
+                }
             }
         });
 
@@ -270,8 +293,14 @@
 
                 if (doc.exists) {
                     const data = doc.data();
-                    funcao = data.funcao || funcao;
-                    nome = data.nome || nome;
+                    // Resiliência: verificar múltiplos nomes de campos possíveis para o cargo/função
+                    funcao = data.funcao || data.Gestor || data.Docente || data.role || data.Funcao || funcao;
+                    nome = data.nome || data.Nome || nome;
+                    
+                    // Se o campo não for 'funcao', vamos padronizar para evitar erros futuros
+                    if (!data.funcao && (data.Gestor || data.Docente || data.role)) {
+                        await docRef.update({ funcao: funcao });
+                    }
                 }
                 
                 // Garantir que a conta mestre de admin tenha sempre as permissões correctas
