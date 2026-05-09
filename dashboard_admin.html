@@ -150,10 +150,12 @@
                 <button class="btn-glass" data-bs-toggle="modal" data-bs-target="#modalNovoUtilizador">+ Novo</button>
             </div>
             <div class="modal-body">
-                <table class="table">
-                    <thead><tr><th>Email</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
-                    <tbody id="usersTableBody"></tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Email Principal</th><th>Email Secundário</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -195,7 +197,8 @@
         <div class="modal-content p-4">
             <h5>Novo Utilizador</h5>
             <form id="formNovoUtilizador">
-                <div class="input-glass mb-3"><i class="fas fa-envelope"></i><input type="email" id="novoEmail" placeholder="Email" required></div>
+                <div class="input-glass mb-3"><i class="fas fa-envelope"></i><input type="email" id="novoEmail" placeholder="Email Institucional" required></div>
+                <div class="input-glass mb-3"><i class="fas fa-envelope-circle-check"></i><input type="email" id="novoEmailSec" placeholder="Email Secundário" required></div>
                 <div class="input-glass mb-3"><i class="fas fa-user"></i><input type="text" id="novoNome" placeholder="Nome" required></div>
                 <div class="input-glass mb-3"><i class="fas fa-lock"></i><input type="password" id="novaSenha" placeholder="Senha" required></div>
                 <select id="novaFuncao" class="form-select mb-3">
@@ -261,6 +264,7 @@
                 const displayFuncao = data.funcao || data.Gestor || data.Docente || data.role || 'Docente';
                 tbody.innerHTML += `<tr>
                     <td>${data.email || 'N/A'}</td>
+                    <td><small class="text-muted">${data.emailSecundario || '—'}</small></td>
                     <td>${data.nome || 'N/A'}</td>
                     <td>${displayFuncao}</td>
                     <td><button class="btn btn-sm btn-danger" onclick="apagarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button></td>
@@ -298,13 +302,14 @@
     document.getElementById('formNovoUtilizador').addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = document.getElementById('novoEmail').value.trim();
+        const emailSec = document.getElementById('novoEmailSec').value.trim();
         const nome = document.getElementById('novoNome').value.trim();
         const senha = document.getElementById('novaSenha').value;
         const funcao = document.getElementById('novaFuncao').value;
         try {
             const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
             const uid = userCredential.user.uid;
-            await db.collection('users').doc(uid).set({ nome, funcao, email });
+            await db.collection('users').doc(uid).set({ nome, funcao, email, emailSecundario: emailSec });
             showToast('Utilizador criado!');
             bootstrap.Modal.getInstance(document.getElementById('modalNovoUtilizador')).hide();
             document.getElementById('formNovoUtilizador').reset();
