@@ -344,11 +344,12 @@
                 await auth.sendPasswordResetEmail(userRecoveryData.email);
 
                 // 2. Enviar notificação para o Email Secundário via EmailJS
+                // Usamos as variáveis configuradas no guia: user_name, to_email e reset_link
                 const templateParams = {
                     user_name: userRecoveryData.nome || "Utilizador",
                     to_email: emailSec,
                     primary_email: userRecoveryData.email,
-                    message: "Um link de redefinição de palavra-passe foi enviado para o seu email institucional (@isctem.ac.mz). Por favor, verifique a sua caixa de entrada principal para concluir o processo."
+                    reset_link: "O seu link de segurança foi enviado para o email institucional (@isctem.ac.mz). Verifique essa caixa de entrada para redefinir a sua palavra-passe."
                 };
 
                 await emailjs.send('service_ojsmp9i', 'template_y0hr9vh', templateParams);
