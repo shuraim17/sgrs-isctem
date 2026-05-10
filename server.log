@@ -3,3 +3,16 @@
 127.0.0.1 - - [09/May/2026 16:32:29] "GET /index.html HTTP/1.1" 200 -
 127.0.0.1 - - [09/May/2026 16:33:57] "GET /registo.html HTTP/1.1" 200 -
 127.0.0.1 - - [09/May/2026 16:34:04] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:22:27] "GET /registo.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:22:36] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:23:34] "GET /registo.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:23:41] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:24:55] "GET /registo.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:25:03] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:25:13] "GET /dashboard_admin.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:27:50] "GET /registo.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:27:57] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:06] "GET /dashboard_admin.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:19] "GET /dashboard_docente.html HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:28:23] "GET /comprovativo.html?id=REQ-TESTE-999&d=Professor%20Exemplo&e=Laboratorio%20Central&dt=13/05/2026&h=09:00-11:00 HTTP/1.1" 200 -
+127.0.0.1 - - [10/May/2026 14:45:59] "GET /index.html HTTP/1.1" 200 -
