@@ -324,46 +324,42 @@
         document.getElementById('nomeDocente').textContent = 'Olá, ' + (loggedNome || 'Docente');
         document.getElementById('reqEmailDisplay').textContent = loggedEmail;
 
-        async function carregarDadosReais() {
-            try {
-                const snapshot = await db.collection('requisitions')
-                    .where('docenteEmail', '==', loggedEmail)
-                    .get();
-                
-                let total = 0, pendentes = 0, aprovadas = 0;
-                const tbody = document.querySelector('table tbody');
-                tbody.innerHTML = '';
+        function carregarDadosReais() {
+            db.collection('requisitions')
+                .where('docenteEmail', '==', loggedEmail)
+                .onSnapshot((snapshot) => {
+                    let total = 0, pendentes = 0, aprovadas = 0;
+                    const tbody = document.querySelector('table tbody');
+                    tbody.innerHTML = '';
 
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sem requisições recentes.</td></tr>';
-                }
+                    if (snapshot.empty) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sem requisições recentes.</td></tr>';
+                    }
 
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    total++;
-                    if (d.estado === 'Pendente') pendentes++;
-                    if (d.estado === 'Aprovada') aprovadas++;
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        total++;
+                        if (d.estado === 'Pendente') pendentes++;
+                        if (d.estado === 'Aprovada') aprovadas++;
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>#${d.id}</td>
-                            <td>${d.tipo}</td>
-                            <td>${d.data}</td>
-                            <td><span class="status-badge status-${d.estado.toLowerCase()}">${d.estado}</span></td>
-                        </tr>
-                    `;
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${d.id}</td>
+                                <td>${d.tipo}</td>
+                                <td>${d.data}</td>
+                                <td><span class="status-badge status-${d.estado.toLowerCase()}">${d.estado}</span></td>
+                            </tr>
+                        `;
+                    });
+
+                    const stats = document.querySelectorAll('.stat-val');
+                    stats[0].textContent = total;
+                    stats[1].textContent = pendentes;
+                    stats[2].textContent = aprovadas;
+                    stats[3].textContent = total > 0 ? 'Agendado' : 'Nenhum';
+                }, (error) => {
+                    console.error("Erro no stream docente:", error);
                 });
-
-                const stats = document.querySelectorAll('.stat-val');
-                stats[0].textContent = total;
-                stats[1].textContent = pendentes;
-                stats[2].textContent = aprovadas;
-                stats[3].textContent = total > 0 ? 'Agendado' : 'Nenhum';
-
-            } catch (e) {
-                console.error("Erro ao carregar dashboard:", e);
-                showToast('Erro ao ligar à base de dados.', 'error');
-            }
         }
 
         carregarDadosReais();

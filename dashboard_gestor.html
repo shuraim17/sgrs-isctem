@@ -190,20 +190,18 @@
         window.location.href = 'index.html';
     }
 
-    async function carregarConsolaGestor() {
-        try {
-            const [reqSnap, userSnap] = await Promise.all([
-                db.collection('requisitions').get(),
-                db.collection('users').get()
-            ]);
-
+    function carregarConsolaGestor() {
+        // Stream de Requisições (Resiliente a CamelCase nos estados)
+        db.collection('requisitions').onSnapshot((reqSnap) => {
             let pendentes = 0, aprovadas = 0, recusadas = 0;
             const tbody = document.querySelector('table tbody');
             tbody.innerHTML = '';
 
             reqSnap.forEach(doc => {
                 const d = doc.data();
-                if (d.estado === 'Pendente') {
+                const status = (d.estado || 'Pendente').toLowerCase();
+                
+                if (status === 'pendente') {
                     pendentes++;
                     tbody.innerHTML += `
                         <tr>
@@ -218,8 +216,8 @@
                         </tr>
                     `;
                 }
-                if (d.estado === 'Aprovada') aprovadas++;
-                if (d.estado === 'Recusada') recusadas++;
+                if (status === 'aprovada') aprovadas++;
+                if (status === 'recusada') recusadas++;
             });
 
             if (pendentes === 0) {
@@ -230,22 +228,31 @@
             h2s[0].textContent = pendentes;
             h2s[1].textContent = aprovadas;
             h2s[2].textContent = recusadas;
-            h2s[3].textContent = '12'; // Salas (fixo por agora)
-            h2s[4].textContent = userSnap.size;
-            h2s[5].textContent = Math.round((aprovadas / (aprovadas + 10)) * 100) + '%';
+            h2s[3].textContent = '12'; // Salas (fixo)
+            
+            // Cálculo de ocupação real baseado em aprovadas/total_salas
+            const totalSalas = 12;
+            const ocupacao = Math.min(100, Math.round((aprovadas / totalSalas) * 100));
+            h2s[5].textContent = ocupacao + '%';
+        }, (err) => {
+            console.error("Erro de sincronização de requisições:", err);
+        });
 
-        } catch (e) {
-            console.error(e);
-        }
+        // Stream de Utilizadores
+        db.collection('users').onSnapshot((userSnap) => {
+            const h2s = document.querySelectorAll('.card-dashboard h2');
+            h2s[4].textContent = userSnap.size;
+        });
     }
 
     window.alterarEstado = async (id, novoEstado) => {
         try {
+            // A atualização no Firestore irá disparar o onSnapshot automaticamente
             await db.collection('requisitions').doc(id).update({ estado: novoEstado });
-            carregarConsolaGestor();
-        } catch (e) { alert(e.message); }
+        } catch (e) { alert("Erro ao atualizar: " + e.message); }
     };
 
+    // Iniciar o carregamento apenas uma vez
     carregarConsolaGestor();
 
     document.getElementById('sidebarToggle').addEventListener('click', () => {
