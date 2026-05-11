@@ -324,12 +324,49 @@
         document.getElementById('nomeDocente').textContent = 'Olá, ' + (loggedNome || 'Docente');
         document.getElementById('reqEmailDisplay').textContent = loggedEmail;
 
-        // Simulate fast data load
-        setTimeout(() => {
-            const stats = document.querySelectorAll('.stat-val');
-            const values = ['24', '3', '18', '2d'];
-            stats.forEach((s, i) => { if(values[i]) s.textContent = values[i]; });
-        }, 500);
+        async function carregarDadosReais() {
+            try {
+                const snapshot = await db.collection('requisitions')
+                    .where('docenteEmail', '==', loggedEmail)
+                    .get();
+                
+                let total = 0, pendentes = 0, aprovadas = 0;
+                const tbody = document.querySelector('table tbody');
+                tbody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sem requisições recentes.</td></tr>';
+                }
+
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    total++;
+                    if (d.estado === 'Pendente') pendentes++;
+                    if (d.estado === 'Aprovada') aprovadas++;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>#${d.id}</td>
+                            <td>${d.tipo}</td>
+                            <td>${d.data}</td>
+                            <td><span class="status-badge status-${d.estado.toLowerCase()}">${d.estado}</span></td>
+                        </tr>
+                    `;
+                });
+
+                const stats = document.querySelectorAll('.stat-val');
+                stats[0].textContent = total;
+                stats[1].textContent = pendentes;
+                stats[2].textContent = aprovadas;
+                stats[3].textContent = total > 0 ? 'Agendado' : 'Nenhum';
+
+            } catch (e) {
+                console.error("Erro ao carregar dashboard:", e);
+                showToast('Erro ao ligar à base de dados.', 'error');
+            }
+        }
+
+        carregarDadosReais();
 
         document.getElementById('sidebarToggle').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('active');
@@ -392,9 +429,29 @@
                 }
             } catch (e) {}
 
-            showToast(`Requisição #REQ-${Date.now().toString().slice(-6)} submetida com sucesso!`, 'success');
-            resetForm();
-            bootstrap.Modal.getInstance(modalRequisicao).hide();
+            const reqId = `REQ-${Date.now().toString().slice(-6)}`;
+            const tipo = document.getElementById('reqTipo').value;
+            
+            try {
+                await db.collection('requisitions').doc(reqId).set({
+                    id: reqId,
+                    docenteEmail: loggedEmail,
+                    docenteNome: loggedNome,
+                    tipo: tipo,
+                    data: data,
+                    inicio: inicio,
+                    fim: fim,
+                    estado: 'Pendente',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast(`Requisição ${reqId} submetida com sucesso!`, 'success');
+                resetForm();
+                bootstrap.Modal.getInstance(modalRequisicao).hide();
+                carregarDadosReais(); // Atualizar interface
+            } catch (error) {
+                showToast('Erro ao gravar no Firestore: ' + error.message, 'error');
+            }
         });
 
         // ============= DISPONIBILIDADE =============
