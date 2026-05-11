@@ -182,7 +182,7 @@
                         <i class="fa-solid fa-at"></i>
                         <input type="email" id="email" placeholder="nome@isctem.ac.mz" required>
                     </div>
-                    <div class="field-hint muted" id="emailHint" style="font-size:0.75rem; margin-top:5px;">Use o seu @isctem.ac.mz</div>
+                    <div class="field-hint" id="emailHint" style="font-size:0.75rem; margin-top:5px; color: #86868b;">Use o seu @isctem.ac.mz</div>
                 </div>
                 <div class="form-group-apple">
                     <label>Palavra-passe</label>
@@ -191,7 +191,7 @@
                         <input type="password" id="password" placeholder="Insira a sua senha" required minlength="6">
                         <button type="button" id="togglePassword" class="btn-icon"><i class="fa-solid fa-eye"></i></button>
                     </div>
-                    <div class="field-hint muted" id="passHint" style="font-size:0.75rem; margin-top:5px;">Mínimo 6 caracteres</div>
+                    <div class="field-hint" id="passHint" style="font-size:0.75rem; margin-top:5px; color: #86868b;">Mínimo 6 caracteres</div>
                 </div>
                 <div class="d-flex justify-content-between mb-4 align-items-center">
                     <a href="#" id="recoverLink">Recuperar acesso?</a>
@@ -213,18 +213,21 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- EmailJS SDK (Primary CDN) -->
+    <!-- EmailJS SDK (Universal Loader) -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/sdk.min.js"></script>
-    <script>
-        // Fallback caso o CDN falhe
-        window.addEventListener('error', function(e) {
-            if (e.target.src && e.target.src.includes('emailjs')) {
-                console.warn("Erro ao carregar EmailJS do CDN principal. Tentando backup...");
-                const backup = document.createElement('script');
-                backup.src = "https://cdn.emailjs.com/sdk/2.3.2/email.min.js"; // Versão estável antiga como backup
-                document.head.appendChild(backup);
-            }
-        }, true);
+    <script type="text/javascript">
+        (function() {
+            // Garantir inicialização mal o script carregue
+            const checkEmailJS = setInterval(() => {
+                if (window.emailjs) {
+                    emailjs.init("d5MOZvCDRcj4dfAIx");
+                    console.log("EmailJS carregado e inicializado com sucesso.");
+                    clearInterval(checkEmailJS);
+                }
+            }, 500);
+            // Timeout para o intervalo
+            setTimeout(() => clearInterval(checkEmailJS), 5000);
+        })();
     </script>
 
     <!-- Firebase Compat SDKs -->
@@ -350,27 +353,27 @@
                 await auth.sendPasswordResetEmail(userRecoveryData.email);
 
                 // 2. Enviar notificação para o Email Secundário via EmailJS
-                // Verificação extra para evitar "emailjs is not defined"
-                const lib = window.emailjs || (typeof emailjs !== 'undefined' ? emailjs : null);
-                if (lib) {
-                    lib.init("d5MOZvCDRcj4dfAIx");
+                if (window.emailjs) {
                     const templateParams = {
                         user_name: userRecoveryData.nome || "Utilizador",
                         to_email: emailSec,
                         primary_email: userRecoveryData.email,
                         reset_link: "O seu link de segurança foi enviado para o email institucional (@isctem.ac.mz). Verifique essa caixa de entrada para redefinir a sua palavra-passe."
                     };
-                    await lib.send('service_ojsmp9i', 'template_y0hr9vh', templateParams);
+
+                    const response = await emailjs.send('service_ojsmp9i', 'template_y0hr9vh', templateParams);
+                    console.log("EmailJS Resposta:", response.status, response.text);
+
                     showToast(`Sucesso! Instruções enviadas para o email secundário.`, 'success');
                 } else {
-                    console.error("EmailJS está indisponível. Verifique a sua ligação à internet.");
-                    showToast(`Link enviado para o email institucional. (Erro de rede no secundário)`, 'warning');
+                    throw new Error("O serviço de email de terceiros (EmailJS) não carregou. Verifique a sua ligação.");
                 }
 
                 console.log("Recuperação concluída: Firebase Auth disparado.");
             } catch (error) {
-                console.error("Erro na recuperação:", error);
-                showToast('Erro ao processar: ' + error.message, 'error');
+                console.error("Erro detalhado na recuperação:", error);
+                // Se o Firebase funcionou mas o EmailJS falhou, avisamos
+                showToast('Aviso: Link enviado para o principal, mas falhou notificação no secundário.', 'warning');
             }
         });
 
@@ -469,15 +472,15 @@
 
                 showToast('Login bem-sucedido! Redireccionando...', 'success');
 
-                // Redireccionamento forçado após 500ms
+                // Redireccionamento forçado
                 setTimeout(() => {
                     const role = funcao.toLowerCase();
                     if (role.includes('admin')) {
-                        window.location.replace('dashboard_admin.html');
-                    } else if (role.includes('gestor')) {
-                        window.location.replace('dashboard_gestor.html');
+                        window.location.href = 'dashboard_admin.html';
+                    } else if (role.includes('gestor') || role.includes('académico') || role.includes('academico')) {
+                        window.location.href = 'dashboard_gestor.html';
                     } else {
-                        window.location.replace('dashboard_docente.html');
+                        window.location.href = 'dashboard_docente.html';
                     }
                 }, 800);
 
