@@ -29,5 +29,19 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    match /requisitions/{reqId} {
+      // Leitura: Docentes veem as suas, Gestores/Admins veem todas
+      allow read: if request.auth != null && (
+        resource.data.docenteEmail == request.auth.token.email ||
+        isAdmin() ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.funcao == 'Gestor'
+      );
+
+      // Escrita: Docentes criam, Gestores/Admins atualizam estado
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (isAdmin() || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.funcao == 'Gestor');
+      allow delete: if isAdmin();
+    }
   }
 }

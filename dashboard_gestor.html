@@ -170,22 +170,83 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAH9cA7UTOUzzHFKswBAkAOjdZIyynaMQg",
+        authDomain: "sgrs-isctem.firebaseapp.com",
+        projectId: "sgrs-isctem",
+        storageBucket: "sgrs-isctem.firebasestorage.app",
+        messagingSenderId: "1029014740161",
+        appId: "1:1029014740161:web:e80c034c58df4424928840"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const loggedFuncao = (sessionStorage.getItem('loggedFuncao') || '').toLowerCase();
     if (!sessionStorage.getItem('loggedEmail') || !loggedFuncao.includes('gestor')) {
         window.location.href = 'index.html';
     }
 
-    // Simulate data loading to show skeleton/spinner state briefly
-    window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            const h2s = document.querySelectorAll('.card-dashboard h2');
-            const values = ['12', '156', '8', '45', '320', '87%'];
-            h2s.forEach((h2, i) => {
-                if (values[i]) h2.textContent = values[i];
+    async function carregarConsolaGestor() {
+        try {
+            const [reqSnap, userSnap] = await Promise.all([
+                db.collection('requisitions').get(),
+                db.collection('users').get()
+            ]);
+
+            let pendentes = 0, aprovadas = 0, recusadas = 0;
+            const tbody = document.querySelector('table tbody');
+            tbody.innerHTML = '';
+
+            reqSnap.forEach(doc => {
+                const d = doc.data();
+                if (d.estado === 'Pendente') {
+                    pendentes++;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>#${d.id}</td>
+                            <td>${d.docenteNome || 'Docente'}</td>
+                            <td>${d.tipo}</td>
+                            <td>${d.data}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success me-1" onclick="alterarEstado('${d.id}', 'Aprovada')"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="alterarEstado('${d.id}', 'Recusada')"><i class="fas fa-times"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }
+                if (d.estado === 'Aprovada') aprovadas++;
+                if (d.estado === 'Recusada') recusadas++;
             });
-        }, 600);
-    });
+
+            if (pendentes === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhuma requisição pendente.</td></tr>';
+            }
+
+            const h2s = document.querySelectorAll('.card-dashboard h2');
+            h2s[0].textContent = pendentes;
+            h2s[1].textContent = aprovadas;
+            h2s[2].textContent = recusadas;
+            h2s[3].textContent = '12'; // Salas (fixo por agora)
+            h2s[4].textContent = userSnap.size;
+            h2s[5].textContent = Math.round((aprovadas / (aprovadas + 10)) * 100) + '%';
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    window.alterarEstado = async (id, novoEstado) => {
+        try {
+            await db.collection('requisitions').doc(id).update({ estado: novoEstado });
+            carregarConsolaGestor();
+        } catch (e) { alert(e.message); }
+    };
+
+    carregarConsolaGestor();
 
     document.getElementById('sidebarToggle').addEventListener('click', () => {
         document.getElementById('sidebar').classList.toggle('active');

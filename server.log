@@ -16,3 +16,8 @@
 127.0.0.1 - - [10/May/2026 14:28:19] "GET /dashboard_docente.html HTTP/1.1" 200 -
 127.0.0.1 - - [10/May/2026 14:28:23] "GET /comprovativo.html?id=REQ-TESTE-999&d=Professor%20Exemplo&e=Laboratorio%20Central&dt=13/05/2026&h=09:00-11:00 HTTP/1.1" 200 -
 127.0.0.1 - - [10/May/2026 14:45:59] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/May/2026 11:08:37] "GET /registo.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/May/2026 11:08:45] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/May/2026 11:08:54] "GET /dashboard_admin.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/May/2026 11:09:05] "GET /dashboard_docente.html HTTP/1.1" 200 -
+127.0.0.1 - - [11/May/2026 11:09:09] "GET /comprovativo.html?id=REQ-TESTE-999&d=Professor%20Exemplo&e=Laboratorio%20Central&dt=13/05/2026&h=09:00-11:00 HTTP/1.1" 200 -
