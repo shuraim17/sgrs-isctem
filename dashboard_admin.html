@@ -242,18 +242,19 @@
         setTimeout(()=>t.remove(),4000);
     }
 
-    async function carregarUsuarios() {
+    function carregarUsuarios() {
         const tbody = document.getElementById('usersTableBody');
         const totalUsersEl = document.getElementById('totalUsers');
 
-        try {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center">A carregar utilizadores...</td></tr>';
-            const snapshot = await db.collection('users').get();
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">A carregar utilizadores...</td></tr>';
+
+        // Usar onSnapshot para sincronização em tempo real
+        db.collection('users').onSnapshot((snapshot) => {
             tbody.innerHTML = '';
             let count = 0;
 
             if (snapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Nenhum utilizador encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhum utilizador encontrado.</td></tr>';
                 totalUsersEl.textContent = '0';
                 return;
             }
@@ -270,12 +271,11 @@
                     <td><button class="btn btn-sm btn-danger" onclick="apagarUsuario('${doc.id}')"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
             });
-            totalUsersEl.textContent = count;
-        } catch (error) {
-            console.error("Erro ao carregar:", error);
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Erro ao carregar dados: ${error.message}</td></tr>`;
-            showToast('Erro ao carregar lista.', 'error');
-        }
+            totalUsersEl.textContent = snapshot.size;
+        }, (error) => {
+            console.error("Erro no stream:", error);
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Erro de sincronização: ${error.message}</td></tr>`;
+        });
     }
 
     window.apagarUsuario = async function(uid) {

@@ -190,13 +190,9 @@
         window.location.href = 'index.html';
     }
 
-    async function carregarConsolaGestor() {
-        try {
-            const [reqSnap, userSnap] = await Promise.all([
-                db.collection('requisitions').get(),
-                db.collection('users').get()
-            ]);
-
+    function carregarConsolaGestor() {
+        // Stream de Requisições
+        db.collection('requisitions').onSnapshot((reqSnap) => {
             let pendentes = 0, aprovadas = 0, recusadas = 0;
             const tbody = document.querySelector('table tbody');
             tbody.innerHTML = '';
@@ -230,13 +226,18 @@
             h2s[0].textContent = pendentes;
             h2s[1].textContent = aprovadas;
             h2s[2].textContent = recusadas;
-            h2s[3].textContent = '12'; // Salas (fixo por agora)
-            h2s[4].textContent = userSnap.size;
-            h2s[5].textContent = Math.round((aprovadas / (aprovadas + 10)) * 100) + '%';
+            h2s[3].textContent = '12'; // Salas (fixo)
 
-        } catch (e) {
-            console.error(e);
-        }
+            // Cálculo de ocupação real baseado em aprovadas/total_salas
+            const ocupacao = Math.min(100, Math.round((aprovadas / 12) * 100));
+            h2s[5].textContent = ocupacao + '%';
+        });
+
+        // Stream de Utilizadores
+        db.collection('users').onSnapshot((userSnap) => {
+            const h2s = document.querySelectorAll('.card-dashboard h2');
+            h2s[4].textContent = userSnap.size;
+        });
     }
 
     window.alterarEstado = async (id, novoEstado) => {
