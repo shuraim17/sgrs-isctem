@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGRS — Painel Gestor | ISCTEM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --apple-blue: #0071e3;
+            --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --radius-apple: 20px;
+            --transition-apple: cubic-bezier(0.2, 0, 0, 1);
+        }
+        body { margin: 0; min-height: 100vh; font-family: var(--sf-font); background: #f5f5f7; color: #1d1d1f; display: flex; }
+        #sidebar { width: 280px; height: 100vh; background: rgba(255,255,255,0.7); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px 20px; position: fixed; z-index: 100; transition: transform 0.4s var(--transition-apple); }
+        .main-content { flex: 1; padding: 40px; margin-left: 280px; width: calc(100% - 280px); }
+        .card-apple { background: #fff; border-radius: var(--radius-apple); padding: 25px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.02); margin-bottom: 24px; }
+        .stat-card { text-align: center; }
+        .stat-card h2 { font-size: 32px; font-weight: 700; color: var(--apple-blue); }
+        .toast-apple { position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        @media (max-width: 992px) { #sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; width: 100%; padding-top: 80px; } }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="mb-5"><img src="https://isctem.ac.mz/wp-content/uploads/2023/05/isctem-logo.png" width="40"></div>
+        <nav class="flex-grow-1">
+            <a href="#" class="nav-link active py-3 text-dark text-decoration-none d-block"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+            <a href="index.html" class="nav-link py-3 text-danger text-decoration-none d-block mt-5"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1 class="fw-bold mb-4">Gestão Académica</h1>
+        
+        <div class="row g-4 mb-4">
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Pendentes</p><h2 id="statPendentes">0</h2></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Aprovadas</p><h2 id="statAprovadas">0</h2></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Total</p><h2 id="statTotal">0</h2></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Usuários</p><h2 id="statUsers">0</h2></div></div>
+        </div>
+
+        <div class="card-apple">
+            <h5 class="fw-bold mb-4">Pedidos de Aprovação</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>ID</th><th>Docente</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead>
+                    <tbody id="listaPendentes"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        if (!sessionStorage.getItem('loggedFuncao')?.toLowerCase().includes('gestor')) {
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div'); t.className='toast-apple'; t.textContent=msg;
+            document.getElementById('toastContainer').appendChild(t);
+            setTimeout(()=>t.remove(), 4000);
+        }
+
+        async function carregarDados() {
+            // Stats de Requisições
+            const { data: reqs } = await supabaseClient.from('requisitions').select('*');
+            const pendentes = reqs.filter(r => r.estado.toLowerCase() === 'pendente');
+            const aprovadas = reqs.filter(r => r.estado.toLowerCase() === 'aprovada');
+
+            document.getElementById('statPendentes').textContent = pendentes.length;
+            document.getElementById('statAprovadas').textContent = aprovadas.length;
+            document.getElementById('statTotal').textContent = reqs.length;
+
+            const tbody = document.getElementById('listaPendentes');
+            tbody.innerHTML = '';
+            pendentes.forEach(r => {
+                tbody.innerHTML += `<tr>
+                    <td>${r.id}</td>
+                    <td>${r.docente_nome}</td>
+                    <td>${r.tipo}</td>
+                    <td>${r.data} ${r.inicio}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success me-1" onclick="updateStatus('${r.id}', 'Aprovada')"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="updateStatus('${r.id}', 'Recusada')"><i class="fas fa-times"></i></button>
+                    </td>
+                </tr>`;
+            });
+
+            // Stats de Usuários
+            const { data: users } = await supabaseClient.from('profiles').select('id', { count: 'exact' });
+            document.getElementById('statUsers').textContent = users?.length || 0;
+        }
+
+        window.updateStatus = async (id, status) => {
+            const { error } = await supabaseClient.from('requisitions').update({ estado: status }).eq('id', id);
+            if (error) showToast('Erro: ' + error.message);
+            else { showToast('Estado atualizado!'); carregarDados(); }
+        }
+
+        supabaseClient.channel('gestor-realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, (payload) => {
+            carregarDados();
+          })
+          .subscribe();
+
+        carregarDados();
+    </script>
+</body>
+</html>
