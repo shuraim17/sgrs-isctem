@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Gestor | SGRS ISCTEM</title>
+    <title>SGRS — Painel Gestor | ISCTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,255 +12,112 @@
             --glass-border: rgba(255, 255, 255, 0.6);
             --apple-blue: #0071e3;
             --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            --radius-apple: 28px;
-            --sidebar-width: 280px;
+            --radius-apple: 20px;
             --transition-apple: cubic-bezier(0.2, 0, 0, 1);
-            --transition-fast: 0.25s var(--transition-apple);
         }
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { margin:0; font-family: var(--sf-font); background:#fbfbfd; display:flex; min-height:100vh; color: #1d1d1f; }
-        /* Liquid Glass Background */
-        .liquid-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden; background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
-        }
-        .bg-orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-            animation: floatLiquid 30s infinite alternate var(--transition-apple);
-        }
-        .bg-orb--1 { width: 600px; height: 600px; background: radial-gradient(circle, #818cf8 0%, #c084fc 100%); top: -200px; left: -150px; }
-        .bg-orb--2 { width: 500px; height: 500px; background: radial-gradient(circle, #38bdf8 0%, #818cf8 100%); bottom: -150px; right: -100px; animation-delay: -5s; }
-        .bg-orb--3 { width: 400px; height: 400px; background: radial-gradient(circle, #f472b6 0%, #fb7185 100%); top: 40%; left: 60%; animation-delay: -10s; opacity: 0.3; }
-        @keyframes floatLiquid {
-            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-            33% { transform: translate(50px, -40px) rotate(120deg) scale(1.1); }
-            66% { transform: translate(-30px, 60px) rotate(240deg) scale(0.9); }
-            100% { transform: translate(20px, -20px) rotate(360deg) scale(1.05); }
-        }
-        .sidebar {
-            width:var(--sidebar-width); background:rgba(255,255,255,0.4); backdrop-filter:blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            position:fixed; top:0; left:0; height:100vh; padding:32px 24px;
-            border-right: 1px solid var(--glass-border); z-index: 100;
-        }
-        .sidebar-header { text-align:center; margin-bottom:40px; color:#1d1d1f; }
-        .sidebar-menu { list-style:none; padding:0; margin:0; flex:1; }
-        .sidebar-menu li a {
-            color:#424245; text-decoration:none; padding:14px 20px; display:flex; align-items:center;
-            gap:16px; border-radius:18px; margin-bottom:12px; font-weight:500;
-            transition: all 0.3s var(--transition-apple);
-        }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active { background:rgba(255,255,255,0.6); color: var(--apple-blue); transform: translateX(4px); }
-        .main-content { 
-            margin-left:var(--sidebar-width); flex:1; padding:48px; position:relative; z-index:1; 
-            animation: fadeIn 0.4s var(--transition-apple);
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .topbar {
-            background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); border-radius:24px;
-            padding:20px 32px; margin-bottom:40px; display:flex; justify-content:space-between;
-            align-items:center; border:1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.03);
-            transition: all var(--transition-fast);
-        }
-        .card-dashboard {
-            background:rgba(255,255,255,0.45); backdrop-filter:blur(20px); border-radius:var(--radius-apple);
-            padding:32px; border:1px solid var(--glass-border); box-shadow: 0 10px 40px rgba(0,0,0,0.04);
-            transition: all var(--transition-fast);
-        }
-        .card-dashboard:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
-        .btn-glass {
-            background:#1d1d1f; color:white; border:none; padding:12px 24px; border-radius:18px;
-            font-weight:600; cursor:pointer; display:inline-flex; align-items:center;
-            gap:10px; transition: all 0.3s var(--transition-apple);
-        }
-        .btn-glass:hover { background: #000; transform: scale(1.02); }
-        .input-glass {
-            background:rgba(255,255,255,0.5); border:1px solid rgba(0,0,0,0.06);
-            border-radius:20px; padding:14px 20px; display:flex; align-items:center;
-            gap:18px; transition: all 0.4s var(--transition-apple);
-        }
-        .input-glass:focus-within { background: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.12); transform: translateY(-1px); }
-        .input-glass i { color: #424245; font-size: 1.1rem; width: 24px; text-align: center; }
-        .input-glass input, .input-glass select { background:transparent; border:none; outline:none; flex:1; }
-        .modal-content {
-            background:rgba(255,255,255,0.6); backdrop-filter:blur(50px) saturate(200%);
-            -webkit-backdrop-filter: blur(50px) saturate(200%);
-            border-radius:32px; border:1px solid var(--glass-border); padding: 24px;
-        }
-        .mobile-toggle {
-            display: none; position: fixed; top: 20px; left: 20px; z-index: 1001;
-            background: rgba(255,255,255,0.8); border: 1px solid var(--glass-border);
-            padding: 10px; border-radius: 12px; backdrop-filter: blur(10px);
-        }
-        @media (max-width:768px) {
-            .sidebar { 
-                transform: translateX(-100%); transition: transform 0.4s var(--transition-apple);
-                width: 280px; z-index: 1000;
-            }
-            .sidebar.active { transform: translateX(0); box-shadow: 0 0 50px rgba(0,0,0,0.1); }
-            .main-content { margin-left:0; padding: 80px 24px 24px; }
-            .topbar { flex-direction:column; align-items:flex-start; gap:12px; padding: 20px; }
-            .mobile-toggle { display: block; }
-        }
+        body { margin: 0; min-height: 100vh; font-family: var(--sf-font); background: #f5f5f7; color: #1d1d1f; display: flex; }
+        #sidebar { width: 280px; height: 100vh; background: rgba(255,255,255,0.7); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px 20px; position: fixed; z-index: 100; transition: transform 0.4s var(--transition-apple); }
+        .main-content { flex: 1; padding: 40px; margin-left: 280px; width: calc(100% - 280px); }
+        .card-apple { background: #fff; border-radius: var(--radius-apple); padding: 25px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.02); margin-bottom: 24px; }
+        .stat-card { text-align: center; }
+        .stat-card h2 { font-size: 32px; font-weight: 700; color: var(--apple-blue); }
+        .toast-apple { position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        @media (max-width: 992px) { #sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; width: 100%; padding-top: 80px; } }
     </style>
 </head>
 <body>
-<div class="liquid-container">
-    <div class="bg-orb bg-orb--1"></div>
-    <div class="bg-orb bg-orb--2"></div>
-    <div class="bg-orb bg-orb--3"></div>
-</div>
-
-<button class="mobile-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
-
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <i class="fa-solid fa-graduation-cap fa-2x" style="color:var(--apple-blue);"></i>
-        <h5 class="mt-2">SGRS Gestor</h5>
-        <small class="text-muted">Gestão Académica</small>
+    <div id="sidebar">
+        <div class="mb-5"><img src="https://isctem.ac.mz/wp-content/uploads/2023/05/isctem-logo.png" width="40"></div>
+        <nav class="flex-grow-1">
+            <a href="#" class="nav-link active py-3 text-dark text-decoration-none d-block"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+            <a href="index.html" class="nav-link py-3 text-danger text-decoration-none d-block mt-5"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
+        </nav>
     </div>
-    <ul class="sidebar-menu">
-        <li><a href="#" class="active"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
-        <li><a href="#"><i class="fa-solid fa-envelope-open-text"></i> Pendentes <span class="badge bg-warning ms-2">12</span></a></li>
-        <li><a href="#"><i class="fa-solid fa-circle-check"></i> Aprovadas</a></li>
-        <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalRelatorios"><i class="fa-solid fa-chart-pie"></i> Relatórios</a></li>
-        <li class="mt-auto"><a href="index.html" class="text-danger"><i class="fa-solid fa-power-off"></i> Sair</a></li>
-    </ul>
-</div>
 
-<div class="main-content">
-    <div class="topbar">
-        <div><h4 class="mb-0">Gestão Académica</h4><small class="text-muted">Monitorização e Controlo de Espaços</small></div>
-        <div class="badge bg-dark rounded-pill px-3 py-2">Sessão Ativa</div>
-    </div>
-    <div class="row g-4">
-        <div class="col-md-2"><div class="card-dashboard text-center"><h2><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2><small>Pendentes</small></div></div>
-        <div class="col-md-2"><div class="card-dashboard text-center"><h2><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2><small>Aprovadas</small></div></div>
-        <div class="col-md-2"><div class="card-dashboard text-center"><h2><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2><small>Recusadas</small></div></div>
-        <div class="col-md-2"><div class="card-dashboard text-center"><h2><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2><small>Salas</small></div></div>
-        <div class="col-md-2"><div class="card-dashboard text-center"><h2><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2><small>Utilizadores</small></div></div>
-        <div class="col-md-2"><div class="card-dashboard text-center"><h2><i class="fa-solid fa-spinner fa-spin fs-4 text-muted"></i></h2><small>Ocupação</small></div></div>
-    </div>
-    <div class="card-dashboard mt-4 p-4">
-        <h5>Requisições Pendentes de Aprovação</h5>
-        <table class="table table-borderless align-middle">
-            <thead><tr><th>Nº</th><th>Docente</th><th>Sala</th><th>Data</th><th>Ação</th></tr></thead>
-            <tbody>
-                <tr><td>#REQ-101</td><td>Prof. Silva</td><td>Sala 201</td><td>12/05/2026</td><td><button class="btn btn-sm btn-success me-1"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button></td></tr>
-                <tr><td>#REQ-102</td><td>Prof. Costa</td><td>Lab 5</td><td>15/05/2026</td><td><button class="btn btn-sm btn-success me-1"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button></td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <div class="main-content">
+        <h1 class="fw-bold mb-4">Gestão Académica</h1>
 
-<!-- Modal Relatórios -->
-<div class="modal fade" id="modalRelatorios" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content p-3">
-            <div class="modal-header"><h5>Gerar Relatório</h5></div>
-            <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-md-6"><label>Período Início</label><div class="input-glass"><i class="fas fa-calendar"></i><input type="date"></div></div>
-                    <div class="col-md-6"><label>Período Fim</label><div class="input-glass"><i class="fas fa-calendar"></i><input type="date"></div></div>
-                </div>
+        <div class="row g-4 mb-4">
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Pendentes</p><h2 id="statPendentes">0</h2></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Aprovadas</p><h2 id="statAprovadas">0</h2></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Total</p><h2 id="statTotal">0</h2></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Usuários</p><h2 id="statUsers">0</h2></div></div>
+        </div>
+
+        <div class="card-apple">
+            <h5 class="fw-bold mb-4">Pedidos de Aprovação</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>ID</th><th>Docente</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead>
+                    <tbody id="listaPendentes"></tbody>
+                </table>
             </div>
-            <div class="modal-footer"><button class="btn-glass" onclick="alert('Relatório gerado!')">Gerar</button></div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAH9cA7UTOUzzHFKswBAkAOjdZIyynaMQg",
-        authDomain: "sgrs-isctem.firebaseapp.com",
-        projectId: "sgrs-isctem",
-        storageBucket: "sgrs-isctem.firebasestorage.app",
-        messagingSenderId: "1029014740161",
-        appId: "1:1029014740161:web:e80c034c58df4424928840"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <div id="toastContainer"></div>
 
-    const loggedFuncao = (sessionStorage.getItem('loggedFuncao') || '').toLowerCase();
-    if (!sessionStorage.getItem('loggedEmail') || !loggedFuncao.includes('gestor')) {
-        window.location.href = 'index.html';
-    }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    function carregarConsolaGestor() {
-        // Stream de Requisições (Resiliente a CamelCase nos estados)
-        db.collection('requisitions').onSnapshot((reqSnap) => {
-            let pendentes = 0, aprovadas = 0, recusadas = 0;
-            const tbody = document.querySelector('table tbody');
+    <script>
+        const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        if (!sessionStorage.getItem('loggedFuncao')?.toLowerCase().includes('gestor')) {
+            window.location.href = 'index.html';
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div'); t.className='toast-apple'; t.textContent=msg;
+            document.getElementById('toastContainer').appendChild(t);
+            setTimeout(()=>t.remove(), 4000);
+        }
+
+        async function carregarDados() {
+            // Stats de Requisições
+            const { data: reqs } = await supabaseClient.from('requisitions').select('*');
+            const pendentes = reqs.filter(r => r.estado.toLowerCase() === 'pendente');
+            const aprovadas = reqs.filter(r => r.estado.toLowerCase() === 'aprovada');
+
+            document.getElementById('statPendentes').textContent = pendentes.length;
+            document.getElementById('statAprovadas').textContent = aprovadas.length;
+            document.getElementById('statTotal').textContent = reqs.length;
+
+            const tbody = document.getElementById('listaPendentes');
             tbody.innerHTML = '';
-
-            reqSnap.forEach(doc => {
-                const d = doc.data();
-                const status = (d.estado || 'Pendente').toLowerCase();
-                
-                if (status === 'pendente') {
-                    pendentes++;
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>#${d.id}</td>
-                            <td>${d.docenteNome || 'Docente'}</td>
-                            <td>${d.tipo}</td>
-                            <td>${d.data}</td>
-                            <td>
-                                <button class="btn btn-sm btn-success me-1" onclick="alterarEstado('${d.id}', 'Aprovada')"><i class="fas fa-check"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="alterarEstado('${d.id}', 'Recusada')"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                }
-                if (status === 'aprovada') aprovadas++;
-                if (status === 'recusada') recusadas++;
+            pendentes.forEach(r => {
+                tbody.innerHTML += `<tr>
+                    <td>${r.id}</td>
+                    <td>${r.docente_nome}</td>
+                    <td>${r.tipo}</td>
+                    <td>${r.data} ${r.inicio}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success me-1" onclick="updateStatus('${r.id}', 'Aprovada')"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="updateStatus('${r.id}', 'Recusada')"><i class="fas fa-times"></i></button>
+                    </td>
+                </tr>`;
             });
 
-            if (pendentes === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhuma requisição pendente.</td></tr>';
-            }
+            // Stats de Usuários
+            const { data: users } = await supabaseClient.from('profiles').select('id', { count: 'exact' });
+            document.getElementById('statUsers').textContent = users?.length || 0;
+        }
 
-            const h2s = document.querySelectorAll('.card-dashboard h2');
-            h2s[0].textContent = pendentes;
-            h2s[1].textContent = aprovadas;
-            h2s[2].textContent = recusadas;
-            h2s[3].textContent = '12'; // Salas (fixo)
-            
-            // Cálculo de ocupação real baseado em aprovadas/total_salas
-            const totalSalas = 12;
-            const ocupacao = Math.min(100, Math.round((aprovadas / totalSalas) * 100));
-            h2s[5].textContent = ocupacao + '%';
-        }, (err) => {
-            console.error("Erro de sincronização de requisições:", err);
-        });
+        window.updateStatus = async (id, status) => {
+            const { error } = await supabaseClient.from('requisitions').update({ estado: status }).eq('id', id);
+            if (error) showToast('Erro: ' + error.message);
+            else { showToast('Estado atualizado!'); carregarDados(); }
+        }
 
-        // Stream de Utilizadores
-        db.collection('users').onSnapshot((userSnap) => {
-            const h2s = document.querySelectorAll('.card-dashboard h2');
-            h2s[4].textContent = userSnap.size;
-        });
-    }
+        supabaseClient.channel('gestor-realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, (payload) => {
+            carregarDados();
+          })
+          .subscribe();
 
-    window.alterarEstado = async (id, novoEstado) => {
-        try {
-            // A atualização no Firestore irá disparar o onSnapshot automaticamente
-            await db.collection('requisitions').doc(id).update({ estado: novoEstado });
-        } catch (e) { alert("Erro ao atualizar: " + e.message); }
-    };
-
-    // Iniciar o carregamento apenas uma vez
-    carregarConsolaGestor();
-
-    document.getElementById('sidebarToggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('active');
-        const icon = document.querySelector('#sidebarToggle i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-xmark');
-    });
-</script>
+        carregarDados();
+    </script>
 </body>
 </html>
