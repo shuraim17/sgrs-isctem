@@ -32,27 +32,26 @@
         }
         .bg-orb--1 { width: 500px; height: 500px; background: radial-gradient(circle, #818cf8 0%, #c084fc 100%); top: -100px; right: -100px; }
         .bg-orb--2 { width: 400px; height: 400px; background: radial-gradient(circle, #38bdf8 0%, #818cf8 100%); bottom: -100px; left: -50px; animation-delay: -8s; }
-        @keyframes floatLiquid {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(40px, 40px) scale(1.1); }
-        }
+        @keyframes floatLiquid { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
 
         .registo-card {
-            width: 100%; max-width: 650px; background: var(--glass-bg);
+            width: 100%; max-width: 700px; background: var(--glass-bg);
             backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid var(--glass-border); border-radius: 36px; padding: 50px;
+            border: 1px solid var(--glass-border); border-radius: 36px; padding: 40px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.08); animation: cardAppear 0.6s var(--transition-apple);
         }
         @keyframes cardAppear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .logo-isctem { width: 100px; margin-bottom: 30px; }
-        h2 { font-weight: 700; font-size: 32px; letter-spacing: -0.5px; margin-bottom: 8px; }
-        .subtitle { color: #86868b; margin-bottom: 35px; font-size: 17px; }
+        .logo-isctem { width: 80px; margin-bottom: 20px; }
+        h2 { font-weight: 700; font-size: 28px; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .subtitle { color: #86868b; margin-bottom: 30px; font-size: 16px; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+        .section-title { font-size: 14px; font-weight: 600; color: #86868b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; margin-top: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
 
-        .input-group-glass { margin-bottom: 24px; position: relative; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
+        @media (max-width: 650px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .input-group-glass { margin-bottom: 15px; position: relative; }
         .input-glass {
             background: rgba(255, 255, 255, 0.6); border: 1px solid var(--glass-border);
             border-radius: 16px; padding: 12px 18px; display: flex; align-items: center;
@@ -60,136 +59,88 @@
         }
         .input-glass:focus-within { background: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1); }
         .input-glass i { color: #86868b; margin-right: 12px; width: 20px; text-align: center; }
-        .input-glass input, .input-glass select {
-            border: none; background: transparent; width: 100%; outline: none; font-size: 16px;
-        }
+        .input-glass input, .input-glass select { border: none; background: transparent; width: 100%; outline: none; font-size: 15px; }
 
         .input-glass--success { border-color: var(--success-color) !important; background: rgba(52, 199, 89, 0.05); }
         .input-glass--error { border-color: var(--error-color) !important; background: rgba(255, 59, 48, 0.05); }
 
-        .feedback-text { font-size: 12px; margin-top: 6px; padding-left: 4px; min-height: 18px; transition: 0.2s; }
+        .feedback-text { font-size: 11px; margin-top: 4px; padding-left: 4px; min-height: 16px; transition: 0.2s; color: #86868b; }
         .feedback-text.error { color: var(--error-color); }
         .feedback-text.success { color: var(--success-color); }
 
-        .btn-registo {
-            background: var(--apple-blue); color: #fff; border: none; width: 100%;
-            padding: 16px; border-radius: 18px; font-weight: 600; font-size: 17px;
-            transition: 0.2s; cursor: pointer; margin-top: 10px;
-        }
+        .btn-registo { background: var(--apple-blue); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 18px; font-weight: 600; font-size: 17px; transition: 0.2s; cursor: pointer; margin-top: 20px; }
         .btn-registo:hover { background: #0077ed; transform: scale(1.01); }
-        .btn-registo:active { transform: scale(0.99); }
+        .btn-registo:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .admin-key-field { display: none; margin-top: 10px; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .toast-apple {
-            position: fixed; bottom: 30px; right: 30px; z-index: 9999;
-            background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px;
-            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideInToast 0.4s var(--transition-apple);
-        }
+        .toast-apple { position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideInToast 0.4s var(--transition-apple); }
         @keyframes slideInToast { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="liquid-container">
-        <div class="bg-orb bg-orb--1"></div>
-        <div class="bg-orb bg-orb--2"></div>
-    </div>
+    <div class="liquid-container"><div class="bg-orb bg-orb--1"></div><div class="bg-orb bg-orb--2"></div></div>
 
     <div class="registo-card">
         <img src="https://isctem.ac.mz/wp-content/uploads/2023/05/isctem-logo.png" alt="ISCTEM" class="logo-isctem">
-        <h2>Criar nova conta</h2>
-        <p class="subtitle">Registe-se no Sistema de Gestão de Requisição de Salas.</p>
+        <h2>Registo de Utilizador</h2>
+        <p class="subtitle">Introduza os seus dados para aceder ao sistema SGRS.</p>
 
         <form id="registoForm">
+            <div class="section-title">Informações Pessoais</div>
             <div class="form-grid">
                 <div class="input-group-glass">
-                    <label class="form-label small ms-1 text-muted">Email Institucional</label>
-                    <div class="input-glass" id="emailGlass">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" placeholder="nome@isctem.ac.mz" required>
-                    </div>
-                    <div class="feedback-text" id="emailFeedback">Use o domínio @isctem.ac.mz</div>
+                    <label class="small text-muted mb-1">Nome Completo</label>
+                    <div class="input-glass" id="nomeGlass"><i class="fas fa-user"></i><input type="text" id="nome" placeholder="Nome e Sobrenome" required></div>
+                    <div class="feedback-text" id="nomeFeedback">Ex: João Silva</div>
                 </div>
-
                 <div class="input-group-glass">
-                    <label class="form-label small ms-1 text-muted">Telemóvel (Moçambique)</label>
-                    <div class="input-glass" id="telGlass">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="telemovel" placeholder="841234567" maxlength="9" required>
-                    </div>
-                    <div class="feedback-text" id="telFeedback">Ex: 841234567</div>
+                    <label class="small text-muted mb-1">Telemóvel (Moçambique)</label>
+                    <div class="input-glass" id="telGlass"><i class="fas fa-phone"></i><input type="tel" id="telemovel" placeholder="841234567" maxlength="9" required></div>
+                    <div class="feedback-text" id="telFeedback">Ex: 84 / 82 / 86 / 87</div>
                 </div>
             </div>
 
+            <div class="section-title">Credenciais de Acesso</div>
             <div class="form-grid">
                 <div class="input-group-glass">
-                    <label class="form-label small ms-1 text-muted">Nome Completo</label>
-                    <div class="input-glass" id="nomeGlass">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="nome" placeholder="Seu nome" required>
-                    </div>
-                    <div class="feedback-text" id="nomeFeedback">Como aparecerá nos relatórios</div>
+                    <label class="small text-muted mb-1">Email Institucional</label>
+                    <div class="input-glass" id="emailGlass"><i class="fas fa-envelope"></i><input type="email" id="email" placeholder="nome@isctem.ac.mz" required></div>
+                    <div class="feedback-text" id="emailFeedback">Domínio @isctem.ac.mz</div>
                 </div>
-
                 <div class="input-group-glass">
-                    <label class="form-label small ms-1 text-muted">Email Secundário</label>
-                    <div class="input-glass" id="emailSecGlass">
-                        <i class="fas fa-envelope-circle-check"></i>
-                        <input type="email" id="emailSecundario" placeholder="gmail, outlook, etc" required>
-                    </div>
+                    <label class="small text-muted mb-1">Email Secundário</label>
+                    <div class="input-glass" id="emailSecGlass"><i class="fas fa-envelope-circle-check"></i><input type="email" id="emailSecundario" placeholder="gmail, outlook, etc" required></div>
                     <div class="feedback-text" id="emailSecFeedback">Para recuperação de conta</div>
                 </div>
             </div>
 
             <div class="form-grid">
                 <div class="input-group-glass">
-                    <label class="form-label small ms-1 text-muted">Palavra-passe</label>
-                    <div class="input-glass" id="senhaGlass">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" required>
-                    </div>
+                    <label class="small text-muted mb-1">Palavra-passe</label>
+                    <div class="input-glass" id="senhaGlass"><i class="fas fa-lock"></i><input type="password" id="senha" placeholder="Mínimo 6 caracteres" required></div>
                     <div class="feedback-text" id="senhaFeedback"></div>
                 </div>
-
                 <div class="input-group-glass">
-                    <label class="form-label small ms-1 text-muted">Confirmar Password</label>
-                    <div class="input-glass" id="confirmarGlass">
-                        <i class="fas fa-shield-halved"></i>
-                        <input type="password" id="confirmarSenha" placeholder="Repita a password" required>
-                    </div>
+                    <label class="small text-muted mb-1">Confirmar Password</label>
+                    <div class="input-glass" id="confirmarGlass"><i class="fas fa-shield-halved"></i><input type="password" id="confirmarSenha" placeholder="Repita a password" required></div>
                     <div class="feedback-text" id="confirmarFeedback"></div>
                 </div>
             </div>
 
-            <div class="input-group-glass">
-                <label class="form-label small ms-1 text-muted">Função / Cargo</label>
-                <div class="input-glass">
-                    <i class="fas fa-briefcase"></i>
-                    <select id="funcao" required>
-                        <option value="" disabled selected>Selecione a sua função</option>
-                        <option value="Docente">Docente</option>
-                        <option value="Gestor">Gestor Académico</option>
-                        <option value="Admin">Administrador do Sistema</option>
-                    </select>
-                </div>
+            <div class="section-title">Função e Segurança</div>
+            <div class="input-group-glass mb-3">
+                <label class="small text-muted mb-1">Função / Cargo</label>
+                <div class="input-glass"><i class="fas fa-briefcase"></i><select id="funcao" required><option value="" disabled selected>Selecione a sua função</option><option value="Docente">Docente</option><option value="Gestor">Gestor Académico</option><option value="Admin">Administrador do Sistema</option></select></div>
             </div>
 
-            <div class="input-group-glass admin-key-field" id="adminKeyWrapper">
-                <label class="form-label small ms-1 text-muted">Chave de Administrador</label>
-                <div class="input-glass" id="adminKeyGlass">
-                    <i class="fas fa-key"></i>
-                    <input type="password" id="adminKey" placeholder="Introduza a chave mestre">
-                </div>
-                <div class="feedback-text" id="adminKeyFeedback">Requerido para privilégios de Admin</div>
+            <div class="input-group-glass" id="adminKeyWrapper" style="display: none;">
+                <label class="small text-muted mb-1">Chave de Administrador</label>
+                <div class="input-glass" id="adminKeyGlass"><i class="fas fa-key"></i><input type="password" id="adminKey" placeholder="Introduza a chave mestre"></div>
+                <div class="feedback-text" id="adminKeyFeedback">Necessário para privilégios de Admin</div>
             </div>
 
-            <button type="submit" class="btn-registo mt-2" id="submitBtn">Criar Conta</button>
+            <button type="submit" class="btn-registo" id="submitBtn">Criar Minha Conta</button>
 
-            <div class="text-center mt-4">
-                <p class="small text-muted">Já tem uma conta? <a href="index.html" class="text-decoration-none fw-bold" style="color: var(--apple-blue)">Fazer Login</a></p>
-            </div>
+            <div class="text-center mt-4"><p class="small text-muted">Já tem uma conta? <a href="index.html" class="text-decoration-none fw-bold" style="color: var(--apple-blue)">Fazer Login</a></p></div>
         </form>
     </div>
 
@@ -197,7 +148,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
         const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
@@ -205,86 +155,100 @@
 
         const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
         const TEL_REGEX = /^(82|83|84|85|86|87)\d{7}$/;
-        const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+        const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]{3,}$/;
 
         function showToast(msg, type = 'success') {
-            const t = document.createElement('div');
-            t.className = `toast-apple toast-${type}`;
-            t.textContent = msg;
-            document.getElementById('toastContainer').appendChild(t);
-            setTimeout(() => t.remove(), 4000);
+            const t = document.createElement('div'); t.className = `toast-apple toast-${type}`; t.textContent = msg;
+            document.getElementById('toastContainer').appendChild(t); setTimeout(() => t.remove(), 4000);
         }
 
-        function setFieldState(element, feedback, state, message) {
-            element.classList.remove('input-glass--success', 'input-glass--error');
+        function setFieldState(glass, feedback, state, msg) {
+            glass.classList.remove('input-glass--success', 'input-glass--error');
             feedback.classList.remove('success', 'error');
-            feedback.textContent = message;
-            if (state === 'success') { element.classList.add('input-glass--success'); feedback.classList.add('success'); }
-            if (state === 'error') { element.classList.add('input-glass--error'); feedback.classList.add('error'); }
+            feedback.textContent = msg;
+            if (state === 'success') { glass.classList.add('input-glass--success'); feedback.classList.add('success'); }
+            if (state === 'error') { glass.classList.add('input-glass--error'); feedback.classList.add('error'); }
         }
 
-        const funcaoSelect = document.getElementById('funcao');
-        const adminKeyWrapper = document.getElementById('adminKeyWrapper');
+        const inputs = {
+            nome: { el: document.getElementById('nome'), glass: document.getElementById('nomeGlass'), feedback: document.getElementById('nomeFeedback') },
+            tel: { el: document.getElementById('telemovel'), glass: document.getElementById('telGlass'), feedback: document.getElementById('telFeedback') },
+            email: { el: document.getElementById('email'), glass: document.getElementById('emailGlass'), feedback: document.getElementById('emailFeedback') },
+            emailSec: { el: document.getElementById('emailSecundario'), glass: document.getElementById('emailSecGlass'), feedback: document.getElementById('emailSecFeedback') },
+            senha: { el: document.getElementById('senha'), glass: document.getElementById('senhaGlass'), feedback: document.getElementById('senhaFeedback') },
+            conf: { el: document.getElementById('confirmarSenha'), glass: document.getElementById('confirmarGlass'), feedback: document.getElementById('confirmarFeedback') }
+        };
 
-        funcaoSelect.addEventListener('change', function() {
-            if (this.value === 'Admin') {
-                adminKeyWrapper.style.display = 'block';
-            } else {
-                adminKeyWrapper.style.display = 'none';
-            }
+        inputs.nome.el.addEventListener('input', () => {
+            const val = inputs.nome.el.value.trim();
+            if (NAME_REGEX.test(val)) setFieldState(inputs.nome.glass, inputs.nome.feedback, 'success', 'Nome válido ✓');
+            else setFieldState(inputs.nome.glass, inputs.nome.feedback, 'error', 'Mínimo 3 letras e apenas espaços.');
         });
 
-        // Real-time validations similar to previous logic but adapted
+        inputs.tel.el.addEventListener('input', () => {
+            const val = inputs.tel.el.value.trim();
+            if (TEL_REGEX.test(val)) setFieldState(inputs.tel.glass, inputs.tel.feedback, 'success', 'Número válido ✓');
+            else setFieldState(inputs.tel.glass, inputs.tel.feedback, 'error', 'Ex: 841234567 (9 dígitos)');
+        });
+
+        inputs.email.el.addEventListener('input', () => {
+            const val = inputs.email.el.value.trim();
+            if (EMAIL_REGEX.test(val)) setFieldState(inputs.email.glass, inputs.email.feedback, 'success', 'Email institucional válido ✓');
+            else setFieldState(inputs.email.glass, inputs.email.feedback, 'error', 'Use @isctem.ac.mz');
+        });
+
+        inputs.emailSec.el.addEventListener('input', () => {
+            const val = inputs.emailSec.el.value.trim();
+            const generic = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (generic.test(val) && val !== inputs.email.el.value) setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'success', 'Email secundário válido ✓');
+            else setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'error', 'Email diferente do principal.');
+        });
+
+        inputs.senha.el.addEventListener('input', () => {
+            const val = inputs.senha.el.value;
+            if (val.length >= 6) setFieldState(inputs.senha.glass, inputs.senha.feedback, 'success', 'Senha forte ✓');
+            else setFieldState(inputs.senha.glass, inputs.senha.feedback, 'error', 'Mínimo 6 caracteres.');
+        });
+
+        inputs.conf.el.addEventListener('input', () => {
+            if (inputs.conf.el.value === inputs.senha.el.value && inputs.senha.el.value.length > 0) setFieldState(inputs.conf.glass, inputs.conf.feedback, 'success', 'Passwords coincidem ✓');
+            else setFieldState(inputs.conf.glass, inputs.conf.feedback, 'error', 'As passwords não coincidem.');
+        });
+
+        document.getElementById('funcao').addEventListener('change', (e) => {
+            document.getElementById('adminKeyWrapper').style.display = e.target.value === 'Admin' ? 'block' : 'none';
+        });
+
         document.getElementById('registoForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('senha').value;
-            const nome = document.getElementById('nome').value.trim();
-            const telemovel = document.getElementById('telemovel').value.trim();
-            const emailSec = document.getElementById('emailSecundario').value.trim();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.textContent = 'A processar...';
+
+            const email = inputs.email.el.value.trim();
+            const password = inputs.senha.el.value;
             const funcao = document.getElementById('funcao').value;
-            const adminKey = document.getElementById('adminKey').value.trim();
 
             if (funcao === 'Admin') {
-                const { data: isValidKey } = await supabaseClient.rpc('check_admin_key', { key_input: adminKey });
-                if (!isValidKey) {
-                    showToast('Chave de administrador incorreta.', 'error');
-                    return;
-                }
+                const { data: isValidKey } = await supabaseClient.rpc('check_admin_key', { key_input: document.getElementById('adminKey').value.trim() });
+                if (!isValidKey) { showToast('Chave de administrador incorreta.', 'error'); btn.disabled = false; btn.textContent = 'Criar Minha Conta'; return; }
             }
 
             try {
-                // 1. Sign up user
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                    email,
-                    password
+                    email, password, options: { data: { nome: inputs.nome.el.value, funcao: funcao } }
                 });
-
                 if (authError) throw authError;
 
-                // 2. Create profile
-                const { error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .insert({
-                        id: authData.user.id,
-                        email,
-                        nome,
-                        funcao,
-                        email_secundario: emailSec,
-                        telemovel
-                    });
+                const { error: profileError } = await supabaseClient.from('profiles').update({
+                    email_secundario: inputs.emailSec.el.value.trim(),
+                    telemovel: inputs.tel.el.value.trim()
+                }).eq('id', authData.user.id);
 
-                if (profileError) {
-                    // Cleanup auth if profile creation fails
-                    // Note: Supabase doesn't easily allow deleting users from client side for security
-                    throw profileError;
-                }
-
-                showToast('Conta criada com sucesso! Verifique o seu email.', 'success');
+                showToast('Conta criada com sucesso!', 'success');
                 setTimeout(() => window.location.href = 'index.html', 2000);
-
             } catch (error) {
-                showToast('Erro ao criar conta: ' + error.message, 'error');
+                showToast('Erro: ' + error.message, 'error');
+                btn.disabled = false; btn.textContent = 'Criar Minha Conta';
             }
         });
     </script>
