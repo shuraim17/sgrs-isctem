@@ -79,7 +79,7 @@
     </div>
     <div class="login-wrapper">
         <div class="login-side-info">
-            <img src="https://isctem.ac.mz/wp-content/uploads/2023/05/isctem-logo.png" alt="ISCTEM" class="logo-isctem">
+            <img src="logo2.png" alt="ISCTEM" class="logo-isctem">
             <h1>Gestão de Requisição de Salas</h1>
             <p class="subtitle">Aceda ao portal administrativo para gerir espaços, horários e requisições da faculdade com eficiência.</p>
         </div>
@@ -87,7 +87,7 @@
             <h2 class="mb-4 fw-bold">Login</h2>
             <form id="loginForm">
                 <div class="input-glass"><i class="fas fa-envelope"></i><input type="email" id="email" placeholder="Email (@isctem.ac.mz)" required></div>
-                <div class="input-glass"><i class="fas fa-lock"></i><input type="password" id="password" placeholder="Palavra-passe" required></div>
+                <div class="input-glass"><i class="fas fa-lock"></i><input type="password" id="password" placeholder="Palavra-passe" required><i class="fas fa-eye toggle-password" id="togglePassword" style="cursor: pointer; margin-left: -30px; z-index: 10;"></i></div>
                 <button type="submit" class="btn-apple" id="submitBtn"><span class="btn-text">Entrar</span><div id="loginSpinner" class="spinner-border spinner-border-sm d-none"></div></button>
             </form>
             <div class="links-area">
@@ -152,6 +152,7 @@
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
         const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        document.getElementById("togglePassword").addEventListener("click", function() { const p = document.getElementById("password"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
         const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
         let userRecoveryData = null;
 

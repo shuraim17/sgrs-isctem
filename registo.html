@@ -80,7 +80,7 @@
     <div class="liquid-container"><div class="bg-orb bg-orb--1"></div><div class="bg-orb bg-orb--2"></div></div>
 
     <div class="registo-card">
-        <img src="https://isctem.ac.mz/wp-content/uploads/2023/05/isctem-logo.png" alt="ISCTEM" class="logo-isctem">
+        <img src="logo1.png" alt="ISCTEM" class="logo-isctem">
         <h2>Registo de Utilizador</h2>
         <p class="subtitle">Introduza os seus dados para aceder ao sistema SGRS.</p>
 
@@ -116,12 +116,12 @@
             <div class="form-grid">
                 <div class="input-group-glass">
                     <label class="small text-muted mb-1">Palavra-passe</label>
-                    <div class="input-glass" id="senhaGlass"><i class="fas fa-lock"></i><input type="password" id="senha" placeholder="Mínimo 6 caracteres" required></div>
+                    <div class="input-glass" id="senhaGlass"><i class="fas fa-lock"></i><input type="password" id="senha" placeholder="Mínimo 6 caracteres" required><i class="fas fa-eye toggle-password" id="toggleSenha" style="cursor: pointer; margin-left: -30px; z-index: 10;"></i></div>
                     <div class="feedback-text" id="senhaFeedback"></div>
                 </div>
                 <div class="input-group-glass">
                     <label class="small text-muted mb-1">Confirmar Password</label>
-                    <div class="input-glass" id="confirmarGlass"><i class="fas fa-shield-halved"></i><input type="password" id="confirmarSenha" placeholder="Repita a password" required></div>
+                    <div class="input-glass" id="confirmarGlass"><i class="fas fa-shield-halved"></i><input type="password" id="confirmarSenha" placeholder="Repita a password" required><i class="fas fa-eye toggle-password" id="toggleConfirmar" style="cursor: pointer; margin-left: -30px; z-index: 10;"></i></div>
                     <div class="feedback-text" id="confirmarFeedback"></div>
                 </div>
             </div>
@@ -152,6 +152,7 @@
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
         const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        document.getElementById("toggleSenha").addEventListener("click", function() { const p = document.getElementById("senha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); }); document.getElementById("toggleConfirmar").addEventListener("click", function() { const p = document.getElementById("confirmarSenha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
 
         const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
         const TEL_REGEX = /^(82|83|84|85|86|87)\d{7}$/;
