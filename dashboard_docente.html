@@ -16,14 +16,10 @@
             --transition-apple: cubic-bezier(0.2, 0, 0, 1);
         }
         body { margin: 0; min-height: 100vh; font-family: var(--sf-font); background: #fbfbfd; display: flex; color: #1d1d1f; }
-        #sidebar {
-            width: 280px; height: 100vh; background: rgba(255,255,255,0.7); backdrop-filter: blur(30px);
-            border-right: 1px solid var(--glass-border); padding: 30px 20px; display: flex; flex-direction: column; position: fixed; z-index: 100;
-            transition: transform 0.4s var(--transition-apple);
-        }
+        #sidebar { width: 280px; height: 100vh; background: rgba(255,255,255,0.7); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px 20px; display: flex; flex-direction: column; position: fixed; z-index: 100; transition: transform 0.4s var(--transition-apple); }
         .main-content { flex: 1; padding: 40px; margin-left: 280px; width: calc(100% - 280px); }
         .card-apple { background: #fff; border-radius: var(--radius-apple); padding: 25px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.02); margin-bottom: 24px; }
-        .btn-apple { background: var(--apple-blue); color: #fff; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 600; transition: 0.2s; }
+        .btn-apple { background: var(--apple-blue); color: #fff; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 600; transition: 0.2s; cursor: pointer; }
         .btn-apple:hover { background: #0077ed; transform: scale(1.02); }
         .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 12px; }
         .status-pendente { background: #fff4e5; color: #b7791f; }
@@ -33,6 +29,11 @@
         #sidebar.active { transform: translateX(0) !important; }
         .mobile-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); z-index: 90; display: none; }
         .mobile-overlay.active { display: block; }
+        .nav-link { border-radius: 12px; margin-bottom: 5px; transition: 0.2s; cursor: pointer; }
+        .nav-link:hover { background: rgba(0,0,0,0.05); }
+        .nav-link.active { background: var(--apple-blue); color: #fff !important; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
         @media (max-width: 992px) { #sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; width: 100%; padding-top: 80px; } }
     </style>
 </head>
@@ -43,36 +44,55 @@
             <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <nav class="flex-grow-1">
-            <a href="#" class="nav-link active py-3 text-dark text-decoration-none d-block"><i class="fas fa-home me-2"></i> Início</a>
+            <a onclick="showSection('dashboard')" class="nav-link active py-3 text-dark text-decoration-none d-block nav-dash"><i class="fas fa-home me-2"></i> Início</a>
+            <a onclick="showSection('minhas')" class="nav-link py-3 text-dark text-decoration-none d-block nav-min"><i class="fas fa-list-ul me-2"></i> Minhas Requisições</a>
+            <a onclick="showSection('disponibilidade')" class="nav-link py-3 text-dark text-decoration-none d-block nav-dis"><i class="fas fa-calendar-check me-2"></i> Disponibilidade</a>
+            <a onclick="showSection('comprovativos')" class="nav-link py-3 text-dark text-decoration-none d-block nav-com"><i class="fas fa-file-pdf me-2"></i> Comprovativos</a>
             <a href="index.html" class="nav-link py-3 text-danger text-decoration-none d-block mt-5"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
         </nav>
     </div>
 
     <button id="sidebarToggle" class="btn btn-dark d-lg-none position-fixed top-0 start-0 m-3 z-3" style="border-radius: 12px;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    
     <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <div>
-                <h1 class="fw-bold mb-0">Olá, <span id="docenteNome">Docente</span></h1>
-                <p class="text-muted">Gerir as suas requisições de espaços.</p>
+        
+        <!-- DASHBOARD (OVERVIEW) -->
+        <section id="dashboard" class="content-section active">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div><h1 class="fw-bold mb-0">Olá, <span id="docenteNome">Docente</span></h1><p class="text-muted">Resumo da sua atividade.</p></div>
+                <button class="btn-apple" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fas fa-plus me-2"></i> Nova Requisição</button>
             </div>
-            <button class="btn-apple" data-bs-toggle="modal" data-bs-target="#modalRequisicao"><i class="fas fa-plus me-2"></i> Nova Requisição</button>
-        </div>
-
-        <div class="row g-4 mb-4">
-            <div class="col-md-4"><div class="card-apple text-center"><p class="text-muted mb-1">Total</p><h2 id="statTotal" class="fw-bold mb-0">0</h2></div></div>
-            <div class="col-md-4"><div class="card-apple text-center"><p class="text-muted mb-1">Aprovadas</p><h2 id="statAprovadas" class="fw-bold mb-0 text-success">0</h2></div></div>
-            <div class="col-md-4"><div class="card-apple text-center"><p class="text-muted mb-1">Pendentes</p><h2 id="statPendentes" class="fw-bold mb-0 text-warning">0</h2></div></div>
-        </div>
-
-        <div class="card-apple">
-            <h5 class="fw-bold mb-4">As Minhas Requisições</h5>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead><tr><th>ID</th><th>Espaço</th><th>Data</th><th>Horário</th><th>Estado</th><th>Ações</th></tr></thead>
-                    <tbody id="listaRequisicoes"></tbody>
-                </table>
+            <div class="row g-4 mb-4">
+                <div class="col-md-4"><div class="card-apple text-center"><p class="text-muted mb-1">Total</p><h2 id="statTotal" class="fw-bold mb-0">0</h2></div></div>
+                <div class="col-md-4"><div class="card-apple text-center"><p class="text-muted mb-1">Aprovadas</p><h2 id="statAprovadas" class="fw-bold mb-0 text-success">0</h2></div></div>
+                <div class="col-md-4"><div class="card-apple text-center"><p class="text-muted mb-1">Pendentes</p><h2 id="statPendentes" class="fw-bold mb-0 text-warning">0</h2></div></div>
             </div>
-        </div>
+        </section>
+
+        <!-- MINHAS REQUISICOES -->
+        <section id="minhas" class="content-section">
+            <h1 class="fw-bold mb-4">Minhas Requisições</h1>
+            <div class="card-apple">
+                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>ID</th><th>Espaço</th><th>Data</th><th>Horário</th><th>Estado</th></tr></thead><tbody id="listaMinhas"></tbody></table></div>
+            </div>
+        </section>
+
+        <!-- DISPONIBILIDADE (PUBLIC VIEW) -->
+        <section id="disponibilidade" class="content-section">
+            <h1 class="fw-bold mb-4">Disponibilidade de Salas</h1>
+            <p class="text-muted mb-4">Veja abaixo as reservas já confirmadas em tempo real.</p>
+            <div class="card-apple">
+                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Sala/Espaço</th><th>Data</th><th>Horário</th><th>Status</th></tr></thead><tbody id="listaDisponibilidade"></tbody></table></div>
+            </div>
+        </section>
+
+        <!-- COMPROVATIVOS -->
+        <section id="comprovativos" class="content-section">
+            <h1 class="fw-bold mb-4">Meus Comprovativos</h1>
+            <p class="text-muted mb-4">Baixe o PDF oficial das suas requisições aprovadas.</p>
+            <div class="row g-4" id="listaComprovativos"></div>
+        </section>
+
     </div>
 
     <!-- Modal Requisicao -->
@@ -115,8 +135,15 @@
 
         function showToast(msg, type='success') {
             const t = document.createElement('div'); t.className=`toast-apple toast-${type}`; t.textContent=msg;
-            document.getElementById('toastContainer').appendChild(t);
-            setTimeout(()=>t.remove(), 4000);
+            document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(), 4000);
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-' + id.substring(0,3)).classList.add('active');
+            if(window.innerWidth < 992) toggleSidebar();
         }
 
         function toggleSidebar() {
@@ -124,8 +151,7 @@
             let overlay = document.querySelector(".mobile-overlay");
             if(!overlay) {
                 overlay = document.createElement("div"); overlay.className = "mobile-overlay";
-                document.body.appendChild(overlay);
-                overlay.onclick = toggleSidebar;
+                document.body.appendChild(overlay); overlay.onclick = toggleSidebar;
             }
             overlay.classList.toggle("active");
         }
@@ -133,14 +159,9 @@
         async function popularHoras() {
             const inicio = document.getElementById('reqInicio');
             const fim = document.getElementById('reqFim');
-            
             const { data: setting } = await supabaseClient.from('settings').select('*').eq('key', 'faculdade').single();
             let hStart = 6, hEnd = 22;
-            if(setting) {
-                hStart = parseInt(setting.value.abertura.split(':')[0]);
-                hEnd = parseInt(setting.value.fecho.split(':')[0]);
-            }
-
+            if(setting) { hStart = parseInt(setting.value.abertura.split(':')[0]); hEnd = parseInt(setting.value.fecho.split(':')[0]); }
             for(let h=hStart; h<=hEnd; h++) {
                 for(let m=0; m<60; m+=30) {
                     const val = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
@@ -152,96 +173,77 @@
 
         function formatarData(dataStr) {
             if(!dataStr) return '-';
-            const [y, m, d] = dataStr.split('-');
-            return `${d}/${m}/${y}`;
+            const [y, m, d] = dataStr.split('-'); return `${d}/${m}/${y}`;
         }
 
         async function carregarDados() {
-            const { data, error } = await supabaseClient
-                .from('requisitions')
-                .select('*')
-                .eq('docente_id', loggedUid)
-                .order('created_at', { ascending: false });
-
+            const { data: allReqs, error } = await supabaseClient.from('requisitions').select('*').order('created_at', { ascending: false });
             if (error) { showToast('Erro: ' + error.message, 'error'); return; }
 
-            const tbody = document.getElementById('listaRequisicoes');
-            tbody.innerHTML = '';
-            let total = 0, aprovadas = 0, pendentes = 0;
+            const userReqs = allReqs.filter(r => r.docente_id === loggedUid);
+            const approvedReqs = allReqs.filter(r => r.estado.toLowerCase() === 'aprovada');
 
-            data.forEach(r => {
-                total++;
-                if (r.estado.toLowerCase() === 'aprovada') aprovadas++;
-                if (r.estado.toLowerCase() === 'pendente') pendentes++;
+            // Stats
+            document.getElementById('statTotal').textContent = userReqs.length;
+            document.getElementById('statAprovadas').textContent = userReqs.filter(r => r.estado.toLowerCase() === 'aprovada').length;
+            document.getElementById('statPendentes').textContent = userReqs.filter(r => r.estado.toLowerCase() === 'pendente').length;
 
-                tbody.innerHTML += `<tr>
-                    <td>${r.id}</td>
-                    <td>${r.tipo}</td>
-                    <td>${formatarData(r.data)}</td>
-                    <td>${r.inicio.slice(0,5)} - ${r.fim.slice(0,5)}</td>
-                    <td><span class="badge-status status-${r.estado.toLowerCase()}">${r.estado}</span></td>
-                    <td>${r.estado.toLowerCase() === 'aprovada' ? `<button class="btn btn-sm btn-dark" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio}-${r.fim}', '${r.tipo}')"><i class="fas fa-file-pdf"></i></button>` : '—'}</td>
-                </tr>`;
+            // Minhas Table
+            const mBody = document.getElementById('listaMinhas'); mBody.innerHTML = '';
+            userReqs.forEach(r => {
+                mBody.innerHTML += `<tr><td>${r.id}</td><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-\n${r.fim.slice(0,5)}</td><td><span class="badge-status status-${r.estado.toLowerCase()}">${r.estado}</span></td></tr>`;
             });
 
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statAprovadas').textContent = aprovadas;
-            document.getElementById('statPendentes').textContent = pendentes;
+            // Disponibilidade Table
+            const dBody = document.getElementById('listaDisponibilidade'); dBody.innerHTML = '';
+            approvedReqs.forEach(r => {
+                dBody.innerHTML += `<tr><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td><td><span class="text-danger fw-bold"><i class="fas fa-lock me-1"></i> Ocupado</span></td></tr>`;
+            });
+
+            // Comprovativos Grid
+            const cBody = document.getElementById('listaComprovativos'); cBody.innerHTML = '';
+            userReqs.filter(r => r.estado.toLowerCase() === 'aprovada').forEach(r => {
+                cBody.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="card-apple text-center">
+                            <i class="fas fa-file-pdf fa-2x text-primary mb-3"></i>
+                            <h6 class="fw-bold">${r.tipo}</h6>
+                            <p class="small text-muted">${formatarData(r.data)}</p>
+                            <button class="btn btn-sm btn-dark w-100" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}', '${r.tipo}')">Baixar PDF</button>
+                        </div>
+                    </div>`;
+            });
         }
 
         document.getElementById('formRequisicao').addEventListener('submit', async (e) => {
             e.preventDefault();
             const reqId = `REQ-${Date.now().toString().slice(-6)}`;
             const { error } = await supabaseClient.from('requisitions').insert({
-                id: reqId,
-                docente_id: loggedUid,
-                docente_email: loggedEmail,
-                docente_nome: loggedNome,
-                tipo: document.getElementById('reqTipo').value,
-                data: document.getElementById('reqData').value,
-                inicio: document.getElementById('reqInicio').value,
-                fim: document.getElementById('reqFim').value
+                id: reqId, docente_id: loggedUid, docente_email: loggedEmail, docente_nome: loggedNome,
+                tipo: document.getElementById('reqTipo').value, data: document.getElementById('reqData').value,
+                inicio: document.getElementById('reqInicio').value, fim: document.getElementById('reqFim').value
             });
-
             if (error) showToast('Erro: ' + error.message, 'error');
-            else {
-                showToast('Requisição submetida!');
-                bootstrap.Modal.getInstance(document.getElementById('modalRequisicao')).hide();
-                carregarDados();
-            }
+            else { showToast('Requisição submetida!'); bootstrap.Modal.getInstance(document.getElementById('modalRequisicao')).hide(); carregarDados(); }
         });
 
         window.gerarComprovativo = function(id, data, horario, tipo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(22);
-            doc.setTextColor(0, 113, 227);
-            doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
-            doc.setFontSize(16); doc.setTextColor(100);
-            doc.text("Comprovativo de Requisição", 105, 45, { align: "center" });
+            doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(0, 113, 227); doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
+            doc.setFontSize(16); doc.setTextColor(100); doc.text("Comprovativo de Requisição", 105, 45, { align: "center" });
             doc.setDrawColor(0, 113, 227); doc.setLineWidth(1); doc.line(20, 55, 190, 55);
-            doc.setFontSize(12); doc.setTextColor(0);
-            doc.text(`Nº Requisição: ${id}`, 20, 70);
-            doc.text(`Docente: ${loggedNome}`, 20, 80);
-            doc.text(`Espaço: ${tipo}`, 20, 90);
-            doc.text(`Data: ${formatarData(data)}`, 20, 100);
-            doc.text(`Horário: ${horario}`, 20, 110);
+            doc.setFontSize(12); doc.setTextColor(0); doc.text(`Nº Requisição: ${id}`, 20, 70); doc.text(`Docente: ${loggedNome}`, 20, 80); doc.text(`Espaço: ${tipo}`, 20, 90); doc.text(`Data: ${formatarData(data)}`, 20, 100); doc.text(`Horário: ${horario}`, 20, 110);
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/comprovativo.html?id=${id}`;
             const img = new Image(); img.crossOrigin = "Anonymous"; img.src = qrUrl;
             img.onload = function() {
                 doc.addImage(img, 'PNG', 75, 130, 60, 60);
-                doc.setFontSize(10); doc.setTextColor(150);
-                doc.text("Documento digital autêntico.", 105, 200, { align: "center" });
-                doc.save(`Comprovativo_${id}.pdf`);
-                showToast('PDF gerado!');
+                doc.setFontSize(10); doc.setTextColor(150); doc.text("Documento digital autêntico.", 105, 200, { align: "center" });
+                doc.save(`Comprovativo_${id}.pdf`); showToast('PDF gerado!');
             };
         }
 
-        supabaseClient.channel('req-docente')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions', filter: `docente_id=eq.${loggedUid}` }, () => carregarDados())
-          .subscribe();
-
+        supabaseClient.channel('req-docente').on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, () => carregarDados()).subscribe();
         popularHoras().then(carregarDados);
     </script>
 </body>
