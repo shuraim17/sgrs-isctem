@@ -27,6 +27,11 @@
         #sidebar.active { transform: translateX(0) !important; }
         .mobile-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); z-index: 90; display: none; }
         .mobile-overlay.active { display: block; }
+        .nav-link { border-radius: 12px; margin-bottom: 5px; transition: 0.2s; cursor: pointer; }
+        .nav-link:hover { background: rgba(0,0,0,0.05); }
+        .nav-link.active { background: var(--apple-blue); color: #fff !important; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
         @media (max-width: 992px) { #sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; width: 100%; padding-top: 80px; } }
     </style>
 </head>
@@ -37,36 +42,45 @@
             <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <nav class="flex-grow-1">
-            <a href="#" class="nav-link active py-3 text-dark text-decoration-none d-block"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+            <a onclick="showSection('dashboard')" class="nav-link active py-3 text-dark text-decoration-none d-block nav-dash"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+            <a onclick="showSection('relatorio')" class="nav-link py-3 text-dark text-decoration-none d-block nav-rel"><i class="fas fa-file-alt me-2"></i> Relatório de Ocupação</a>
             <a href="index.html" class="nav-link py-3 text-danger text-decoration-none d-block mt-5"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
         </nav>
     </div>
 
     <button id="sidebarToggle" class="btn btn-dark d-lg-none position-fixed top-0 start-0 m-3 z-3" style="border-radius: 12px;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
     <div class="main-content">
-        <h1 class="fw-bold mb-4">Gestão Académica</h1>
 
-        <div class="row g-4 mb-4">
-            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Pendentes</p><h2 id="statPendentes">0</h2></div></div>
-            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Aprovadas</p><h2 id="statAprovadas">0</h2></div></div>
-            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Total</p><h2 id="statTotal">0</h2></div></div>
-            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Usuários</p><h2 id="statUsers">0</h2></div></div>
-        </div>
-
-        <div class="search-glass">
-            <i class="fas fa-search text-muted"></i>
-            <input type="text" id="searchInput" placeholder="Procurar por docente ou espaço..." onkeyup="filtrarTabela()">
-        </div>
-
-        <div class="card-apple">
-            <h5 class="fw-bold mb-4">Pedidos de Aprovação</h5>
-            <div class="table-responsive">
-                <table class="table align-middle" id="tabelaPedidos">
-                    <thead><tr><th>ID</th><th>Docente</th><th>Espaço</th><th>Data/Hora</th><th>Estado</th><th>Ações</th></tr></thead>
-                    <tbody id="listaPedidos"></tbody>
-                </table>
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <h1 class="fw-bold mb-4">Gestão Académica</h1>
+            <div class="row g-4 mb-4">
+                <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Pendentes</p><h2 id="statPendentes">0</h2></div></div>
+                <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Aprovadas</p><h2 id="statAprovadas">0</h2></div></div>
+                <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Total</p><h2 id="statTotal">0</h2></div></div>
+                <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Usuários</p><h2 id="statUsers">0</h2></div></div>
             </div>
-        </div>
+            <div class="search-glass"><i class="fas fa-search text-muted"></i><input type="text" placeholder="Procurar pedidos..." onkeyup="filtrarTabela('listaPedidos', this.value)"></div>
+            <div class="card-apple">
+                <h5 class="fw-bold mb-4">Pedidos de Aprovação</h5>
+                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>ID</th><th>Docente</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead><tbody id="listaPedidos"></tbody></table></div>
+            </div>
+        </section>
+
+        <!-- Relatorio Section -->
+        <section id="relatorio" class="content-section">
+            <h1 class="fw-bold mb-4">Relatório de Ocupação</h1>
+            <div class="search-glass"><i class="fas fa-search text-muted"></i><input type="text" placeholder="Filtrar por sala ou docente..." onkeyup="filtrarTabela('listaRelatorio', this.value)"></div>
+            <div class="card-apple">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Sala/Espaço</th><th>Data</th><th>Horário</th><th>Responsável</th><th>Contacto</th></tr></thead>
+                        <tbody id="listaRelatorio"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </div>
 
     <div id="toastContainer"></div>
@@ -79,14 +93,19 @@
         const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        if (!sessionStorage.getItem('loggedFuncao')?.toLowerCase().includes('gestor')) {
-            window.location.href = 'index.html';
-        }
+        if (!sessionStorage.getItem('loggedFuncao')?.toLowerCase().includes('gestor')) window.location.href = 'index.html';
 
         function showToast(msg) {
             const t = document.createElement('div'); t.className='toast-apple'; t.textContent=msg;
-            document.getElementById('toastContainer').appendChild(t);
-            setTimeout(()=>t.remove(), 4000);
+            document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(), 4000);
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-' + id.substring(0,3)).classList.add('active');
+            if(window.innerWidth < 992) toggleSidebar();
         }
 
         function toggleSidebar() {
@@ -94,21 +113,19 @@
             let overlay = document.querySelector(".mobile-overlay");
             if(!overlay) {
                 overlay = document.createElement("div"); overlay.className = "mobile-overlay";
-                document.body.appendChild(overlay);
-                overlay.onclick = toggleSidebar;
+                document.body.appendChild(overlay); overlay.onclick = toggleSidebar;
             }
             overlay.classList.toggle("active");
         }
 
         function formatarData(dataStr) {
             if(!dataStr) return '-';
-            const [y, m, d] = dataStr.split('-');
-            return `${d}/${m}/${y}`;
+            const [y, m, d] = dataStr.split('-'); return `${d}/${m}/${y}`;
         }
 
         async function carregarDados() {
             const { data: reqs } = await supabaseClient.from('requisitions').select('*').order('created_at', {ascending: false});
-            const { data: users } = await supabaseClient.from('profiles').select('id', { count: 'exact' });
+            const { data: profiles } = await supabaseClient.from('profiles').select('*');
 
             const pendentes = reqs.filter(r => r.estado.toLowerCase() === 'pendente');
             const aprovadas = reqs.filter(r => r.estado.toLowerCase() === 'aprovada');
@@ -116,60 +133,54 @@
             document.getElementById('statPendentes').textContent = pendentes.length;
             document.getElementById('statAprovadas').textContent = aprovadas.length;
             document.getElementById('statTotal').textContent = reqs.length;
-            document.getElementById('statUsers').textContent = users?.length || 0;
+            document.getElementById('statUsers').textContent = profiles?.length || 0;
 
+            // Dashboard Table
             const tbody = document.getElementById('listaPedidos');
             tbody.innerHTML = '';
-            reqs.forEach(r => {
-                const isPendente = r.estado.toLowerCase() === 'pendente';
+            pendentes.forEach(r => {
                 tbody.innerHTML += `<tr>
-                    <td>${r.id}</td>
-                    <td>${r.docente_nome}</td>
-                    <td>${r.tipo}</td>
-                    <td>${formatarData(r.data)} ${r.inicio.slice(0,5)}</td>
-                    <td><span class="badge bg-light text-dark border">${r.estado}</span></td>
+                    <td>${r.id}</td><td>${r.docente_nome}</td><td>${r.tipo}</td><td>${formatarData(r.data)} ${r.inicio.slice(0,5)}</td>
                     <td>
-                        ${isPendente ? `
-                            <button class="btn btn-sm btn-success me-1" onclick="updateStatus('${r.id}', 'Aprovada', '${r.docente_id}')"><i class="fas fa-check"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="updateStatus('${r.id}', 'Recusada', '${r.docente_id}')"><i class="fas fa-times"></i></button>
-                        ` : '<i class="fas fa-lock text-muted"></i>'}
+                        <button class="btn btn-sm btn-success me-1" onclick="updateStatus('${r.id}', 'Aprovada', '${r.docente_id}')"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="updateStatus('${r.id}', 'Recusada', '${r.docente_id}')"><i class="fas fa-times"></i></button>
                     </td>
+                </tr>`;
+            });
+
+            // Relatorio Table
+            const relBody = document.getElementById('listaRelatorio');
+            relBody.innerHTML = '';
+            aprovadas.forEach(r => {
+                const p = profiles.find(u => u.id === r.docente_id);
+                relBody.innerHTML += `<tr>
+                    <td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td>
+                    <td>${r.docente_nome}</td><td>${p ? (p.telemovel || p.email_secundario || p.email) : '-'}</td>
                 </tr>`;
             });
         }
 
-        function filtrarTabela() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const rows = document.getElementById('listaPedidos').getElementsByTagName('tr');
-            for (let row of rows) {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
-            }
+        function filtrarTabela(id, filter) {
+            const f = filter.toLowerCase();
+            const rows = document.getElementById(id).getElementsByTagName('tr');
+            for (let row of rows) row.style.display = row.textContent.toLowerCase().includes(f) ? '' : 'none';
         }
 
         window.updateStatus = async (id, status, docenteId) => {
             const { error } = await supabaseClient.from('requisitions').update({ estado: status }).eq('id', id);
             if (error) { showToast('Erro: ' + error.message); return; }
-                if (data && data.error) { showToast("Erro: " + data.error); return; }
             showToast('Estado atualizado!'); carregarDados();
             try {
                 const { data: p } = await supabaseClient.from('profiles').select('*').eq('id', docenteId).single();
                 if (p) {
                     await supabaseClient.functions.invoke('notifications', {
-                        body: { type: 'email', to: p.email_secundario || p.email, subject: 'Atualização SGRS', message: `<p>Requisição ${id} foi ${status}.</p>` }
-                    });
-                    if(p.telemovel) await supabaseClient.functions.invoke('notifications', {
-                        body: { type: 'sms', to: p.telemovel, message: `SGRS: Requisição ${id} foi ${status.toLowerCase()}.` }
+                        body: { type: 'email', to: p.email_secundario || p.email, subject: 'Atualização SGRS', message: `<p>Requisição ${id} foi ${status}.</p>`, email: p.email }
                     });
                 }
             } catch (e) { console.error(e); }
         }
 
-        supabaseClient.channel('gestor-realtime')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, () => carregarDados())
-          .subscribe();
-
+        supabaseClient.channel('gestor-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, () => carregarDados()).subscribe();
         carregarDados();
     </script>
 </body>
