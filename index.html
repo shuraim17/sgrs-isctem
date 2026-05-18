@@ -214,12 +214,13 @@
                 const { data, error } = await supabaseClient.functions.invoke('notifications', {
                     body: { 
                         type: 'sms', 
-                        to: tel, 
+                        to: String(tel), 
                         message: `SGRS ISCTEM: Utilize o seu email institucional para recuperar o acesso.` 
                     }
                 });
 
                 if (error) throw error;
+                if (data && data.error) throw new Error(data.error);
                 showToast('SMS enviado com sucesso.', 'success');
                 new bootstrap.Modal(document.getElementById('modalSMS')).show();
             } catch (error) {
@@ -244,7 +245,7 @@
                 await supabaseClient.functions.invoke('notifications', {
                     body: {
                         type: 'email',
-                        to: emailSec,
+                        to: String(emailSec),
                         subject: 'Recuperação de Conta - SGRS ISCTEM',
                         message: `<p>Olá ${userRecoveryData.nome},</p><p>Um link de redefinição de senha foi enviado para o seu email institucional (@isctem.ac.mz).</p>`
                     }
