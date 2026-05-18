@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRS — Registo | ISCTEM</title>
+    <title>SGRS — Criar Conta | ISCTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,77 +12,40 @@
             --glass-border: rgba(255, 255, 255, 0.6);
             --apple-blue: #0071e3;
             --sf-font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            --radius-apple: 24px;
+            --radius-apple: 28px;
             --transition-apple: cubic-bezier(0.2, 0, 0, 1);
-            --success-color: #34c759;
-            --error-color: #ff3b30;
         }
-        body {
-            margin: 0; min-height: 100vh; font-family: var(--sf-font);
-            background: #fbfbfd; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow-x: hidden; color: #1d1d1f; padding: 40px 20px;
-        }
-        .liquid-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden; background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
-        }
-        .bg-orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-            animation: floatLiquid 30s infinite alternate var(--transition-apple);
-        }
-        .bg-orb--1 { width: 500px; height: 500px; background: radial-gradient(circle, #818cf8 0%, #c084fc 100%); top: -100px; right: -100px; }
-        .bg-orb--2 { width: 400px; height: 400px; background: radial-gradient(circle, #38bdf8 0%, #818cf8 100%); bottom: -100px; left: -50px; animation-delay: -8s; }
-        @keyframes floatLiquid { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
-
-        .registo-card {
-            width: 100%; max-width: 700px; background: var(--glass-bg);
-            backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid var(--glass-border); border-radius: 36px; padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.08); animation: cardAppear 0.6s var(--transition-apple);
-        }
-        @keyframes cardAppear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
+        body { margin: 0; min-height: 100vh; font-family: var(--sf-font); background: #fbfbfd; display: flex; align-items: center; justify-content: center; color: #1d1d1f; padding: 40px 20px; }
+        .registo-container { width: 100%; max-width: 700px; background: var(--glass-bg); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 36px; padding: 40px; box-shadow: 0 30px 90px rgba(0,0,0,0.05); }
         .logo-isctem { width: 120px; margin-bottom: 25px; }
-        h2 { font-weight: 700; font-size: 28px; letter-spacing: -0.5px; margin-bottom: 4px; }
-        .subtitle { color: #86868b; margin-bottom: 30px; font-size: 16px; }
-
-        .section-title { font-size: 14px; font-weight: 600; color: #86868b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; margin-top: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
-
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
-        @media (max-width: 650px) { .form-grid { grid-template-columns: 1fr; } }
-
-        .input-group-glass { margin-bottom: 15px; position: relative; }
-        .input-glass {
-            background: rgba(255, 255, 255, 0.6); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 12px 18px; display: flex; align-items: center;
-            transition: all 0.3s var(--transition-apple);
-        }
+        h1 { font-weight: 700; font-size: 32px; letter-spacing: -0.5px; margin-bottom: 8px; }
+        .subtitle { font-size: 17px; color: #86868b; margin-bottom: 35px; }
+        .section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; color: #86868b; letter-spacing: 1px; margin: 25px 0 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+        .input-group-glass { display: flex; flex-direction: column; }
+        .input-glass { background: rgba(255, 255, 255, 0.6); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px 18px; display: flex; align-items: center; transition: 0.3s var(--transition-apple); }
         .input-glass:focus-within { background: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1); }
-        .input-glass i { color: #86868b; margin-right: 12px; width: 20px; text-align: center; }
-        .input-glass input, .input-glass select { border: none; background: transparent; width: 100%; outline: none; font-size: 15px; }
-
-        .input-glass--success { border-color: var(--success-color) !important; background: rgba(52, 199, 89, 0.05); }
-        .input-glass--error { border-color: var(--error-color) !important; background: rgba(255, 59, 48, 0.05); }
-
-        .feedback-text { font-size: 11px; margin-top: 4px; padding-left: 4px; min-height: 16px; transition: 0.2s; color: #86868b; }
-        .feedback-text.error { color: var(--error-color); }
-        .feedback-text.success { color: var(--success-color); }
-
-        .btn-registo { background: var(--apple-blue); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 18px; font-weight: 600; font-size: 17px; transition: 0.2s; cursor: pointer; margin-top: 20px; }
+        .input-glass i { color: #86868b; margin-right: 12px; font-size: 16px; }
+        .input-glass input, .input-glass select { border: none; background: transparent; width: 100%; outline: none; font-size: 16px; color: #1d1d1f; }
+        .input-glass--success { border-color: #34c759 !important; }
+        .input-glass--error { border-color: #ff3b30 !important; }
+        .feedback-text { font-size: 11px; margin-top: 5px; margin-left: 5px; color: #86868b; }
+        .feedback-text.success { color: #34c759; }
+        .feedback-text.error { color: #ff3b30; }
+        .btn-registo { background: var(--apple-blue); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 16px; font-weight: 600; font-size: 17px; transition: 0.2s; cursor: pointer; margin-top: 30px; }
         .btn-registo:hover { background: #0077ed; transform: scale(1.01); }
-        .btn-registo:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .toast-apple { position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideInToast 0.4s var(--transition-apple); }
+        .btn-registo:disabled { background: #d2d2d7; cursor: not-allowed; }
+        .toast-apple { position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px; border-radius: 20px; font-weight: 500; backdrop-filter: blur(20px); animation: slideInToast 0.4s var(--transition-apple); }
         @keyframes slideInToast { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .prefix { font-weight: 600; color: #86868b; margin-right: 8px; border-right: 1px solid #d2d2d7; padding-right: 8px; }
     </style>
 </head>
 <body>
-    <div class="liquid-container"><div class="bg-orb bg-orb--1"></div><div class="bg-orb bg-orb--2"></div></div>
-
-    <div class="registo-card">
-        <img src="logo1.png" alt="ISCTEM" class="logo-isctem">
-        <h2>Registo de Utilizador</h2>
-        <p class="subtitle">Introduza os seus dados para aceder ao sistema SGRS.</p>
+    <div class="registo-container">
+        <div class="text-center"><img src="logo1.png" alt="ISCTEM" class="logo-isctem"></div>
+        <h1>Criar nova conta</h1>
+        <p class="subtitle">Registe os seus dados para aceder ao sistema de gestão.</p>
 
         <form id="registoForm">
             <div class="section-title">Informações Pessoais</div>
@@ -94,8 +57,12 @@
                 </div>
                 <div class="input-group-glass">
                     <label class="small text-muted mb-1">Telemóvel (Moçambique)</label>
-                    <div class="input-glass" id="telGlass"><i class="fas fa-phone"></i><input type="tel" id="telemovel" placeholder="841234567" maxlength="9" required></div>
-                    <div class="feedback-text" id="telFeedback">Ex: 84 / 82 / 86 / 87</div>
+                    <div class="input-glass" id="telGlass">
+                        <i class="fas fa-phone"></i>
+                        <span class="prefix">+258</span>
+                        <input type="tel" id="telemovel" placeholder="841234567" maxlength="9" required>
+                    </div>
+                    <div class="feedback-text" id="telFeedback">Apenas os 9 dígitos</div>
                 </div>
             </div>
 
@@ -152,7 +119,9 @@
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
         const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        document.getElementById("toggleSenha").addEventListener("click", function() { const p = document.getElementById("senha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); }); document.getElementById("toggleConfirmar").addEventListener("click", function() { const p = document.getElementById("confirmarSenha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
+
+        document.getElementById("toggleSenha").addEventListener("click", function() { const p = document.getElementById("senha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); }); 
+        document.getElementById("toggleConfirmar").addEventListener("click", function() { const p = document.getElementById("confirmarSenha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
 
         const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
         const TEL_REGEX = /^(82|83|84|85|86|87)\d{7}$/;
@@ -238,17 +207,23 @@
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                     email, password, options: { data: { nome: inputs.nome.el.value, funcao: funcao } }
                 });
-                if (authError) throw authError;
+                
+                if (authError) {
+                    if (authError.message.toLowerCase().includes('rate limit')) {
+                        throw new Error('Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.');
+                    }
+                    throw authError;
+                }
 
                 const { error: profileError } = await supabaseClient.from('profiles').update({
                     email_secundario: inputs.emailSec.el.value.trim(),
-                    telemovel: inputs.tel.el.value.trim()
+                    telemovel: '+258' + inputs.tel.el.value.trim()
                 }).eq('id', authData.user.id);
 
                 showToast('Conta criada com sucesso!', 'success');
                 setTimeout(() => window.location.href = 'index.html', 2000);
             } catch (error) {
-                showToast('Erro: ' + error.message, 'error');
+                showToast(error.message, 'error');
                 btn.disabled = false; btn.textContent = 'Criar Minha Conta';
             }
         });
