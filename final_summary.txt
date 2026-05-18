@@ -1,6 +1,0 @@
-Finalized SGRS ISCTEM migration and enhancement:
-- Restored Admin features: Horário modal and user management with secondary email/phone fields.
-- Improved Docente UI: Date formatting to dd/mm/yyyy, select-based time selection (30m intervals), and PDF generation with QR code.
-- Enhanced Gestor Dashboard: Added search functionality and date formatting.
-- Integrated Comprovativo: Live data fetching from Supabase for digital receipt verification.
-- Tech: Supabase Auth, PostgreSQL, Realtime, Edge Functions (notifications).

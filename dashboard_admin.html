@@ -20,33 +20,48 @@
         .main-content { flex: 1; padding: 40px; margin-left: 280px; width: calc(100% - 280px); }
         .card-apple { background: #fff; border-radius: var(--radius-apple); padding: 25px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.02); margin-bottom: 24px; }
         .stat-card { text-align: center; }
-        .stat-card h3 { font-size: 36px; font-weight: 700; color: var(--apple-blue); }
+        .stat-card h3 { font-size: 32px; font-weight: 700; color: var(--apple-blue); }
         .btn-apple { background: var(--apple-blue); color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; }
         .toast-apple { position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: rgba(29, 29, 31, 0.9); color: #fff; padding: 16px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        #sidebar.active { transform: translateX(0) !important; }
+        .mobile-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); z-index: 90; display: none; }
+        .mobile-overlay.active { display: block; }
+        .nav-link { border-radius: 12px; margin-bottom: 5px; transition: 0.2s; }
+        .nav-link:hover { background: rgba(0,0,0,0.05); }
+        .nav-link.active { background: var(--apple-blue); color: #fff !important; }
         @media (max-width: 992px) { #sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; width: 100%; padding-top: 80px; } }
     </style>
 </head>
 <body>
     <div id="sidebar">
-        <div class="mb-5"><img src="logo1.png" width="40"></div>
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <img src="logo1.png" width="40">
+            <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+        </div>
         <nav class="flex-grow-1">
             <a href="#" class="nav-link active py-3 text-dark text-decoration-none d-block"><i class="fas fa-grip me-2"></i> Dashboard</a>
             <a href="#" class="nav-link py-3 text-dark text-decoration-none d-block" data-bs-toggle="modal" data-bs-target="#modalUsuarios"><i class="fas fa-users me-2"></i> Utilizadores</a>
+            <a href="#" class="nav-link py-3 text-dark text-decoration-none d-block" data-bs-toggle="modal" data-bs-target="#modalRequisicoesAll"><i class="fas fa-history me-2"></i> Histórico</a>
             <a href="#" class="nav-link py-3 text-dark text-decoration-none d-block" data-bs-toggle="modal" data-bs-target="#modalHorario"><i class="fas fa-clock me-2"></i> Horário</a>
             <a href="index.html" class="nav-link py-3 text-danger text-decoration-none d-block mt-5"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
         </nav>
     </div>
 
+    <button id="sidebarToggle" class="btn btn-dark d-lg-none position-fixed top-0 start-0 m-3 z-3" style="border-radius: 12px;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
     <div class="main-content">
         <h1 class="fw-bold mb-4">Painel Administrativo</h1>
         <div class="row g-4 mb-4">
-            <div class="col-md-4"><div class="card-apple stat-card"><p class="text-muted mb-1">Utilizadores</p><h3 id="totalUsers">0</h3></div></div>
-            <div class="col-md-4"><div class="card-apple stat-card"><p class="text-muted mb-1">Requisições</p><h3 id="totalReqs">0</h3></div></div>
-            <div class="col-md-4"><div class="card-apple stat-card"><p class="text-muted mb-1">Status</p><h3 class="text-success">Ativo</h3></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Total Requisições</p><h3 id="totalReqs">0</h3></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Pendentes</p><h3 id="pendReqs" class="text-warning">0</h3></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Aprovadas</p><h3 id="aprovReqs" class="text-success">0</h3></div></div>
+            <div class="col-md-3"><div class="card-apple stat-card"><p class="text-muted mb-1">Utilizadores</p><h3 id="totalUsers">0</h3></div></div>
         </div>
 
         <div class="card-apple">
-            <h5 class="fw-bold mb-4">Requisições Recentes</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0">Requisições Recentes</h5>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalRequisicoesAll">Ver Tudo</button>
+            </div>
             <div class="table-responsive">
                 <table class="table align-middle">
                     <thead><tr><th>ID</th><th>Docente</th><th>Data/Hora</th><th>Estado</th></tr></thead>
@@ -61,13 +76,55 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 rounded-4">
                 <div class="modal-body p-4">
-                    <h5 class="fw-bold mb-4">Gestão de Utilizadores</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0">Gestão de Utilizadores</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead><tr><th>Email</th><th>Nome</th><th>Função</th><th>Email Sec.</th><th>Tel</th><th>Ações</th></tr></thead>
                             <tbody id="usersTableBody"></tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Requisicoes Todas -->
+    <div class="modal fade" id="modalRequisicoesAll" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0">Histórico de Requisições</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead><tr><th>ID</th><th>Docente</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Estado</th></tr></thead>
+                            <tbody id="allReqsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Usuario -->
+    <div class="modal fade" id="modalEditUser" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-body p-4">
+                    <h5 class="fw-bold mb-4">Editar Perfil</h5>
+                    <form id="formEditUser">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3"><label class="form-label small">Nome</label><input type="text" id="editNome" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label small">Função</label><select id="editFuncao" class="form-select"><option>Docente</option><option>Gestor</option><option>Admin</option></select></div>
+                        <div class="mb-3"><label class="form-label small">Email Secundário</label><input type="email" id="editEmailSec" class="form-control"></div>
+                        <div class="mb-3"><label class="form-label small">Telemóvel</label><input type="text" id="editTel" class="form-control"></div>
+                        <button type="submit" class="btn btn-primary w-100">Atualizar</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -80,14 +137,8 @@
                 <div class="modal-body p-4">
                     <h5 class="fw-bold mb-4">Horário de Funcionamento</h5>
                     <form id="formHorario">
-                        <div class="mb-3">
-                            <label class="form-label">Abertura</label>
-                            <input type="time" class="form-control" id="horaAbertura" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Fecho</label>
-                            <input type="time" class="form-control" id="horaFecho" required>
-                        </div>
+                        <div class="mb-3"><label class="form-label">Abertura</label><input type="time" class="form-control" id="horaAbertura" required></div>
+                        <div class="mb-3"><label class="form-label">Fecho</label><input type="time" class="form-control" id="horaFecho" required></div>
                         <button type="submit" class="btn btn-primary w-100">Guardar Alterações</button>
                     </form>
                 </div>
@@ -115,12 +166,31 @@
             setTimeout(()=>t.remove(), 4000);
         }
 
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+            let overlay = document.querySelector(".mobile-overlay");
+            if(!overlay) {
+                overlay = document.createElement("div"); overlay.className = "mobile-overlay";
+                document.body.appendChild(overlay);
+                overlay.onclick = toggleSidebar;
+            }
+            overlay.classList.toggle("active");
+        }
+
+        function formatarData(dataStr) {
+            if(!dataStr) return '-';
+            const [y, m, d] = dataStr.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
         async function carregarDados() {
             const { data: users } = await supabaseClient.from('profiles').select('*');
-            const { data: reqs } = await supabaseClient.from('requisitions').select('*').order('created_at', {ascending: false}).limit(10);
+            const { data: reqs } = await supabaseClient.from('requisitions').select('*').order('created_at', {ascending: false});
 
             document.getElementById('totalUsers').textContent = users?.length || 0;
             document.getElementById('totalReqs').textContent = reqs?.length || 0;
+            document.getElementById('pendReqs').textContent = reqs?.filter(r => r.estado.toLowerCase() === 'pendente').length || 0;
+            document.getElementById('aprovReqs').textContent = reqs?.filter(r => r.estado.toLowerCase() === 'aprovada').length || 0;
 
             const uBody = document.getElementById('usersTableBody');
             uBody.innerHTML = '';
@@ -131,17 +201,25 @@
                     <td>${u.funcao}</td>
                     <td>${u.email_secundario || '-'}</td>
                     <td>${u.telemovel || '-'}</td>
-                    <td><button class="btn btn-sm btn-danger" onclick="deleteProfile('${u.id}')"><i class="fas fa-trash"></i></button></td>
+                    <td>
+                        <button class="btn btn-sm btn-light me-1" onclick="openEditUser('${u.id}', '${u.nome}', '${u.funcao}', '${u.email_secundario}', '${u.telemovel}')"><i class="fas fa-edit text-primary"></i></button>
+                        <button class="btn btn-sm btn-light" onclick="deleteProfile('${u.id}')"><i class="fas fa-trash text-danger"></i></button>
+                    </td>
                 </tr>`;
             });
 
             const rBody = document.getElementById('listaRecentes');
             rBody.innerHTML = '';
-            reqs?.forEach(r => {
-                rBody.innerHTML += `<tr><td>${r.id}</td><td>${r.docente_nome}</td><td>${r.data} ${r.inicio}</td><td><span class="badge bg-light text-dark border">${r.estado}</span></td></tr>`;
+            reqs?.slice(0, 10).forEach(r => {
+                rBody.innerHTML += `<tr><td>${r.id}</td><td>${r.docente_nome}</td><td>${formatarData(r.data)} ${r.inicio.slice(0,5)}</td><td><span class="badge bg-light text-dark border">${r.estado}</span></td></tr>`;
             });
 
-            // Carregar Horário
+            const allRBody = document.getElementById('allReqsTableBody');
+            allRBody.innerHTML = '';
+            reqs?.forEach(r => {
+                allRBody.innerHTML += `<tr><td>${r.id}</td><td>${r.docente_nome}</td><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td><td><span class="badge bg-light text-dark border">${r.estado}</span></td></tr>`;
+            });
+
             const { data: setting } = await supabaseClient.from('settings').select('*').eq('key', 'faculdade').single();
             if (setting) {
                 document.getElementById('horaAbertura').value = setting.value.abertura;
@@ -149,22 +227,42 @@
             }
         }
 
-        document.getElementById('formHorario').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const abertura = document.getElementById('horaAbertura').value;
-            const fecho = document.getElementById('horaFecho').value;
+        window.openEditUser = (id, nome, funcao, emailSec, tel) => {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editNome').value = nome;
+            document.getElementById('editFuncao').value = funcao;
+            document.getElementById('editEmailSec').value = (emailSec === 'null' || !emailSec) ? '' : emailSec;
+            document.getElementById('editTel').value = (tel === 'null' || !tel) ? '' : tel;
+            new bootstrap.Modal(document.getElementById('modalEditUser')).show();
+        }
 
-            const { error } = await supabaseClient.from('settings').upsert({
-                key: 'faculdade',
-                value: { abertura, fecho },
-                updated_at: new Date()
-            });
+        document.getElementById('formEditUser').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const { error } = await supabaseClient.from('profiles').update({
+                nome: document.getElementById('editNome').value,
+                funcao: document.getElementById('editFuncao').value,
+                email_secundario: document.getElementById('editEmailSec').value,
+                telemovel: document.getElementById('editTel').value
+            }).eq('id', id);
 
             if (error) showToast('Erro: ' + error.message);
             else {
-                showToast('Horário atualizado com sucesso!');
-                bootstrap.Modal.getInstance(document.getElementById('modalHorario')).hide();
+                showToast('Utilizador atualizado!');
+                bootstrap.Modal.getInstance(document.getElementById('modalEditUser')).hide();
+                carregarDados();
             }
+        });
+
+        document.getElementById('formHorario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await supabaseClient.from('settings').upsert({
+                key: 'faculdade',
+                value: { abertura: document.getElementById('horaAbertura').value, fecho: document.getElementById('horaFecho').value },
+                updated_at: new Date()
+            });
+            if (error) showToast('Erro: ' + error.message);
+            else { showToast('Horário atualizado!'); bootstrap.Modal.getInstance(document.getElementById('modalHorario')).hide(); }
         });
 
         window.deleteProfile = async (id) => {
