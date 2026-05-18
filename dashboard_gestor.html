@@ -63,7 +63,7 @@
             <div class="search-glass"><i class="fas fa-search text-muted"></i><input type="text" placeholder="Procurar pedidos..." onkeyup="filtrarTabela('listaPedidos', this.value)"></div>
             <div class="card-apple">
                 <h5 class="fw-bold mb-4">Pedidos de Aprovação</h5>
-                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>ID</th><th>Docente</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead><tbody id="listaPedidos"></tbody></table></div>
+                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>ID</th><th>Docente/Rep.</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead><tbody id="listaPedidos"></tbody></table></div>
             </div>
         </section>
 
@@ -74,7 +74,7 @@
             <div class="card-apple">
                 <div class="table-responsive">
                     <table class="table align-middle">
-                        <thead><tr><th>Sala/Espaço</th><th>Data</th><th>Horário</th><th>Responsável</th><th>Contacto</th></tr></thead>
+                        <thead><tr><th>Sala/Espaço</th><th>Data</th><th>Horário</th><th>Responsável</th><th>Contacto</th><th>Ações</th></tr></thead>
                         <tbody id="listaRelatorio"></tbody>
                     </table>
                 </div>
@@ -87,6 +87,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
@@ -156,6 +157,7 @@
                 relBody.innerHTML += `<tr>
                     <td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td>
                     <td>${r.docente_nome}</td><td>${p ? (p.telemovel || p.email_secundario || p.email) : '-'}</td>
+                    <td><button class="btn btn-sm btn-dark" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}', '${r.tipo}', '${r.docente_nome}')"><i class="fas fa-file-pdf"></i></button></td>
                 </tr>`;
             });
         }
@@ -178,6 +180,28 @@
                     });
                 }
             } catch (e) { console.error(e); }
+        }
+
+        window.gerarComprovativo = function(id, data, horario, tipo, nome) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(0, 113, 227); doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
+            doc.setFontSize(16); doc.setTextColor(100); doc.text("Comprovativo de Reserva (Gestor)", 105, 45, { align: "center" });
+            doc.setDrawColor(0, 113, 227); doc.setLineWidth(1); doc.line(20, 55, 190, 55);
+            doc.setFontSize(12); doc.setTextColor(0);
+            doc.text(`Nº Requisição: ${id}`, 20, 70);
+            doc.text(`Responsável: ${nome}`, 20, 80);
+            doc.text(`Espaço: ${tipo}`, 20, 90);
+            doc.text(`Data: ${formatarData(data)}`, 20, 100);
+            doc.text(`Horário: ${horario}`, 20, 110);
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/comprovativo.html?id=${id}`;
+            const img = new Image(); img.crossOrigin = "Anonymous"; img.src = qrUrl;
+            img.onload = function() {
+                doc.addImage(img, 'PNG', 75, 130, 60, 60);
+                doc.setFontSize(10); doc.setTextColor(150);
+                doc.text("Documento digital autêntico gerado pela Gestão Académica.", 105, 200, { align: "center" });
+                doc.save(`Comprovativo_${id}.pdf`); showToast('PDF gerado!');
+            };
         }
 
         supabaseClient.channel('gestor-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, () => carregarDados()).subscribe();
