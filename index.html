@@ -137,7 +137,7 @@
                 </div>
                 <div class="modal-body p-4 text-center">
                     <i class="fas fa-paper-plane fa-3x mb-3 text-primary"></i>
-                    <p class="text-muted">Um SMS de instrução foi enviado. Por favor, verifique o seu email institucional para concluir o reset.</p>
+                    <p class="text-muted">Um SMS contendo a sua palavra-passe foi enviado. Por favor, verifique o seu telemóvel.</p>
                     <button class="btn-apple" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
@@ -215,7 +215,7 @@
                     body: { 
                         type: 'sms', 
                         to: String(tel), 
-                        message: `SGRS ISCTEM: Utilize o seu email institucional para recuperar o acesso.` 
+                        email: userRecoveryData.email, message: `SGRS ISCTEM: Utilize o link enviado para o seu email para recuperar o acesso.` 
                     }
                 });
 
