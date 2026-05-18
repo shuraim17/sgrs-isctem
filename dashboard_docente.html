@@ -6,6 +6,7 @@
     <title>SGRS — Dashboard Docente | ISCTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.4);
@@ -34,19 +35,21 @@
         .nav-link.active { background: var(--apple-blue); color: #fff !important; }
         .content-section { display: none; }
         .content-section.active { display: block; }
+        #calendar { background: #fff; padding: 20px; border-radius: 20px; }
+        .fc-event { cursor: pointer; }
         @media (max-width: 992px) { #sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; width: 100%; padding-top: 80px; } }
     </style>
 </head>
 <body>
     <div id="sidebar">
         <div class="d-flex justify-content-between align-items-center mb-5">
-            <img src="logo1.png" width="40">
+            <img src="logo1.png" width="100">
             <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <nav class="flex-grow-1">
             <a onclick="showSection('dashboard')" class="nav-link active py-3 text-dark text-decoration-none d-block nav-dash"><i class="fas fa-home me-2"></i> Início</a>
             <a onclick="showSection('minhas')" class="nav-link py-3 text-dark text-decoration-none d-block nav-min"><i class="fas fa-list-ul me-2"></i> Minhas Requisições</a>
-            <a onclick="showSection('disponibilidade')" class="nav-link py-3 text-dark text-decoration-none d-block nav-dis"><i class="fas fa-calendar-check me-2"></i> Disponibilidade</a>
+            <a onclick="showSection('disponibilidade')" class="nav-link py-3 text-dark text-decoration-none d-block nav-dis"><i class="fas fa-calendar-alt me-2"></i> Calendário</a>
             <a onclick="showSection('comprovativos')" class="nav-link py-3 text-dark text-decoration-none d-block nav-com"><i class="fas fa-file-pdf me-2"></i> Comprovativos</a>
             <a href="index.html" class="nav-link py-3 text-danger text-decoration-none d-block mt-5"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
         </nav>
@@ -77,19 +80,19 @@
             </div>
         </section>
 
-        <!-- DISPONIBILIDADE (PUBLIC VIEW) -->
+        <!-- DISPONIBILIDADE (CALENDAR VIEW) -->
         <section id="disponibilidade" class="content-section">
-            <h1 class="fw-bold mb-4">Disponibilidade de Salas</h1>
-            <p class="text-muted mb-4">Veja abaixo as reservas já confirmadas em tempo real.</p>
+            <h1 class="fw-bold mb-4">Calendário de Ocupação</h1>
+            <p class="text-muted mb-4">Visualize todas as reservas confirmadas no sistema.</p>
             <div class="card-apple">
-                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Sala/Espaço</th><th>Data</th><th>Horário</th><th>Status</th></tr></thead><tbody id="listaDisponibilidade"></tbody></table></div>
+                <div id="calendar"></div>
             </div>
         </section>
 
         <!-- COMPROVATIVOS -->
         <section id="comprovativos" class="content-section">
             <h1 class="fw-bold mb-4">Meus Comprovativos</h1>
-            <p class="text-muted mb-4">Baixe o PDF oficial das suas requisições aprovadas.</p>
+            <p class="text-muted mb-4">Visualize e baixe o comprovativo oficial.</p>
             <div class="row g-4" id="listaComprovativos"></div>
         </section>
 
@@ -115,11 +118,29 @@
         </div>
     </div>
 
+    <!-- Modal PDF Preview -->
+    <div class="modal fade" id="modalPreview" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0"><h5 class="fw-bold m-0">Pré-visualização do Comprovativo</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body text-center p-4">
+                    <div id="pdfFrameWrapper" style="background: #f5f5f7; border-radius: 16px; padding: 20px; min-height: 400px; display: flex; align-items: center; justify-content: center;">
+                        <canvas id="pdfCanvas" style="max-width: 100%; border: 1px solid #ddd;"></canvas>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button class="btn btn-dark w-100 py-3 rounded-3" id="btnDownloadActual"><i class="fas fa-download me-2"></i> Baixar Documento PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="toastContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 
     <script>
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
@@ -132,6 +153,7 @@
         if (!loggedEmail) window.location.href = 'index.html';
 
         document.getElementById('docenteNome').textContent = loggedNome;
+        let calendar;
 
         function showToast(msg, type='success') {
             const t = document.createElement('div'); t.className=`toast-apple toast-${type}`; t.textContent=msg;
@@ -143,6 +165,7 @@
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.querySelector('.nav-' + id.substring(0,3)).classList.add('active');
+            if(id === 'disponibilidade') { setTimeout(() => calendar.render(), 100); }
             if(window.innerWidth < 992) toggleSidebar();
         }
 
@@ -191,14 +214,18 @@
             // Minhas Table
             const mBody = document.getElementById('listaMinhas'); mBody.innerHTML = '';
             userReqs.forEach(r => {
-                mBody.innerHTML += `<tr><td>${r.id}</td><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-\n${r.fim.slice(0,5)}</td><td><span class="badge-status status-${r.estado.toLowerCase()}">${r.estado}</span></td></tr>`;
+                mBody.innerHTML += `<tr><td>${r.id}</td><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td><td><span class="badge-status status-${r.estado.toLowerCase()}">${r.estado}</span></td></tr>`;
             });
 
-            // Disponibilidade Table
-            const dBody = document.getElementById('listaDisponibilidade'); dBody.innerHTML = '';
-            approvedReqs.forEach(r => {
-                dBody.innerHTML += `<tr><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td><td><span class="text-danger fw-bold"><i class="fas fa-lock me-1"></i> Ocupado</span></td></tr>`;
-            });
+            // Calendar
+            const events = approvedReqs.map(r => ({
+                title: `${r.tipo} (${r.docente_nome})`,
+                start: `${r.data}T${r.inicio}`,
+                end: `${r.data}T${r.fim}`,
+                color: '#0071e3'
+            }));
+            calendar.removeAllEvents();
+            calendar.addEventSource(events);
 
             // Comprovativos Grid
             const cBody = document.getElementById('listaComprovativos'); cBody.innerHTML = '';
@@ -209,7 +236,7 @@
                             <i class="fas fa-file-pdf fa-2x text-primary mb-3"></i>
                             <h6 class="fw-bold">${r.tipo}</h6>
                             <p class="small text-muted">${formatarData(r.data)}</p>
-                            <button class="btn btn-sm btn-dark w-100" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}', '${r.tipo}')">Baixar PDF</button>
+                            <button class="btn btn-sm btn-dark w-100" onclick="showPreview('${r.id}', '${r.data}', '${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}', '${r.tipo}')">Ver e Baixar</button>
                         </div>
                     </div>`;
             });
@@ -227,24 +254,45 @@
             else { showToast('Requisição submetida!'); bootstrap.Modal.getInstance(document.getElementById('modalRequisicao')).hide(); carregarDados(); }
         });
 
-        window.gerarComprovativo = function(id, data, horario, tipo) {
+        function showPreview(id, data, horario, tipo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(0, 113, 227); doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
             doc.setFontSize(16); doc.setTextColor(100); doc.text("Comprovativo de Requisição", 105, 45, { align: "center" });
             doc.setDrawColor(0, 113, 227); doc.setLineWidth(1); doc.line(20, 55, 190, 55);
-            doc.setFontSize(12); doc.setTextColor(0); doc.text(`Nº Requisição: ${id}`, 20, 70); doc.text(`Docente: ${loggedNome}`, 20, 80); doc.text(`Espaço: ${tipo}`, 20, 90); doc.text(`Data: ${formatarData(data)}`, 20, 100); doc.text(`Horário: ${horario}`, 20, 110);
+            doc.setFontSize(12); doc.setTextColor(0);
+            doc.text(`Nº Requisição: ${id}`, 20, 70);
+            doc.text(`Docente: ${loggedNome}`, 20, 80);
+            doc.text(`Espaço: ${tipo}`, 20, 90);
+            doc.text(`Data: ${formatarData(data)}`, 20, 100);
+            doc.text(`Horário: ${horario}`, 20, 110);
+            
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/comprovativo.html?id=${id}`;
             const img = new Image(); img.crossOrigin = "Anonymous"; img.src = qrUrl;
             img.onload = function() {
                 doc.addImage(img, 'PNG', 75, 130, 60, 60);
                 doc.setFontSize(10); doc.setTextColor(150); doc.text("Documento digital autêntico.", 105, 200, { align: "center" });
-                doc.save(`Comprovativo_${id}.pdf`); showToast('PDF gerado!');
+                
+                // Show in Canvas for preview
+                const pdfData = doc.output('datauristring');
+                document.getElementById('pdfCanvas').style.display = 'none'; // Canvas is tricky with jsPDF, we'll use an image or blob
+                document.getElementById('pdfFrameWrapper').innerHTML = `<iframe src="${pdfData}" width="100%" height="500px" style="border:none; border-radius:12px;"></iframe>`;
+                
+                document.getElementById('btnDownloadActual').onclick = () => { doc.save(`Comprovativo_${id}.pdf`); showToast('Baixado!'); };
+                new bootstrap.Modal(document.getElementById('modalPreview')).show();
             };
         }
 
-        supabaseClient.channel('req-docente').on('postgres_changes', { event: '*', schema: 'public', table: 'requisitions' }, () => carregarDados()).subscribe();
-        popularHoras().then(carregarDados);
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'pt-br',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+                events: []
+            });
+            popularHoras().then(carregarDados);
+        });
     </script>
 </body>
 </html>
