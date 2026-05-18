@@ -151,6 +151,7 @@
         window.updateStatus = async (id, status, docenteId) => {
             const { error } = await supabaseClient.from('requisitions').update({ estado: status }).eq('id', id);
             if (error) { showToast('Erro: ' + error.message); return; }
+                if (data && data.error) { showToast("Erro: " + data.error); return; }
             showToast('Estado atualizado!'); carregarDados();
             try {
                 const { data: p } = await supabaseClient.from('profiles').select('*').eq('id', docenteId).single();
