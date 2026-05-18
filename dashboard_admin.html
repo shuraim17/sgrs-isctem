@@ -64,10 +64,32 @@
                     <h5 class="fw-bold mb-4">Gestão de Utilizadores</h5>
                     <div class="table-responsive">
                         <table class="table align-middle">
-                            <thead><tr><th>Email</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Email</th><th>Nome</th><th>Função</th><th>Email Sec.</th><th>Tel</th><th>Ações</th></tr></thead>
                             <tbody id="usersTableBody"></tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Horario -->
+    <div class="modal fade" id="modalHorario" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-body p-4">
+                    <h5 class="fw-bold mb-4">Horário de Funcionamento</h5>
+                    <form id="formHorario">
+                        <div class="mb-3">
+                            <label class="form-label">Abertura</label>
+                            <input type="time" class="form-control" id="horaAbertura" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecho</label>
+                            <input type="time" class="form-control" id="horaFecho" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Guardar Alterações</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -103,7 +125,14 @@
             const uBody = document.getElementById('usersTableBody');
             uBody.innerHTML = '';
             users?.forEach(u => {
-                uBody.innerHTML += `<tr><td>${u.email}</td><td>${u.nome}</td><td>${u.funcao}</td><td><button class="btn btn-sm btn-danger" onclick="deleteProfile('${u.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                uBody.innerHTML += `<tr>
+                    <td>${u.email}</td>
+                    <td>${u.nome}</td>
+                    <td>${u.funcao}</td>
+                    <td>${u.email_secundario || '-'}</td>
+                    <td>${u.telemovel || '-'}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteProfile('${u.id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
             });
 
             const rBody = document.getElementById('listaRecentes');
@@ -111,7 +140,32 @@
             reqs?.forEach(r => {
                 rBody.innerHTML += `<tr><td>${r.id}</td><td>${r.docente_nome}</td><td>${r.data} ${r.inicio}</td><td><span class="badge bg-light text-dark border">${r.estado}</span></td></tr>`;
             });
+
+            // Carregar Horário
+            const { data: setting } = await supabaseClient.from('settings').select('*').eq('key', 'faculdade').single();
+            if (setting) {
+                document.getElementById('horaAbertura').value = setting.value.abertura;
+                document.getElementById('horaFecho').value = setting.value.fecho;
+            }
         }
+
+        document.getElementById('formHorario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const abertura = document.getElementById('horaAbertura').value;
+            const fecho = document.getElementById('horaFecho').value;
+
+            const { error } = await supabaseClient.from('settings').upsert({
+                key: 'faculdade',
+                value: { abertura, fecho },
+                updated_at: new Date()
+            });
+
+            if (error) showToast('Erro: ' + error.message);
+            else {
+                showToast('Horário atualizado com sucesso!');
+                bootstrap.Modal.getInstance(document.getElementById('modalHorario')).hide();
+            }
+        });
 
         window.deleteProfile = async (id) => {
             if (!confirm('Eliminar perfil?')) return;

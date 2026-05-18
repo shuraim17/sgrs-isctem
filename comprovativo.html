@@ -27,6 +27,7 @@
             font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 20px;
         }
         .btn-apple:hover { transform: scale(1.02); }
+        .qr-area { text-align: center; margin: 30px 0; }
         @media print { .btn-apple, .no-print { display: none; } body { padding: 0; } .receipt-card { box-shadow: none; border: none; } }
     </style>
 </head>
@@ -41,12 +42,15 @@
                 <h2>SGRS – ISCTEM</h2>
                 <p class="mb-0">Comprovativo Oficial de Requisição</p>
             </div>
+
+            <div id="qrPlaceholder" class="qr-area"></div>
+
             <div class="info-row"><span class="info-label">Nº Requisição</span><span id="resId"></span></div>
             <div class="info-row"><span class="info-label">Docente</span><span id="resDocente"></span></div>
             <div class="info-row"><span class="info-label">Espaço</span><span id="resEspaco"></span></div>
             <div class="info-row"><span class="info-label">Data</span><span id="resData"></span></div>
             <div class="info-row"><span class="info-label">Horário</span><span id="resHorario"></span></div>
-            <div class="info-row"><span class="info-label">Estado</span><span class="status-badge">Aprovada</span></div>
+            <div class="info-row"><span class="info-label">Estado</span><span class="status-badge" id="resEstado">Aprovada</span></div>
             
             <button class="btn-apple" onclick="window.print()"><i class="fas fa-download me-2"></i> Baixar / Imprimir PDF</button>
             
@@ -62,29 +66,50 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Simulação de carregamento de dados via URL params
-        window.onload = function() {
+        const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        window.onload = async function() {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
-            const docente = params.get('d') || 'Utilizador';
-            const espaco = params.get('e') || 'Sala 101';
-            const data = params.get('dt') || '06/05/2026';
-            const horario = params.get('h') || '10:00–12:00';
 
-            setTimeout(() => {
+            if (!id) {
                 document.getElementById('loading').style.display = 'none';
-                if (!id) {
-                    document.getElementById('error').style.display = 'block';
-                } else {
-                    document.getElementById('resId').textContent = id;
-                    document.getElementById('resDocente').textContent = docente;
-                    document.getElementById('resEspaco').textContent = espaco;
-                    document.getElementById('resData').textContent = data;
-                    document.getElementById('resHorario').textContent = horario;
-                    document.getElementById('content').style.display = 'block';
-                }
-            }, 800);
+                document.getElementById('error').style.display = 'block';
+                return;
+            }
+
+            try {
+                const { data: r, error } = await supabaseClient
+                    .from('requisitions')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error || !r) throw new Error('Não encontrado');
+
+                document.getElementById('resId').textContent = r.id;
+                document.getElementById('resDocente').textContent = r.docente_nome;
+                document.getElementById('resEspaco').textContent = r.tipo;
+
+                const [y, m, d] = r.data.split('-');
+                document.getElementById('resData').textContent = `${d}/${m}/${y}`;
+                document.getElementById('resHorario').textContent = `${r.inicio.slice(0,5)} - ${r.fim.slice(0,5)}`;
+                document.getElementById('resEstado').textContent = r.estado;
+
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${window.location.href}`;
+                document.getElementById('qrPlaceholder').innerHTML = `<img src="${qrUrl}" alt="QR Code" class="img-fluid rounded shadow-sm">`;
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+            } catch (e) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
         };
     </script>
 </body>

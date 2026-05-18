@@ -77,7 +77,16 @@
                     <form id="formRequisicao">
                         <div class="mb-3"><label class="small text-muted">Tipo de Espaço</label><select id="reqTipo" class="form-select border-0 bg-light p-3 rounded-3"><option>Auditório</option><option>Sala de Aula</option><option>Laboratório</option><option>Sala de Reuniões</option></select></div>
                         <div class="mb-3"><label class="small text-muted">Data</label><input type="date" id="reqData" class="form-control border-0 bg-light p-3 rounded-3" required></div>
-                        <div class="row mb-4"><div class="col"><label class="small text-muted">Início</label><input type="time" id="reqInicio" class="form-control border-0 bg-light p-3 rounded-3" required></div><div class="col"><label class="small text-muted">Fim</label><input type="time" id="reqFim" class="form-control border-0 bg-light p-3 rounded-3" required></div></div>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label class="small text-muted">Início</label>
+                                <select id="reqInicio" class="form-select border-0 bg-light p-3 rounded-3" required></select>
+                            </div>
+                            <div class="col">
+                                <label class="small text-muted">Fim</label>
+                                <select id="reqFim" class="form-select border-0 bg-light p-3 rounded-3" required></select>
+                            </div>
+                        </div>
                         <button type="submit" class="btn-apple w-100 py-3">Submeter Pedido</button>
                     </form>
                 </div>
@@ -89,6 +98,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         const SUPABASE_URL = "https://exooykvgjxckvcnxhiap.supabase.co";
@@ -106,6 +116,25 @@
             const t = document.createElement('div'); t.className=`toast-apple toast-${type}`; t.textContent=msg;
             document.getElementById('toastContainer').appendChild(t);
             setTimeout(()=>t.remove(), 4000);
+        }
+
+        // Popular selects de hora
+        function popularHoras() {
+            const inicio = document.getElementById('reqInicio');
+            const fim = document.getElementById('reqFim');
+            for(let h=6; h<=22; h++) {
+                for(let m=0; m<60; m+=30) {
+                    const val = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+                    inicio.innerHTML += `<option value="${val}">${val}</option>`;
+                    fim.innerHTML += `<option value="${val}">${val}</option>`;
+                }
+            }
+        }
+        popularHoras();
+
+        function formatarData(dataStr) {
+            const [y, m, d] = dataStr.split('-');
+            return `${d}/${m}/${y}`;
         }
 
         async function carregarDados() {
@@ -129,10 +158,10 @@
                 tbody.innerHTML += `<tr>
                     <td>${r.id}</td>
                     <td>${r.tipo}</td>
-                    <td>${r.data}</td>
-                    <td>${r.inicio} - ${r.fim}</td>
+                    <td>${formatarData(r.data)}</td>
+                    <td>${r.inicio.slice(0,5)} - ${r.fim.slice(0,5)}</td>
                     <td><span class="badge-status status-${r.estado.toLowerCase()}">${r.estado}</span></td>
-                    <td>${r.estado.toLowerCase() === 'aprovada' ? `<button class="btn btn-sm btn-dark" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio}-${r.fim}', '${r.tipo}')"><i class="fas fa-file-pdf"></i></button>` : '—'}</td>
+                    <td>${r.estado.toLowerCase() === 'aprovada' ? `<button class="btn btn-sm btn-dark" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio}-\n${r.fim}', '${r.tipo}')"><i class="fas fa-file-pdf"></i></button>` : '—'}</td>
                 </tr>`;
             });
 
@@ -170,8 +199,44 @@
           .subscribe();
 
         window.gerarComprovativo = function(id, data, horario, tipo) {
-            // Logic for receipt generation (omitted for brevity, keeping existing behavior)
-            showToast('A gerar comprovativo PDF...', 'info');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(22);
+            doc.setTextColor(0, 113, 227);
+            doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
+
+            doc.setFontSize(16);
+            doc.setTextColor(100);
+            doc.text("Comprovativo de Requisição", 105, 45, { align: "center" });
+
+            doc.setDrawColor(0, 113, 227);
+            doc.setLineWidth(1);
+            doc.line(20, 55, 190, 55);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text(`Nº Requisição: ${id}`, 20, 70);
+            doc.text(`Docente: ${loggedNome}`, 20, 80);
+            doc.text(`Espaço: ${tipo}`, 20, 90);
+            doc.text(`Data: ${formatarData(data)}`, 20, 100);
+            doc.text(`Horário: ${horario.replace('\n', '')}`, 20, 110);
+
+            // QR Code Placeholder via API
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/comprovativo.html?id=${id}`;
+
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = qrUrl;
+            img.onload = function() {
+                doc.addImage(img, 'PNG', 75, 130, 60, 60);
+                doc.setFontSize(10);
+                doc.setTextColor(150);
+                doc.text("Documento digital autêntico.", 105, 200, { align: "center" });
+                doc.save(`Comprovativo_${id}.pdf`);
+                showToast('PDF gerado!');
+            };
         }
 
         carregarDados();
