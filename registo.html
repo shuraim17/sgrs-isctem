@@ -123,7 +123,7 @@
         document.getElementById("toggleSenha").addEventListener("click", function() { const p = document.getElementById("senha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
         document.getElementById("toggleConfirmar").addEventListener("click", function() { const p = document.getElementById("confirmarSenha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
 
-        const EMAIL_REGEX = /^[A-Z0-9._%+-]+@isctem\.ac\.mz$/i;
+        const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/i;
         const TEL_REGEX = /^(82|83|84|85|86|87)\d{7}$/;
         const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]{3,}$/;
 
@@ -158,7 +158,7 @@
         inputs.tel.el.addEventListener('input', () => {
             const val = inputs.tel.el.value.trim();
             if (TEL_REGEX.test(val)) setFieldState(inputs.tel.glass, inputs.tel.feedback, 'success', 'Número válido ✓');
-            else setFieldState(inputs.tel.glass, inputs.tel.feedback, 'error', 'Ex: 841234567 (9 dígitos)');
+            else setFieldState(inputs.tel.glass, inputs.tel.feedback, 'error', 'Introduza os 9 dígitos.');
         });
 
         inputs.email.el.addEventListener('input', () => {
@@ -170,13 +170,13 @@
         inputs.emailSec.el.addEventListener('input', () => {
             const val = inputs.emailSec.el.value.trim();
             const generic = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (generic.test(val) && val !== inputs.email.el.value) setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'success', 'Email secundário válido ✓');
+            if (generic.test(val) && val.toLowerCase() !== inputs.email.el.value.toLowerCase()) setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'success', 'Email secundário válido ✓');
             else setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'error', 'Email diferente do principal.');
         });
 
         inputs.senha.el.addEventListener('input', () => {
             const val = inputs.senha.el.value;
-            if (val.length >= 6) setFieldState(inputs.senha.glass, inputs.senha.feedback, 'success', 'Senha forte ✓');
+            if (val.length >= 6) setFieldState(inputs.senha.glass, inputs.senha.feedback, 'success', 'Senha aceitável ✓');
             else setFieldState(inputs.senha.glass, inputs.senha.feedback, 'error', 'Mínimo 6 caracteres.');
         });
 
@@ -207,7 +207,6 @@
             }
 
             try {
-                // Pass all data in user_metadata during signUp
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                     email,
                     password,
@@ -221,12 +220,7 @@
                     }
                 });
 
-                if (authError) {
-                    if (authError.message.toLowerCase().includes('rate limit')) {
-                        throw new Error('Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.');
-                    }
-                    throw authError;
-                }
+                if (authError) throw authError;
 
                 showToast('Conta criada com sucesso!', 'success');
                 setTimeout(() => window.location.href = 'index.html', 2000);
