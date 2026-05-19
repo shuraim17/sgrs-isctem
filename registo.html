@@ -123,7 +123,7 @@
         document.getElementById("toggleSenha").addEventListener("click", function() { const p = document.getElementById("senha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
         document.getElementById("toggleConfirmar").addEventListener("click", function() { const p = document.getElementById("confirmarSenha"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
 
-        const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/;
+        const EMAIL_REGEX = /^[A-Z0-9._%+-]+@isctem\.ac\.mz$/i;
         const TEL_REGEX = /^(82|83|84|85|86|87)\d{7}$/;
         const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]{3,}$/;
 
