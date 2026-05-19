@@ -197,6 +197,9 @@
             const email = inputs.email.el.value.trim();
             const password = inputs.senha.el.value;
             const funcao = document.getElementById('funcao').value;
+            const nome = inputs.nome.el.value.trim();
+            const emailSec = inputs.emailSec.el.value.trim();
+            const telemovel = '+258' + inputs.tel.el.value.trim();
 
             if (funcao === 'Admin') {
                 const { data: isValidKey } = await supabaseClient.rpc('check_admin_key', { key_input: document.getElementById('adminKey').value.trim() });
@@ -204,8 +207,18 @@
             }
 
             try {
+                // Pass all data in user_metadata during signUp
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                    email, password, options: { data: { nome: inputs.nome.el.value, funcao: funcao } }
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            nome: nome,
+                            funcao: funcao,
+                            email_secundario: emailSec,
+                            telemovel: telemovel
+                        }
+                    }
                 });
 
                 if (authError) {
@@ -214,11 +227,6 @@
                     }
                     throw authError;
                 }
-
-                const { error: profileError } = await supabaseClient.from('profiles').update({
-                    email_secundario: inputs.emailSec.el.value.trim(),
-                    telemovel: '+258' + inputs.tel.el.value.trim()
-                }).eq('id', authData.user.id);
 
                 showToast('Conta criada com sucesso!', 'success');
                 setTimeout(() => window.location.href = 'index.html', 2000);
