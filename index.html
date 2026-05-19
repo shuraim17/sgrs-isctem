@@ -153,7 +153,7 @@
         const SUPABASE_KEY = "sb_publishable_i5paySUP8L7xAGsBENbBBg_UC3Eu_Fm";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         document.getElementById("togglePassword").addEventListener("click", function() { const p = document.getElementById("password"); p.type = p.type === "password" ? "text" : "password"; this.classList.toggle("fa-eye-slash"); });
-        const EMAIL_REGEX = /^[A-Z0-9._%+-]+@isctem\.ac\.mz$/i;
+        const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@isctem\.ac\.mz$/i;
         let userRecoveryData = null;
 
         function showToast(msg, type = 'success') {
