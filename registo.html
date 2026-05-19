@@ -152,37 +152,37 @@
         inputs.nome.el.addEventListener('input', () => {
             const val = inputs.nome.el.value.trim();
             if (NAME_REGEX.test(val)) setFieldState(inputs.nome.glass, inputs.nome.feedback, 'success', 'Nome válido ✓');
-            else setFieldState(inputs.nome.glass, inputs.nome.feedback, 'error', 'Mínimo 3 letras e apenas espaços.');
+            else setFieldState(inputs.nome.glass, inputs.nome.feedback, 'error', 'Mínimo 3 letras.');
         });
 
         inputs.tel.el.addEventListener('input', () => {
             const val = inputs.tel.el.value.trim();
             if (TEL_REGEX.test(val)) setFieldState(inputs.tel.glass, inputs.tel.feedback, 'success', 'Número válido ✓');
-            else setFieldState(inputs.tel.glass, inputs.tel.feedback, 'error', 'Introduza os 9 dígitos.');
+            else setFieldState(inputs.tel.glass, inputs.tel.feedback, 'error', '9 dígitos.');
         });
 
         inputs.email.el.addEventListener('input', () => {
             const val = inputs.email.el.value.trim();
-            if (EMAIL_REGEX.test(val)) setFieldState(inputs.email.glass, inputs.email.feedback, 'success', 'Email institucional válido ✓');
-            else setFieldState(inputs.email.glass, inputs.email.feedback, 'error', 'Use @isctem.ac.mz');
+            if (EMAIL_REGEX.test(val)) setFieldState(inputs.email.glass, inputs.email.feedback, 'success', 'Válido ✓');
+            else setFieldState(inputs.email.glass, inputs.email.feedback, 'error', '@isctem.ac.mz');
         });
 
         inputs.emailSec.el.addEventListener('input', () => {
             const val = inputs.emailSec.el.value.trim();
             const generic = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (generic.test(val) && val.toLowerCase() !== inputs.email.el.value.toLowerCase()) setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'success', 'Email secundário válido ✓');
-            else setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'error', 'Email diferente do principal.');
+            if (generic.test(val) && val.toLowerCase() !== inputs.email.el.value.toLowerCase()) setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'success', 'Válido ✓');
+            else setFieldState(inputs.emailSec.glass, inputs.emailSec.feedback, 'error', 'Email diferente.');
         });
 
         inputs.senha.el.addEventListener('input', () => {
             const val = inputs.senha.el.value;
-            if (val.length >= 6) setFieldState(inputs.senha.glass, inputs.senha.feedback, 'success', 'Senha aceitável ✓');
-            else setFieldState(inputs.senha.glass, inputs.senha.feedback, 'error', 'Mínimo 6 caracteres.');
+            if (val.length >= 6) setFieldState(inputs.senha.glass, inputs.senha.feedback, 'success', 'Válido ✓');
+            else setFieldState(inputs.senha.glass, inputs.senha.feedback, 'error', 'Mínimo 6 char.');
         });
 
         inputs.conf.el.addEventListener('input', () => {
-            if (inputs.conf.el.value === inputs.senha.el.value && inputs.senha.el.value.length > 0) setFieldState(inputs.conf.glass, inputs.conf.feedback, 'success', 'Passwords coincidem ✓');
-            else setFieldState(inputs.conf.glass, inputs.conf.feedback, 'error', 'As passwords não coincidem.');
+            if (inputs.conf.el.value === inputs.senha.el.value && inputs.senha.el.value.length > 0) setFieldState(inputs.conf.glass, inputs.conf.feedback, 'success', 'Coincidem ✓');
+            else setFieldState(inputs.conf.glass, inputs.conf.feedback, 'error', 'Não coincidem.');
         });
 
         document.getElementById('funcao').addEventListener('change', (e) => {
@@ -203,7 +203,7 @@
 
             if (funcao === 'Admin') {
                 const { data: isValidKey } = await supabaseClient.rpc('check_admin_key', { key_input: document.getElementById('adminKey').value.trim() });
-                if (!isValidKey) { showToast('Chave de administrador incorreta.', 'error'); btn.disabled = false; btn.textContent = 'Criar Minha Conta'; return; }
+                if (!isValidKey) { showToast('Chave incorreta.', 'error'); btn.disabled = false; btn.textContent = 'Criar Minha Conta'; return; }
             }
 
             try {
