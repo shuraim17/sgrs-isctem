@@ -38,7 +38,7 @@
 <body>
     <div id="sidebar">
         <div class="d-flex justify-content-between align-items-center mb-5">
-            <img src="logo1.png" width="100">
+            <img src="logo1.png" width="100" id="sidebarLogo">
             <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <nav class="flex-grow-1">
@@ -63,7 +63,7 @@
             <div class="search-glass"><i class="fas fa-search text-muted"></i><input type="text" placeholder="Procurar pedidos..." onkeyup="filtrarTabela('listaPedidos', this.value)"></div>
             <div class="card-apple">
                 <h5 class="fw-bold mb-4">Pedidos de Aprovação</h5>
-                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>ID</th><th>Docente/Rep.</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead><tbody id="listaPedidos"></tbody></table></div>
+                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>ID</th><th>Interessado</th><th>Espaço</th><th>Data/Hora</th><th>Ações</th></tr></thead><tbody id="listaPedidos"></tbody></table></div>
             </div>
         </section>
 
@@ -136,9 +136,7 @@
             document.getElementById('statTotal').textContent = reqs.length;
             document.getElementById('statUsers').textContent = profiles?.length || 0;
 
-            // Dashboard Table
-            const tbody = document.getElementById('listaPedidos');
-            tbody.innerHTML = '';
+            const tbody = document.getElementById('listaPedidos'); tbody.innerHTML = '';
             pendentes.forEach(r => {
                 tbody.innerHTML += `<tr>
                     <td>${r.id}</td><td>${r.docente_nome}</td><td>${r.tipo}</td><td>${formatarData(r.data)} ${r.inicio.slice(0,5)}</td>
@@ -149,13 +147,11 @@
                 </tr>`;
             });
 
-            // Relatorio Table
-            const relBody = document.getElementById('listaRelatorio');
-            relBody.innerHTML = '';
+            const relBody = document.getElementById('listaRelatorio'); relBody.innerHTML = '';
             aprovadas.forEach(r => {
                 const p = profiles.find(u => u.id === r.docente_id);
                 relBody.innerHTML += `<tr>
-                    <td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td>
+                    <td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-\n${r.fim.slice(0,5)}</td>
                     <td>${r.docente_nome}</td><td>${p ? (p.telemovel || p.email_secundario || p.email) : '-'}</td>
                     <td><button class="btn btn-sm btn-dark" onclick="gerarComprovativo('${r.id}', '${r.data}', '${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}', '${r.tipo}', '${r.docente_nome}')"><i class="fas fa-file-pdf"></i></button></td>
                 </tr>`;
@@ -185,6 +181,11 @@
         window.gerarComprovativo = function(id, data, horario, tipo, nome) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+
+            // Add Logo 1 to PDF
+            const logoImg = document.getElementById('sidebarLogo');
+            doc.addImage(logoImg, 'PNG', 15, 10, 30, 30);
+
             doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(0, 113, 227); doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
             doc.setFontSize(16); doc.setTextColor(100); doc.text("Comprovativo de Reserva (Gestor)", 105, 45, { align: "center" });
             doc.setDrawColor(0, 113, 227); doc.setLineWidth(1); doc.line(20, 55, 190, 55);

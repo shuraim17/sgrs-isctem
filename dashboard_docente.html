@@ -43,7 +43,7 @@
 <body>
     <div id="sidebar">
         <div class="d-flex justify-content-between align-items-center mb-5">
-            <img src="logo1.png" width="100">
+            <img src="logo1.png" width="100" id="sidebarLogo">
             <button class="btn d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <nav class="flex-grow-1">
@@ -58,8 +58,7 @@
     <button id="sidebarToggle" class="btn btn-dark d-lg-none position-fixed top-0 start-0 m-3 z-3" style="border-radius: 12px;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
 
     <div class="main-content">
-
-        <!-- DASHBOARD (OVERVIEW) -->
+        <!-- SPA Sections -->
         <section id="dashboard" class="content-section active">
             <div class="d-flex justify-content-between align-items-center mb-5">
                 <div><h1 class="fw-bold mb-0">Olá, <span id="docenteNome">Docente</span></h1><p class="text-muted">Resumo da sua atividade.</p></div>
@@ -72,7 +71,6 @@
             </div>
         </section>
 
-        <!-- MINHAS REQUISICOES -->
         <section id="minhas" class="content-section">
             <h1 class="fw-bold mb-4">Minhas Requisições</h1>
             <div class="card-apple">
@@ -80,59 +78,41 @@
             </div>
         </section>
 
-        <!-- DISPONIBILIDADE (CALENDAR VIEW) -->
         <section id="disponibilidade" class="content-section">
             <h1 class="fw-bold mb-4">Calendário de Ocupação</h1>
             <p class="text-muted mb-4">Visualize todas as reservas confirmadas no sistema.</p>
-            <div class="card-apple">
-                <div id="calendar"></div>
-            </div>
+            <div class="card-apple"><div id="calendar"></div></div>
         </section>
 
-        <!-- COMPROVATIVOS -->
         <section id="comprovativos" class="content-section">
             <h1 class="fw-bold mb-4">Meus Comprovativos</h1>
             <p class="text-muted mb-4">Visualize e baixe o comprovativo oficial.</p>
             <div class="row g-4" id="listaComprovativos"></div>
         </section>
-
     </div>
 
-    <!-- Modal Requisicao -->
+    <!-- Modals -->
     <div class="modal fade" id="modalRequisicao" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content border-0 rounded-4 shadow-lg">
-                <div class="modal-body p-4">
-                    <h5 class="fw-bold mb-4">Nova Requisição</h5>
-                    <form id="formRequisicao">
-                        <div class="mb-3"><label class="small text-muted">Tipo de Espaço</label><select id="reqTipo" class="form-select border-0 bg-light p-3 rounded-3"><option>Sala de Aula</option><option>Anfiteatro</option><option>Laboratório Informático</option><option>Sala de Reuniões</option></select></div>
-                        <div class="mb-3"><label class="small text-muted">Data</label><input type="date" id="reqData" class="form-control border-0 bg-light p-3 rounded-3" required></div>
-                        <div class="row mb-4">
-                            <div class="col"><label class="small text-muted">Início</label><select id="reqInicio" class="form-select border-0 bg-light p-3 rounded-3" required></select></div>
-                            <div class="col"><label class="small text-muted">Fim</label><select id="reqFim" class="form-select border-0 bg-light p-3 rounded-3" required></select></div>
-                        </div>
-                        <button type="submit" class="btn-apple w-100 py-3">Submeter Pedido</button>
-                    </form>
+        <div class="modal-dialog"><div class="modal-content border-0 rounded-4 shadow-lg"><div class="modal-body p-4">
+            <h5 class="fw-bold mb-4">Nova Requisição</h5>
+            <form id="formRequisicao">
+                <div class="mb-3"><label class="small text-muted">Tipo de Espaço</label><select id="reqTipo" class="form-select border-0 bg-light p-3 rounded-3"><option>Sala de Aula</option><option>Anfiteatro</option><option>Laboratório Informático</option><option>Sala de Reuniões</option></select></div>
+                <div class="mb-3"><label class="small text-muted">Data</label><input type="date" id="reqData" class="form-control border-0 bg-light p-3 rounded-3" required></div>
+                <div class="row mb-4">
+                    <div class="col"><label class="small text-muted">Início</label><select id="reqInicio" class="form-select border-0 bg-light p-3 rounded-3" required></select></div>
+                    <div class="col"><label class="small text-muted">Fim</label><select id="reqFim" class="form-select border-0 bg-light p-3 rounded-3" required></select></div>
                 </div>
-            </div>
-        </div>
+                <button type="submit" class="btn-apple w-100 py-3">Submeter Pedido</button>
+            </form>
+        </div></div></div>
     </div>
 
-    <!-- Modal PDF Preview -->
     <div class="modal fade" id="modalPreview" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content border-0 rounded-4">
-                <div class="modal-header border-0 pb-0"><h5 class="fw-bold m-0">Pré-visualização do Comprovativo</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body text-center p-4">
-                    <div id="pdfFrameWrapper" style="background: #f5f5f7; border-radius: 16px; padding: 20px; min-height: 400px; display: flex; align-items: center; justify-content: center;">
-                        <canvas id="pdfCanvas" style="max-width: 100%; border: 1px solid #ddd;"></canvas>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 p-4 pt-0">
-                    <button class="btn btn-dark w-100 py-3 rounded-3" id="btnDownloadActual"><i class="fas fa-download me-2"></i> Baixar Documento PDF</button>
-                </div>
-            </div>
-        </div>
+        <div class="modal-dialog modal-lg"><div class="modal-content border-0 rounded-4">
+            <div class="modal-header border-0 pb-0"><h5 class="fw-bold m-0">Pré-visualização</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body text-center p-4"><div id="pdfFrameWrapper" style="background: #f5f5f7; border-radius: 16px; padding: 20px; min-height: 400px; display: flex; align-items: center; justify-content: center;"><canvas id="pdfCanvas" style="display:none;"></canvas></div></div>
+            <div class="modal-footer border-0 p-4 pt-0"><button class="btn btn-dark w-100 py-3 rounded-3" id="btnDownloadActual"><i class="fas fa-download me-2"></i> Baixar PDF</button></div>
+        </div></div>
     </div>
 
     <div id="toastContainer"></div>
@@ -206,18 +186,15 @@
             const userReqs = allReqs.filter(r => r.docente_id === loggedUid);
             const approvedReqs = allReqs.filter(r => r.estado.toLowerCase() === 'aprovada');
 
-            // Stats
             document.getElementById('statTotal').textContent = userReqs.length;
             document.getElementById('statAprovadas').textContent = userReqs.filter(r => r.estado.toLowerCase() === 'aprovada').length;
             document.getElementById('statPendentes').textContent = userReqs.filter(r => r.estado.toLowerCase() === 'pendente').length;
 
-            // Minhas Table
             const mBody = document.getElementById('listaMinhas'); mBody.innerHTML = '';
             userReqs.forEach(r => {
                 mBody.innerHTML += `<tr><td>${r.id}</td><td>${r.tipo}</td><td>${formatarData(r.data)}</td><td>${r.inicio.slice(0,5)}-${r.fim.slice(0,5)}</td><td><span class="badge-status status-${r.estado.toLowerCase()}">${r.estado}</span></td></tr>`;
             });
 
-            // Calendar
             const events = approvedReqs.map(r => ({
                 title: `${r.tipo} (${r.docente_nome})`,
                 start: `${r.data}T${r.inicio}`,
@@ -227,7 +204,6 @@
             calendar.removeAllEvents();
             calendar.addEventSource(events);
 
-            // Comprovativos Grid
             const cBody = document.getElementById('listaComprovativos'); cBody.innerHTML = '';
             userReqs.filter(r => r.estado.toLowerCase() === 'aprovada').forEach(r => {
                 cBody.innerHTML += `
@@ -257,6 +233,11 @@
         function showPreview(id, data, horario, tipo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+
+            // Add Logo 1 to PDF
+            const logoImg = document.getElementById('sidebarLogo');
+            doc.addImage(logoImg, 'PNG', 15, 10, 30, 30);
+
             doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(0, 113, 227); doc.text("SGRS – ISCTEM", 105, 30, { align: "center" });
             doc.setFontSize(16); doc.setTextColor(100); doc.text("Comprovativo de Requisição", 105, 45, { align: "center" });
             doc.setDrawColor(0, 113, 227); doc.setLineWidth(1); doc.line(20, 55, 190, 55);
@@ -271,13 +252,11 @@
             const img = new Image(); img.crossOrigin = "Anonymous"; img.src = qrUrl;
             img.onload = function() {
                 doc.addImage(img, 'PNG', 75, 130, 60, 60);
-                doc.setFontSize(10); doc.setTextColor(150); doc.text("Documento digital autêntico.", 105, 200, { align: "center" });
+                doc.setFontSize(10); doc.setTextColor(150);
+                doc.text("Documento digital autêntico.", 105, 200, { align: "center" });
 
-                // Show in Canvas for preview
                 const pdfData = doc.output('datauristring');
-                document.getElementById('pdfCanvas').style.display = 'none'; // Canvas is tricky with jsPDF, we'll use an image or blob
                 document.getElementById('pdfFrameWrapper').innerHTML = `<iframe src="${pdfData}" width="100%" height="500px" style="border:none; border-radius:12px;"></iframe>`;
-
                 document.getElementById('btnDownloadActual').onclick = () => { doc.save(`Comprovativo_${id}.pdf`); showToast('Baixado!'); };
                 new bootstrap.Modal(document.getElementById('modalPreview')).show();
             };
